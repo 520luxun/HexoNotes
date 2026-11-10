@@ -1,0 +1,23 @@
+{
+  "source": "D:/ObsidianFirstNotes",
+  "target": "src/content/posts/notes",
+  "publishField": "publish",
+  "alwaysInclude": ["Blog/**", "blog/**"],
+  "exclude": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/.obsidian/**",
+    "**/.claude/**",
+    "**/.venv/**",
+    "**/assets/**",
+    "**/asserts/**",
+    "**/.*/**"
+  ],
+  "defaultCategory": "笔记",
+  "categoryMap": {
+    "Embedded": "嵌入式",
+    "Study": "学习笔记",
+    "Blog": "笔记"
+  },
+  "copyAttachments": true
+}
