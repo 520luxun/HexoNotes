@@ -10,6 +10,7 @@
     "sync-notes": "node scripts/sync-notes.mjs",
     "sync-notes:all": "node scripts/sync-notes.mjs --all",
     "sync-notes:preview": "node scripts/sync-notes.mjs --dry-run",
+    "push:all": "git push origin main && git push gitee main",
     "preview": "astro preview",
     "astro": "astro",
     "type-check": "tsc --noEmit --isolatedDeclarations",
