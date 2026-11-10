@@ -2,7 +2,7 @@
   "source": "D:/ObsidianFirstNotes",
   "target": "src/content/posts/notes",
   "publishField": "publish",
-  "alwaysInclude": ["Blog/**", "blog/**"],
+  "alwaysInclude": ["**/*.md", "Blog/**", "blog/**"],
   "featured": [
     "Embedded/FreeRTOS/01 FreeRTOS入门.md",
     "Embedded/FreeRTOS/08 FreeRTOS任务调度-详细解析.md",

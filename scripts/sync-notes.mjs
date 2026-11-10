@@ -129,7 +129,7 @@ async function downloadImage(url) {
 		// Referer is the blog domain, but serve requests without one.
 		const res = await fetch(url, {
 			headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
-			signal: AbortSignal.timeout(20000),
+			signal: AbortSignal.timeout(12000),
 		});
 		if (!res.ok) return null;
 		const buf = Buffer.from(await res.arrayBuffer());
@@ -232,7 +232,7 @@ function convertNote(file, attachmentIndex, downloaded, assets) {
 		const candidate = fs.existsSync(sameDir)
 			? sameDir
 			: attachmentIndex.get(path.basename(decoded));
-		if (!candidate) return `./assets/${safeName(path.basename(decoded))}`;
+		if (!candidate) return null; // missing source file: drop the broken image
 		let name = safeName(path.basename(decoded));
 		if (assets.has(name) && assets.get(name) !== candidate) {
 			name = `${sha(file.rel)}-${name}`;
@@ -253,9 +253,15 @@ function convertNote(file, attachmentIndex, downloaded, assets) {
 		.replace(/^```\s*C#\s*$/gim, "```csharp")
 		.replace(/^```\s*C\s*$/gim, "```c")
 		.replace(/!\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g, (_, n) => `![](${n.trim()})`)
-		.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, ref) => `![${alt}](${resolveImage(ref)})`)
+		.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, ref) => {
+			const resolved = resolveImage(ref);
+			return resolved === null ? "" : `![${alt}](${resolved})`;
+		})
 		// Raw <img> tags are not processed by Astro, convert them to Markdown.
-		.replace(/<img\s+[^>]*src="([^"]+)"[^>]*\/?>/gi, (_, src) => `![](${resolveImage(src)})`);
+		.replace(/<img\s+[^>]*src="([^"]+)"[^>]*\/?>/gi, (_, src) => {
+			const resolved = resolveImage(src);
+			return resolved === null ? "" : `![](${resolved})`;
+		});
 
 	if (stripMarkup(output).length < (config.minBodyChars ?? 120)) return null;
 
@@ -317,7 +323,7 @@ async function main() {
 		const urls = [...urlSet];
 		let cursor = 0;
 		await Promise.all(
-			Array.from({ length: Math.min(6, urls.length) }, async () => {
+			Array.from({ length: Math.min(12, urls.length) }, async () => {
 				while (cursor < urls.length) {
 					const url = urls[cursor++];
 					downloaded.set(url, await downloadImage(url));
@@ -350,9 +356,37 @@ async function main() {
 		fs.mkdirSync(targetDir, { recursive: true });
 		for (const o of outputs) fs.writeFileSync(path.join(targetDir, o.name), o.content, "utf8");
 		if (assets.size) {
-			fs.mkdirSync(path.join(targetDir, "assets"), { recursive: true });
-			for (const [name, src] of assets)
-				fs.copyFileSync(src, path.join(targetDir, "assets", name));
+			const assetDir = path.join(targetDir, "assets");
+			fs.mkdirSync(assetDir, { recursive: true });
+			const sharp = (await import("sharp")).default;
+			let resized = 0;
+			for (const [name, src] of assets) {
+				const dest = path.join(assetDir, name);
+				try {
+					const meta = await sharp(src).metadata();
+					const w = meta.width ?? 0;
+					const h = meta.height ?? 0;
+					const frames = meta.pages ?? 1;
+					// Animated GIF/WebP: total decoded pixels can exceed sharp's
+					// limit even when one frame is small. Keep only the first frame.
+					if (w * h * frames > 100_000_000 || Math.max(w, h) > 10000 || frames > 1) {
+						await sharp(src, { animated: false })
+							.resize({
+								width: 4096,
+								height: 4096,
+								fit: "inside",
+								withoutEnlargement: true,
+							})
+							.toFile(dest);
+						resized++;
+					} else {
+						fs.copyFileSync(src, dest);
+					}
+				} catch {
+					fs.copyFileSync(src, dest);
+				}
+			}
+			if (resized) console.log(`[notes-sync] resized ${resized} oversized images`);
 		}
 		if (!outputs.length) fs.writeFileSync(path.join(targetDir, ".gitkeep"), "", "utf8");
 	}

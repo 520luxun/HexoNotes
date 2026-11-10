@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="320" viewBox="0 0 800 320">
+  <rect width="800" height="320" fill="#ffffff"/>
+  <g stroke="#202124" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="120" y1="70" x2="680" y2="70"/>
+    <line x1="120" y1="250" x2="680" y2="250"/>
+    <line x1="180" y1="70" x2="180" y2="250"/>
+    <line x1="350" y1="70" x2="350" y2="250"/>
+    <line x1="520" y1="70" x2="520" y2="250"/>
+    <rect x="145" y="130" width="70" height="50" rx="7" fill="#fff3cd"/>
+    <text x="180" y="163" text-anchor="middle" fill="#202124" stroke="none" font-size="22" font-family="Arial, Microsoft YaHei, sans-serif">R</text>
+    <rect x="315" y="130" width="70" height="50" rx="7" fill="#e8f0fe"/>
+    <text x="350" y="163" text-anchor="middle" fill="#202124" stroke="none" font-size="22" font-family="Arial, Microsoft YaHei, sans-serif">L</text>
+    <line x1="495" y1="140" x2="545" y2="140"/>
+    <line x1="495" y1="165" x2="545" y2="165"/>
+    <line x1="520" y1="165" x2="520" y2="250"/>
+    <line x1="100" y1="70" x2="120" y2="70"/>
+    <line x1="100" y1="250" x2="120" y2="250"/>
+  </g>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <text x="400" y="35" font-size="28" font-weight="bold">并联 RLC 自由响应</text>
+    <text x="180" y="210" font-size="18">损耗支路</text>
+    <text x="350" y="210" font-size="18">磁场能</text>
+    <text x="520" y="210" font-size="18">电场能</text>
+    <text x="400" y="290" font-size="18">α = 1 / (2RC)：R 越小，阻尼越强</text>
+  </g>
+</svg>

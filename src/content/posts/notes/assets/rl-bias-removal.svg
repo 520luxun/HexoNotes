@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360">
+  <rect width="800" height="360" fill="#ffffff"/>
+  <g stroke="#202124" stroke-width="2" fill="none">
+    <line x1="85" y1="70" x2="85" y2="285"/>
+    <line x1="85" y1="285" x2="750" y2="285"/>
+    <line x1="85" y1="160" x2="750" y2="160" stroke="#9ca3af" stroke-dasharray="7 7"/>
+    <line x1="420" y1="70" x2="420" y2="285" stroke="#9ca3af" stroke-dasharray="7 7"/>
+  </g>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif">
+    <text x="415" y="38" text-anchor="middle" font-size="28" font-weight="bold">RL 高通：去除直流偏置</text>
+    <text x="55" y="78" text-anchor="end" font-size="18">电压</text>
+    <text x="710" y="315" text-anchor="middle" font-size="18">时间</text>
+    <text x="430" y="153" font-size="17">0 V 平均值</text>
+    <text x="185" y="92" fill="#dc2626" font-size="18">输入：2 V 偏置 + 交流</text>
+    <text x="560" y="245" fill="#2563eb" font-size="18">输出：平均值接近 0 V</text>
+  </g>
+  <path d="M85 185 C125 80 165 250 205 145 C245 40 285 245 325 145 C365 40 405 245 445 145 C485 40 525 245 565 145 C605 40 645 245 685 145 C710 90 730 190 750 145" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M85 160 C125 95 165 225 205 160 C245 95 285 225 325 160 C365 95 405 225 445 160 C485 95 525 225 565 160 C605 95 645 225 685 160 C710 120 730 200 750 160" stroke="#2563eb" stroke-width="3" fill="none"/>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16">
+    <text x="440" y="335">直流下电感近似短路，输出节点被拉向地</text>
+  </g>
+</svg>

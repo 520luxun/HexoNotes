@@ -18,6 +18,14 @@ const sh = (command) => {
 	if (result.status !== 0) process.exit(result.status ?? 1);
 };
 
+// Keep the GitHub-base build so we do not have to rebuild everything twice.
+const distDir = path.resolve("dist");
+const backupDir = path.join(os.tmpdir(), "fuwari-dist-github");
+if (fs.existsSync(distDir)) {
+	fs.mkdirSync(backupDir, { recursive: true });
+	fs.cpSync(distDir, backupDir, { recursive: true, force: true });
+}
+
 // 1. Build with the Gitee Pages base path (build.mjs also syncs notes).
 sh("pnpm build");
 
@@ -38,6 +46,9 @@ git(["add", "-A"]);
 git(["-c", "user.name=520luxun", "-c", "user.email=3974662082@qq.com", "commit", "-m", "Deploy to Gitee Pages"]);
 git(["remote", "add", "origin", GITEE_REPO]);
 git(["push", "-f", "origin", "gh-pages"]);
+
+// Restore the GitHub-base build for local preview (no rebuild needed).
+if (fs.existsSync(backupDir)) fs.cpSync(backupDir, distDir, { recursive: true, force: true });
 
 console.log("\nGitee Pages branch pushed. Enable it at:");
 console.log("https://gitee.com/luxunacc/hexo-notes/pages");

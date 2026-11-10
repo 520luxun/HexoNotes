@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300">
+  <rect width="800" height="300" fill="#ffffff"/>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <text x="400" y="38" font-size="28" font-weight="bold">LC 能量交换</text>
+    <text x="115" y="105" font-size="20">电容电压最大</text>
+    <text x="115" y="135" font-size="18">Wc 最大，电流为 0</text>
+    <text x="400" y="105" font-size="20">电感电流最大</text>
+    <text x="400" y="135" font-size="18">Wl 最大，电容电压为 0</text>
+    <text x="685" y="105" font-size="20">反向电容电压最大</text>
+    <text x="685" y="135" font-size="18">能量再次回到电容</text>
+  </g>
+  <g stroke="#2563eb" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M200 120 C245 45 315 45 350 120"/>
+    <path d="M450 120 C495 45 565 45 600 120"/>
+  </g>
+  <g stroke="#dc2626" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M350 120 C315 195 245 195 200 120"/>
+    <path d="M600 120 C565 195 495 195 450 120"/>
+  </g>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" text-anchor="middle">
+    <text x="275" y="235" fill="#2563eb">电场能 → 磁场能</text>
+    <text x="525" y="235" fill="#dc2626">磁场能 → 反向电场能</text>
+  </g>
+</svg>
