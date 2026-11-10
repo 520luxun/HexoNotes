@@ -1,9 +1,9 @@
-# About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+# 关于
 
-::github{repo="saicaca/fuwari"}
+欢迎来到「晚霞小站」，这里主要记录嵌入式开发、计算机基础与日常学习的笔记。
 
-> ### Sources of images used in this site
-> - [Unsplash](https://unsplash.com/)
-> - [星と少女](https://www.pixiv.net/artworks/108916539) by [Stella](https://www.pixiv.net/users/93273965)
-> - [Rabbit - v1.4 Showcase](https://civitai.com/posts/586908) by [Rabbit_YourMajesty](https://civitai.com/user/Rabbit_YourMajesty)
+- 站点基于 [Astro](https://astro.build) 与 [Fuwari](https://github.com/saicaca/fuwari) 构建
+- 源码托管在 [GitHub](https://github.com/520luxun/HexoNotes) 与 [Gitee](https://gitee.com/luxunacc/hexo-notes)
+- 文章同步自我的 Obsidian 笔记库，持续更新中
+
+如有问题或建议，欢迎通过侧边栏的邮箱联系。

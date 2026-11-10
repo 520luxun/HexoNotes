@@ -46,7 +46,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.About,
 		{
 			name: "GitHub",
-			url: "https://github.com/saicaca/fuwari", // Internal links should not include the base path, as it is automatically added
+			url: "https://github.com/520luxun/HexoNotes", // Internal links should not include the base path, as it is automatically added
 			external: true, // Show an external link icon and will open in a new tab
 		},
 	],
@@ -54,19 +54,19 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "Lorem Ipsum",
-	bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+	name: "520luxun",
+	bio: "嵌入式与计算机学习笔记 · 记录生活与技术",
 	links: [
 		{
 			name: "GitHub",
 			icon: "fa6-brands:github", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
-			url: "https://github.com",
+			url: "https://github.com/520luxun",
 		},
 		{
 			name: "BiliBili",
-			icon: "bilibili", // local icon file: src/assets/icons/bilibili.svg
+			icon: "bilibili", // local icon file: src/icons/bilibili.svg
 			url: "https://space.bilibili.com",
 		},
 		{
