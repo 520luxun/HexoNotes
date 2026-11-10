@@ -244,12 +244,10 @@ function convertNote(file, attachmentIndex, downloaded, assets) {
 	let output = body
 		.replace(/在这里插入图片描述/g, "")
 		.replace(/\uFEFF/g, "") // stray BOM from copied notes
-		// Normalise inline formulas: notes sometimes mix \( $...$ \) or put
-		// Chinese text inside $...$, which KaTeX cannot render cleanly.
-		.replace(/\\\(\s*\$([^$\n]*)\$\s*\\\)/g, (_, x) => `$${x}$`)
-		.replace(/\\\(\s*/g, () => "$")
-		.replace(/\s*\\\)/g, () => "$")
-		.replace(/\$([^$\n]*[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef][^$\n]*)\$/g, "$1")
+		// NOTE: do not rewrite $...$ here. Notes contain tables with several
+		// inline formulas per row; a cross-cell match would swallow the
+		// delimiters and break KaTeX rendering. Warnings about Chinese text in
+		// math mode are harmless.
 		// Expressive Code expects lowercase/standard language ids.
 		.replace(/^```\s*C\+\+\s*$/gim, "```cpp")
 		.replace(/^```\s*C#\s*$/gim, "```csharp")
