@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# cached external images for notes sync
+.notes-image-cache/
+
 # generated types
 .astro/
 

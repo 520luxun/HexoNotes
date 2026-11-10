@@ -2,20 +2,21 @@
   "source": "D:/ObsidianFirstNotes",
   "target": "src/content/posts/notes",
   "publishField": "publish",
-  "alwaysInclude": [
-    "Blog/**",
-    "blog/**",
-    "Embedded/**",
-    "Study/**"
+  "alwaysInclude": ["Blog/**", "blog/**"],
+  "featured": [
+    "Embedded/FreeRTOS/01 FreeRTOS入门.md",
+    "Embedded/FreeRTOS/08 FreeRTOS任务调度-详细解析.md",
+    "Embedded/PID/PID算法.md",
+    "Embedded/PCB/Docs/1-5 恒流源电路.md",
+    "Embedded/KnowledgePoints/嵌入式原理与实践.md"
   ],
+  "minBodyChars": 120,
   "exclude": [
     "**/node_modules/**",
     "**/.git/**",
     "**/.obsidian/**",
     "**/.claude/**",
     "**/.venv/**",
-    "**/assets/**",
-    "**/asserts/**",
     "**/Clippings/**",
     "**/Daily/**",
     "**/Excalidraw/**",
@@ -25,7 +26,13 @@
   "categoryMap": {
     "Embedded": "嵌入式",
     "Study": "学习笔记",
-    "Blog": "笔记"
+    "Blog": "笔记",
+    "FreeRTOS": "FreeRTOS",
+    "KnowledgePoints": "知识点",
+    "PID": "PID 控制",
+    "PCB": "硬件电路",
+    "SchoolStudy": "计算机基础",
+    "Claude": "效率工具"
   },
   "copyAttachments": true
 }
