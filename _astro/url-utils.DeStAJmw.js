@@ -1,0 +1,1 @@
+import"./zh_TW.EWYoPUR2.js";function u(o,e){const t=o.replace(/^\/|\/$/g,"").toLowerCase(),n=e.replace(/^\/|\/$/g,"").toLowerCase();return t===n}function r(...o){return o.join("/").replace(/\/+/g,"/")}function i(o){return a(`/posts/${o}/`)}function a(o){return r("","/HexoNotes/",o)}export{i as g,u as p,a as u};
