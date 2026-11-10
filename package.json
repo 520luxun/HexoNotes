@@ -12,6 +12,7 @@
     "sync-notes:preview": "node scripts/sync-notes.mjs --dry-run",
     "push:all": "git push origin main && git push gitee main",
     "deploy:gitee": "node scripts/deploy-gitee.mjs",
+    "audit:site": "node scripts/audit-site.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "type-check": "tsc --noEmit --isolatedDeclarations",

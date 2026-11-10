@@ -323,25 +323,25 @@ MSYS2 是 Windows 下强大的类 Unix 开发环境，集成 **pacman 包管理�
     
     双击下载的 `.exe` 文件，点击 **Next**。
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p3-flow-imagex-sign.byteimg.com/labis/image/79c288ce31bda6af91bd232a5894105c~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162331F6E65BEB1F570D9044F8&rrcfp=2033b573&x-expires=1785140611&x-signature=lKyn9morsiJyQiTlyx5lnsEKCu0%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 2. **选择安装路径**
     
     **强烈建议默认路径 `C:\msys64`**（纯英文、无空格），避免编译报错。
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p6-flow-imagex-sign.byteimg.com/labis/image/bcd312bfb8d6d5dc05a0df6374fdc282~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162331F6E65BEB1F570D9044F8&rrcfp=2033b573&x-expires=1785140611&x-signature=OiZrqxbS50D1jxeiPF7Jrzeky24%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 3. **选择开始菜单文件夹**
     
     默认即可，点击 **Next** → **Install** 开始安装。
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p26-flow-imagex-sign.byteimg.com/labis/image/a7a4a9aec744615ab5ec9cea078d7d66~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162331F6E65BEB1F570D9044F8&rrcfp=2033b573&x-expires=1785140611&x-signature=PdBc4ItBrqqg1OiASA5fPFWp9PM%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 4. **完成安装**
     
     勾选 **Run MSYS2 now**（启动终端），点击 **Finish**。
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p3-flow-imagex-sign.byteimg.com/labis/image/52de7f6a8eb814011fb670360b30f54a~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162331F6E65BEB1F570D9044F8&rrcfp=2033b573&x-expires=1785140611&x-signature=GWK30LyDgvkLjGZDCC%2FW%2BF9kLkw%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 
 ---
@@ -350,7 +350,7 @@ MSYS2 是 Windows 下强大的类 Unix 开发环境，集成 **pacman 包管理�
 
 安装完成会自动打开 **MSYS2 UCRT64** 终端（黑色窗口）。
 
-![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p26-flow-imagex-sign.byteimg.com/isp-i18n-media/img/844af51d5df48ab007b24609ebc627a3~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162331F6E65BEB1F570D9044F8&rrcfp=2033b573&x-expires=1785140611&x-signature=zQVbxpvnZAh9ouG3iwsbNhl%2Fv18%3D)
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
 
 #### 1. 第一次更新（核心组件）
 
@@ -550,33 +550,33 @@ make install
 
 1. **运行 `setup-x86_64.exe`** → **Next**
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p26-flow-imagex-sign.byteimg.com/isp-i18n-media/img/23a5266a1502af1f63594d21f4880b08~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=bVQDwXayg8KqWCuYNqNB0gG7zMQ%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 2. **Choose Installation Type**：选 **Install from Internet**（在线安装）→ **Next**
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p3-flow-imagex-sign.byteimg.com/isp-i18n-media/img/295543270fddd956fba649d2e0b5b869~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=FPWMR5oJAtlAP7%2F8jFm2lKH9IKc%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 3. **Root Directory**（安装路径）：
     
     - 默认 `C:\cygwin64`（**无中文、无空格**）
     - 建议默认，All Users → **Next**
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p3-flow-imagex-sign.byteimg.com/isp-i18n-media/img/cc427a12acb6641b22bbfba8cfd96f64~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=k9dJjSbRAvyHnwjsjrWsMvKj6d0%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 4. **Local Package Directory**（缓存目录）：默认即可 → **Next**
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p11-flow-imagex-sign.byteimg.com/isp-i18n-media/img/580eb95a2dd46b53f4e296c845bf8a3e~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=Kh26Z45GVZGgvMuwq3wyzn%2FOKRY%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 5. **Connection**：选 **Direct Connection**（直连）→ **Next**
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p3-flow-imagex-sign.byteimg.com/isp-i18n-media/img/2db29fe4f5c27670b5f4821ed59b6ac4~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=iOzxp0Yzn0B9GPzHdEFwslkGG5k%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 6. **Choose Download Site**（镜像）：
     
     - 国内选：`https://mirrors.tuna.tsinghua.edu.cn/cygwin/`
     - 或 `https://mirrors.ustc.edu.cn/cygwin/` → **Next**
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p26-flow-imagex-sign.byteimg.com/isp-i18n-media/img/ad5d9172ee9f29e24f2ce3e81f35565c~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=FJGHTbHDHPpHULvQ%2FiMJSHPmoUk%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 7. **Select Packages**（关键：选软件）
     
@@ -592,15 +592,15 @@ make install
         ```
         
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p3-flow-imagex-sign.byteimg.com/isp-i18n-media/image/e8966d7fe94e28203dd12a1500fee6de~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=hm7wZ1vm5WdiJGVdi7rhzxLCoAM%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 8. **Next** → 同意安装依赖 → 等待下载完成
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p26-flow-imagex-sign.byteimg.com/isp-i18n-media/img/53e2f78ba573eddc8e96b0e62a68ca3a~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=AyYUSs6%2FFW053L%2F95MnZWBordSM%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 9. **Finish**，可勾选创建桌面图标
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p11-flow-imagex-sign.byteimg.com/isp-i18n-media/img/06549fcabb0f51ccb490c16fe65357b3~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=8Upb3Opmpfe3ve4kwfBsKOWExzg%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 
 #### 3. 首次使用
@@ -609,7 +609,7 @@ make install
 - 首次启动自动创建用户目录 `/home/你的Windows用户名`
 - 出现 `用户名@主机名 ~ $` 即成功
     
-    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)![image](https://p26-flow-imagex-sign.byteimg.com/isp-i18n-media/img/16b497ad01f80aad4b4087b6242ea066~tplv-be4g95zd3a-448x448.jpeg?lk3s=8e244e95&rcl=20260720162720CB44A827CAFBE5887EEE&rrcfp=2033b573&x-expires=1785140841&x-signature=i6diUncBxM1Wh1q5iPHvn4qpHxY%3D)
+    ![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27256%27%20height=%27192%27/%3e)
     
 
 ---

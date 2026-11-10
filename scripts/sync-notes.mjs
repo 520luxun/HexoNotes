@@ -221,7 +221,9 @@ function convertNote(file, attachmentIndex, downloaded, assets) {
 		const r = ref.trim();
 		if (/^https?:\/\//i.test(r)) {
 			const item = downloaded.get(r);
-			if (!item) return r; // download failed: keep original link
+			// Expired signed URLs cannot be recovered; drop the broken image
+			// instead of leaving an <img> that 403s on the deployed site.
+			if (!item) return null;
 			const name = `img-${sha(r)}.${item.ext}`;
 			assets.set(name, item.path);
 			return `./assets/${name}`;
