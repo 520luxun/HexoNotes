@@ -26,8 +26,8 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://520luxun.github.io/",
-	base: "/",
+	site: "https://520luxun.github.io/HexoNotes/",
+	base: "/HexoNotes/",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
