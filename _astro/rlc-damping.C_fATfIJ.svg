@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360">
+  <rect width="800" height="360" fill="#ffffff"/>
+  <g stroke="#202124" stroke-width="2" fill="none">
+    <line x1="85" y1="55" x2="85" y2="295"/>
+    <line x1="85" y1="295" x2="750" y2="295"/>
+    <line x1="85" y1="175" x2="750" y2="175" stroke="#9ca3af" stroke-dasharray="7 7"/>
+  </g>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18">
+    <text x="35" y="65">幅值</text>
+    <text x="720" y="325">时间</text>
+    <text x="400" y="35" text-anchor="middle" font-size="28" font-weight="bold">RLC 阻尼响应</text>
+    <text x="610" y="85" fill="#2563eb">欠阻尼：衰减振荡</text>
+    <text x="610" y="115" fill="#dc2626">临界阻尼：最快无振荡</text>
+    <text x="610" y="145" fill="#16a34a">过阻尼：无振荡但较慢</text>
+  </g>
+  <path d="M85 175 C120 35 160 315 205 175 C250 65 285 270 330 175 C375 105 405 230 445 175 C485 135 515 210 550 175 C585 153 610 195 650 175 C680 164 705 185 750 175" stroke="#2563eb" stroke-width="3" fill="none"/>
+  <path d="M85 175 C180 75 275 240 365 175 C455 125 545 205 635 175 C690 157 720 188 750 175" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M85 80 C190 115 290 145 390 160 C500 171 620 174 750 175" stroke="#16a34a" stroke-width="3" fill="none"/>
+</svg>

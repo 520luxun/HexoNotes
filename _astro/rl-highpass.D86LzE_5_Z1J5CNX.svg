@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300">
+  <rect width="800" height="300" fill="#ffffff"/>
+  <g stroke="#202124" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="55" y1="145" x2="170" y2="145"/>
+    <rect x="170" y="118" width="115" height="54" rx="8" fill="#fff3cd"/>
+    <text x="227" y="151" text-anchor="middle" fill="#202124" stroke="none" font-size="24" font-family="Arial, Microsoft YaHei, sans-serif">R</text>
+    <line x1="285" y1="145" x2="395" y2="145"/>
+    <circle cx="395" cy="145" r="5" fill="#202124"/>
+    <line x1="395" y1="145" x2="395" y2="205"/>
+    <rect x="350" y="205" width="90" height="52" rx="8" fill="#e8f0fe"/>
+    <text x="395" y="238" text-anchor="middle" fill="#202124" stroke="none" font-size="22" font-family="Arial, Microsoft YaHei, sans-serif">L</text>
+    <line x1="395" y1="257" x2="395" y2="275"/>
+    <line x1="340" y1="275" x2="450" y2="275"/>
+    <line x1="355" y1="283" x2="435" y2="283"/>
+    <line x1="370" y1="291" x2="420" y2="291"/>
+    <line x1="395" y1="145" x2="620" y2="145"/>
+    <circle cx="620" cy="145" r="5" fill="#202124"/>
+    <line x1="620" y1="145" x2="700" y2="145"/>
+    <path d="M55 145 l-18 -10 v20 z" fill="#202124"/>
+  </g>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22">
+    <text x="55" y="120" text-anchor="middle">Vin</text>
+    <text x="620" y="120" text-anchor="middle">Vout</text>
+    <text x="400" y="48" text-anchor="middle" font-size="28" font-weight="bold">RL 高通</text>
+    <text x="400" y="80" text-anchor="middle" font-size="18">输出取电感 L 两端：直流/低频衰减，高频通过</text>
+    <text x="520" y="190" text-anchor="middle" font-size="18">fc = R / (2πL)</text>
+  </g>
+</svg>

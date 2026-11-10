@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="700" viewBox="0 0 1050 700">
+  <rect width="1050" height="700" fill="#fbfdff"/>
+  <style>
+    .title{font:700 30px 'Microsoft YaHei',Arial;fill:#172033}
+    .axis{stroke:#1f2937;stroke-width:4;fill:none}
+    .curve{stroke:#3b82f6;stroke-width:4;fill:none}
+    .load{stroke:#dc2626;stroke-width:5;fill:none;stroke-dasharray:12 8}
+    .text{font:19px 'Microsoft YaHei',Arial;fill:#374151}
+    .tag{font:700 20px 'Microsoft YaHei',Arial;fill:#111827}
+  </style>
+  <text x="52" y="48" class="title">输出特性曲线、负载线与静态工作点 Q</text>
+  <path d="M120 590 V90 M120 590 H960" class="axis"/>
+  <text x="75" y="105" class="tag">I_C</text>
+  <text x="925" y="635" class="tag">V_CE</text>
+  <text x="130" y="625" class="text">0</text>
+  <text x="845" y="620" class="text">V_CC</text>
+  <path d="M120 555 C155 490 185 470 245 468 H900" class="curve"/>
+  <path d="M120 500 C160 420 195 395 245 390 H900" class="curve"/>
+  <path d="M120 440 C160 350 195 325 245 320 H900" class="curve"/>
+  <path d="M120 380 C160 280 195 250 245 250 H900" class="curve"/>
+  <path d="M120 320 C160 210 195 180 245 180 H900" class="curve"/>
+  <text x="790" y="477" class="text">I_B1</text>
+  <text x="790" y="398" class="text">I_B2</text>
+  <text x="790" y="328" class="text">I_B3</text>
+  <text x="790" y="258" class="text">I_B4</text>
+  <path d="M120 170 L880 570" class="load"/>
+  <text x="595" y="390" class="tag" fill="#dc2626">直流负载线</text>
+  <circle cx="500" cy="370" r="10" fill="#dc2626"/>
+  <text x="520" y="360" class="tag">Q 点</text>
+  <path d="M150 565 L210 565 L210 530" stroke="#64748b" stroke-width="3" fill="none"/>
+  <text x="165" y="550" class="text">截止区</text>
+  <path d="M150 565 L185 500" stroke="#64748b" stroke-width="3"/>
+  <text x="235" y="125" class="text">饱和区</text>
+  <text x="560" y="525" class="text">放大区：曲线近似水平</text>
+  <text x="520" y="665" class="text">负载线方程：V_CE = V_CC - I_C R_C</text>
+</svg>

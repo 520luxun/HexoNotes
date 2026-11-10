@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360">
+  <rect width="800" height="360" fill="#ffffff"/>
+  <g stroke="#202124" stroke-width="2" fill="none">
+    <line x1="80" y1="55" x2="80" y2="295"/>
+    <line x1="80" y1="295" x2="750" y2="295"/>
+    <line x1="415" y1="55" x2="415" y2="295" stroke="#9ca3af" stroke-dasharray="7 7"/>
+  </g>
+  <g fill="#202124" font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle">
+    <text x="410" y="35" font-size="28" font-weight="bold">RLC 频率响应与阻尼</text>
+    <text x="35" y="65" font-size="18">幅值</text>
+    <text x="720" y="325" font-size="18">频率</text>
+    <text x="415" y="320" font-size="18">f₀</text>
+    <text x="610" y="78" fill="#2563eb" font-size="18">高 Q：峰值尖锐、带宽窄</text>
+    <text x="610" y="108" fill="#dc2626" font-size="18">适度阻尼：峰值平滑</text>
+    <text x="610" y="138" fill="#16a34a" font-size="18">强阻尼：峰值被压低</text>
+  </g>
+  <path d="M80 285 C210 284 300 275 350 245 C385 220 395 105 415 70 C435 105 445 220 480 245 C530 275 620 284 750 285" stroke="#2563eb" stroke-width="3" fill="none"/>
+  <path d="M80 285 C220 282 325 270 380 220 C405 190 410 135 415 120 C420 135 425 190 450 220 C505 270 610 282 750 285" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M80 285 C250 280 360 255 405 200 C415 185 425 200 435 220 C480 260 600 280 750 285" stroke="#16a34a" stroke-width="3" fill="none"/>
+</svg>

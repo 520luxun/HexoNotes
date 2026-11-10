@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+  <rect width="1200" height="560" fill="#fbfcfe"/>
+  <style>
+    .title{font:700 30px 'Microsoft YaHei',Arial;fill:#172033}
+    .label{font:700 22px 'Microsoft YaHei',Arial;fill:#172033}
+    .small{font:18px 'Microsoft YaHei',Arial;fill:#374151}
+    .zone{stroke:#ffffff;stroke-width:4}
+    .arrow{stroke:#d9465f;stroke-width:5;fill:none;marker-end:url(#head)}
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d9465f"/></marker>
+  </defs>
+  <text x="70" y="58" class="title">BJT 三层结构与电流方向</text>
+  <text x="70" y="102" class="small">发射区掺杂最重，基区最薄，集电区面积较大并负责承受电压</text>
+  <g transform="translate(70,145)">
+    <text x="170" y="0" class="title">NPN：放大区</text>
+    <rect x="50" y="40" width="180" height="120" rx="5" fill="#5c8fd7" class="zone"/>
+    <rect x="230" y="40" width="100" height="120" rx="5" fill="#f3a44b" class="zone"/>
+    <rect x="330" y="40" width="180" height="120" rx="5" fill="#5c8fd7" class="zone"/>
+    <text x="125" y="114" class="title" fill="#fff">N</text>
+    <text x="268" y="114" class="title" fill="#fff">P</text>
+    <text x="405" y="114" class="title" fill="#fff">N</text>
+    <text x="113" y="190" class="label">E 发射区</text><text x="242" y="190" class="label">B 基区</text><text x="377" y="190" class="label">C 集电区</text>
+    <path d="M 90 255 C 170 220 260 220 420 255" class="arrow"/>
+    <text x="150" y="292" class="small">电子主要运动：E → C</text>
+    <path d="M 430 315 C 360 345 275 345 185 315" class="arrow"/>
+    <text x="170" y="355" class="small">传统电流主要方向：C → E</text>
+    <text x="72" y="405" class="small">放大区偏置：V<tspan baseline-shift="sub">C</tspan> &gt; V<tspan baseline-shift="sub">B</tspan> &gt; V<tspan baseline-shift="sub">E</tspan></text>
+  </g>
+  <g transform="translate(660,145)">
+    <text x="170" y="0" class="title">PNP：放大区</text>
+    <rect x="50" y="40" width="180" height="120" rx="5" fill="#ee8a8a" class="zone"/>
+    <rect x="230" y="40" width="100" height="120" rx="5" fill="#75b9d8" class="zone"/>
+    <rect x="330" y="40" width="180" height="120" rx="5" fill="#ee8a8a" class="zone"/>
+    <text x="125" y="114" class="title" fill="#fff">P</text>
+    <text x="268" y="114" class="title" fill="#fff">N</text>
+    <text x="405" y="114" class="title" fill="#fff">P</text>
+    <text x="113" y="190" class="label">E 发射区</text><text x="242" y="190" class="label">B 基区</text><text x="377" y="190" class="label">C 集电区</text>
+    <path d="M 420 255 C 340 220 250 220 90 255" class="arrow"/>
+    <text x="140" y="292" class="small">空穴主要运动：E → C</text>
+    <path d="M 180 315 C 250 345 335 345 425 315" class="arrow"/>
+    <text x="155" y="355" class="small">传统电流主要方向：E → C</text>
+    <text x="72" y="405" class="small">放大区偏置：V<tspan baseline-shift="sub">E</tspan> &gt; V<tspan baseline-shift="sub">B</tspan> &gt; V<tspan baseline-shift="sub">C</tspan></text>
+  </g>
+</svg>

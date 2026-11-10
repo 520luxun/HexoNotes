@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680">
+  <rect width="1200" height="680" fill="#ffffff"/>
+  <style>
+    .title{font:700 30px 'Microsoft YaHei',Arial;fill:#172033}
+    .head{font:700 24px 'Microsoft YaHei',Arial;fill:#172033}
+    .body{font:18px 'Microsoft YaHei',Arial;fill:#374151}
+    .eq{font:700 22px 'Consolas',monospace;fill:#111827}
+  </style>
+  <text x="52" y="52" class="title">三极管三个主要工作区：由两个 PN 结的偏置决定</text>
+  <g transform="translate(55,95)">
+    <rect width="340" height="500" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <rect width="340" height="74" rx="12" fill="#64748b"/>
+    <text x="125" y="48" class="head" fill="#fff">截止区</text>
+    <circle cx="170" cy="145" r="58" fill="#e2e8f0" stroke="#475569" stroke-width="5"/>
+    <path d="M135 145h70M170 110v70" stroke="#475569" stroke-width="7"/>
+    <text x="70" y="245" class="body">发射结：未明显导通</text>
+    <text x="70" y="282" class="body">集电结：通常反偏</text>
+    <text x="70" y="338" class="eq">I_B ≈ 0</text>
+    <text x="70" y="380" class="eq">I_C ≈ 0</text>
+    <text x="70" y="440" class="body">开关：断开</text>
+    <text x="70" y="478" class="body">V_CE 接近 V_CC</text>
+  </g>
+  <g transform="translate(430,95)">
+    <rect width="340" height="500" rx="12" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+    <rect width="340" height="74" rx="12" fill="#f97316"/>
+    <text x="110" y="48" class="head" fill="#fff">放大区</text>
+    <path d="M80 178 C140 115 205 115 270 178" fill="none" stroke="#ea580c" stroke-width="8"/>
+    <path d="M80 200 C140 137 205 137 270 200" fill="none" stroke="#ea580c" stroke-width="8"/>
+    <path d="M80 222 C140 159 205 159 270 222" fill="none" stroke="#ea580c" stroke-width="8"/>
+    <text x="70" y="282" class="body">发射结：正偏</text>
+    <text x="70" y="319" class="body">集电结：反偏</text>
+    <text x="70" y="375" class="eq">I_C ≈ β I_B</text>
+    <text x="70" y="417" class="body">输出曲线近似水平</text>
+    <text x="70" y="455" class="body">模拟：线性放大</text>
+    <text x="70" y="493" class="body">NPN：V_C &gt; V_B &gt; V_E</text>
+  </g>
+  <g transform="translate(805,95)">
+    <rect width="340" height="500" rx="12" fill="#fff1f2" stroke="#fb7185" stroke-width="2"/>
+    <rect width="340" height="74" rx="12" fill="#e11d48"/>
+    <text x="110" y="48" class="head" fill="#fff">饱和区</text>
+    <path d="M75 220 C120 210 150 160 265 145" fill="none" stroke="#be123c" stroke-width="9"/>
+    <path d="M75 235 C125 230 155 190 265 178" fill="none" stroke="#be123c" stroke-width="9"/>
+    <text x="70" y="282" class="body">发射结：正偏</text>
+    <text x="70" y="319" class="body">集电结：正偏</text>
+    <text x="70" y="375" class="eq">V_CE 较小</text>
+    <text x="70" y="417" class="body">I_C 不再按 β 比例增加</text>
+    <text x="70" y="455" class="body">开关：导通</text>
+    <text x="70" y="493" class="body">V_CE(sat) 约 0.1~0.3 V</text>
+  </g>
+</svg>
