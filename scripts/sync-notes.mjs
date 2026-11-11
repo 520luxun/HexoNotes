@@ -261,11 +261,20 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub) {
 		normalizeDate(basename) ??
 		normalizeDate(fs.statSync(file.full).mtime);
 
+	// Lower-case extensions and de-duplicate case-insensitively: on Windows
+	// "22.PNG" and "22.png" are the same file, but Linux (and the CI runner)
+	// treat them as different paths and fail with ImageNotFound.
+	const usedNames = new Map();
 	const registerImage = (candidate) => {
-		let name = safeName(path.basename(candidate));
-		if (assets.has(name) && assets.get(name) !== candidate) {
-			name = `${sha(candidate)}-${name}`;
+		const base = path.basename(candidate);
+		const ext = path.extname(base).toLowerCase();
+		const stem = safeName(base.slice(0, base.length - ext.length)) || "img";
+		let name = `${stem}${ext}`;
+		const known = usedNames.get(name.toLowerCase());
+		if (known && known !== candidate) {
+			name = `${sha(candidate)}-${stem}${ext}`;
 		}
+		usedNames.set(name.toLowerCase(), candidate);
 		assets.set(name, candidate);
 		return `./assets/${name}`;
 	};
@@ -350,6 +359,9 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub) {
 		.replace(/^```\s*C\+\+\s*$/gim, "```cpp")
 		.replace(/^```\s*C#\s*$/gim, "```csharp")
 		.replace(/^```\s*C\s*$/gim, "```c")
+		.replace(/^```\s*ld\s*$/gim, "```txt")
+		// Dead links to other vault notes ("./assets/.../note.md") become text.
+		.replace(/\[([^\]]+)\]\((?:\.\/)?assets\/[^)]*\.md\)/g, "$1")
 		.replace(/!\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g, (_, n) => `![](${n.trim()})`)
 		.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, ref) => {
 			const resolved = resolveImage(ref);

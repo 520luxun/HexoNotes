@@ -385,7 +385,7 @@ void EXTI15_10_IRQHandler(void) {
 
 2. 按下KEY0：
 
-![](./assets/1ac1785ec715-image.png)
+![](./assets/image.png)
 
 3. 按下KEY1：
 
