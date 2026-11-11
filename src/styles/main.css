@@ -135,3 +135,30 @@
     }
   }
 }
+
+/* ===== 全站照片背景（方案 C）===== */
+/* 图片层与遮罩层都挂在 body 的伪元素上，z-index: -1 保证位于所有内容之下 */
+body {
+    background-color: transparent;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--site-bg);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: rgba(255, 255, 255, 0.82);
+    pointer-events: none;
+}
+html.dark body::after {
+    background-color: rgba(0, 0, 0, 0.7);
+}
