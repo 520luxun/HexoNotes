@@ -1,5 +1,5 @@
 ---
-title: "Expand 扩展资料目录说明"
+title: "Expand扩展资料目录说明"
 published: 2026-08-28
 description: "Expand 扩展资料目录说明 本文说明 D:ObsidianFirstNotesEmbeddedPCBassetsExpand 目录中各类文件的用途"
 tags: ["硬件基础", "文档索引", "目录说明", "Obsidian"]

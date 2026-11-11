@@ -285,7 +285,9 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
-	const title = data.title || basename.replace(/^\d{4}-\d{2}-\d{2}[-_\s]*/, "") || basename;
+	// Titles follow the note file name (minus any date prefix), not the
+	// longer descriptive frontmatter title.
+	const title = basename.replace(/^\d{4}-\d{2}-\d{2}[-_\s]*/, "") || basename;
 	const published =
 		normalizeDate(data.published) ??
 		normalizeDate(data.date) ??
@@ -538,7 +540,7 @@ async function main() {
 		const raw = fs.readFileSync(file.full, "utf8");
 		const { data } = parseFrontmatter(raw);
 		const basename = path.basename(file.rel, ".md");
-		const title = (data.title || basename).trim();
+		const title = basename.replace(/^\d{4}-\d{2}-\d{2}[-_\s]*/, "") || basename;
 		const category = makeCategory(file.rel, data, multiSub);
 		// URL keeps the folder tree; the category label is the second level.
 		const dirs = categoryDirs(file.rel);
