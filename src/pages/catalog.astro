@@ -23,8 +23,28 @@ const sorted = [...posts].sort((a, b) =>
 type Node = { label: string; posts: typeof sorted; children: Map<string, Node> };
 const root: Node = { label: "", posts: [], children: new Map() };
 
+// 目录页专属的二级分组：分类名 -> 从 slug 路径推断子分组。
+// 只影响总目录页，侧边栏分类（frontmatter 的 category）保持扁平不变。
+const CATALOG_GROUPS: Record<string, (post: (typeof sorted)[number]) => string[]> = {
+	硬件电路: (post) => {
+		// slug 形如 notes/嵌入式/硬件电路/<文件夹>/<笔记>。
+		// 只有紧跟「硬件电路」的文件夹是「基础知识点」时（即 1-1 ~ 1-7）
+		// 归入基础知识点，其余（扩展资料 + 根级说明文档）全部归入扩展资料。
+		const parts = String(post.slug).split("/");
+		const i = parts.indexOf("硬件电路");
+		const section = i >= 0 ? parts[i + 1] : "";
+		return section === "基础知识点"
+			? ["硬件电路", "基础知识点"]
+			: ["硬件电路", "扩展资料"];
+	},
+};
+
 for (const post of sorted) {
-	const segments = String(post.data.category ?? "未分类").split("/").filter(Boolean);
+	const category = String(post.data.category ?? "未分类");
+	const groupFn = CATALOG_GROUPS[category];
+	const segments = groupFn
+		? groupFn(post)
+		: category.split("/").filter(Boolean);
 	let node = root;
 	for (const segment of segments) {
 		let child = node.children.get(segment);
