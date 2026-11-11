@@ -3,7 +3,7 @@ title: "06 FreeRTOS任务调度器的挂起和恢复"
 published: 2026-07-18
 description: "任务调度器的挂起和恢复 概念 1、任务调度器挂起和恢复函数 答： 挂起任务调度器，调用此函数是不需要关闭中断的 使用格式示范： 2、任务调度器挂起和恢复的特点 "
 tags: []
-category: "FreeRTOS"
+category: "嵌入式/FreeRTOS"
 draft: false
 order: 9
 ---

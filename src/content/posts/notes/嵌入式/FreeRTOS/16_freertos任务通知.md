@@ -3,7 +3,7 @@ title: "16 FreeRTOS任务通知"
 published: 2026-07-18
 description: "FreeRTOS任务通知 一、任务通知的简介 1、任务通知介绍 答：任务通知：用来通知任务的，任务控制块中的结构体成员变量ulNotifiedValue就是这个"
 tags: []
-category: "FreeRTOS"
+category: "嵌入式/FreeRTOS"
 draft: false
 order: 20
 ---

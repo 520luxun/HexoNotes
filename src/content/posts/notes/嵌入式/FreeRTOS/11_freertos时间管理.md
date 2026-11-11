@@ -3,7 +3,7 @@ title: "11 FreeRTOS时间管理"
 published: 2026-07-18
 description: "FreeRTOS时间管理 一、延时函数介绍 1、FreeRTOS的延时函数 答：FreeRTOS有两种延时函数：相对延时函数 和 绝对延时函数。 相对延时：指每"
 tags: []
-category: "FreeRTOS"
+category: "嵌入式/FreeRTOS"
 draft: false
 order: 15
 ---

@@ -3,7 +3,7 @@ title: "07 FreeRTOS列表和列表项"
 published: 2026-07-18
 description: "FreeRTOS的列表和列表项 一、列表和列表项的简介(熟悉) 1、什么是列表 答：列表是FreeRTOS中的一个数据结构，概念上和链表有点类似，列表被用来跟踪"
 tags: []
-category: "FreeRTOS"
+category: "嵌入式/FreeRTOS"
 draft: false
 order: 10
 ---

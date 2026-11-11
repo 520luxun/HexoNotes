@@ -3,7 +3,7 @@ title: "5.2.3 OS之IO设备的分配与回收（DCT-COCT-CHCT-SDT）_dct coct ch
 published: 2020-05-22
 description: "文章浏览阅读1.1w次，点赞20次，收藏32次。本文深入探讨了设备分配的关键因素，包括设备属性、分配算法及安全性。对比静态与动态分配，详细介绍了设备控制表（DCT）、控制器控制表（COCT）、通道控制表（CHCT）和系统设备表（SDT）等数据结构，最后阐述了设备分配的步骤与改进措施。"
 tags: ["clippings"]
-category: "计算机基础/计算机操作系统"
+category: "嵌入式/计算机基础/计算机操作系统/05_IO管理/02_IO核心子系统"
 draft: false
 order: 114
 ---

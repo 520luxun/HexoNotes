@@ -228,17 +228,15 @@ function categoryParts(rel) {
 function makeCategory(rel, data, _multiSub) {
 	if (data.category) return data.category;
 	const parts = rel.split("/");
-	const parent =
-		config.categoryMap?.[parts[1]] ||
-		parts[1] ||
-		config.categoryMap?.[parts[0]] ||
-		config.defaultCategory ||
-		"笔记";
-	// Use the next folder down as a sub-category when it is a real folder.
-	const raw = parts.length > 3 ? parts[2] : "";
-	const isAsset = /\.assets$/i.test(raw) || /^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(raw);
-	const sub = raw && !isAsset ? config.categoryMap?.[raw] || raw : "";
-	return sub ? `${parent}/${sub}` : parent;
+	// Full folder path becomes the category, e.g.
+	// 嵌入式/硬件电路/扩展资料/基础知识点/进阶
+	const labels = [];
+	for (const p of parts.slice(0, -1)) {
+		if (/\.assets$/i.test(p)) continue;
+		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
+		labels.push(config.categoryMap?.[p] || p);
+	}
+	return labels.join("/") || config.defaultCategory || "笔记";
 }
 
 // URL path keeps the full folder tree so links stay readable.
