@@ -23,27 +23,22 @@ const sorted = [...posts].sort((a, b) =>
 type Node = { label: string; posts: typeof sorted; children: Map<string, Node> };
 const root: Node = { label: "", posts: [], children: new Map() };
 
-// 目录页专属的二级分组：分类名 -> 从 slug 路径推断子分组。
-// 只影响总目录页，侧边栏分类（frontmatter 的 category）保持扁平不变。
-const CATALOG_GROUPS: Record<string, (post: (typeof sorted)[number]) => string[]> = {
-	硬件电路: (post) => {
-		// 同步脚本已按 A/B 布局输出：notes/嵌入式/硬件电路/<笔记> 与
-		// notes/嵌入式/硬件电路/扩展/...。主题笔记直接列在分类下，
-		// 扩展笔记收进「扩展」子分组。
-		const parts = String(post.slug).split("/");
-		const i = parts.indexOf("硬件电路");
-		return i >= 0 && parts[i + 1] === "扩展"
-			? ["硬件电路", "扩展"]
-			: ["硬件电路"];
-	},
+// 目录页二级分组规则（通用，对所有分类生效）：
+// 同步脚本按 A/B 布局输出 notes/<分类>/<笔记> 与 notes/<分类>/扩展/<笔记>，
+// 位于「扩展」子目录的笔记收进「扩展」分组，其余笔记直接列在分类下。
+// 只影响总目录页；侧边栏、归档、标签用的是 frontmatter 的 category，保持扁平。
+const catalogSegments = (post: (typeof sorted)[number]): string[] => {
+	const base = String(post.data.category ?? "未分类")
+		.split("/")
+		.filter(Boolean);
+	const topic = base[base.length - 1] ?? "";
+	const parts = String(post.slug).split("/");
+	const i = topic ? parts.lastIndexOf(topic) : -1;
+	return i >= 0 && parts[i + 1] === "扩展" ? [...base, "扩展"] : base;
 };
 
 for (const post of sorted) {
-	const category = String(post.data.category ?? "未分类");
-	const groupFn = CATALOG_GROUPS[category];
-	const segments = groupFn
-		? groupFn(post)
-		: category.split("/").filter(Boolean);
+	const segments = catalogSegments(post);
 	let node = root;
 	for (const segment of segments) {
 		let child = node.children.get(segment);
