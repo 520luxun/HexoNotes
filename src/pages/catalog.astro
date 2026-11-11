@@ -1,0 +1,38 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getPostUrlBySlug } from "@utils/url-utils";
+import { getSortedPosts } from "../utils/content-utils";
+
+// 总目录：按分类分组、组内按章节顺序（order）排列，方便从第一篇开始读。
+const posts = await getSortedPosts();
+
+const groups = new Map<string, typeof posts>();
+for (const post of posts) {
+	const key = String(post.data.category ?? "未分类").split("/")[0];
+	const list = groups.get(key);
+	if (list) list.push(post);
+	else groups.set(key, [post]);
+}
+---
+
+<MainGridLayout title="总目录">
+    <div class="card-base px-8 py-6">
+        <h1 class="text-3xl font-bold mb-2">总目录</h1>
+        <p class="text-75 mb-6">共 {posts.length} 篇，按分类和章节顺序排列</p>
+        {[...groups.entries()].map(([name, list]) => (
+            <section class="mb-8">
+                <h2 class="text-xl font-bold mb-3">
+                    {name}
+                    <span class="text-75 text-sm font-normal ml-2">({list.length})</span>
+                </h2>
+                <ol class="list-decimal pl-6 space-y-1">
+                    {list.map((post) => (
+                        <li>
+                            <a class="link" href={getPostUrlBySlug(post.slug)}>{post.data.title}</a>
+                        </li>
+                    ))}
+                </ol>
+            </section>
+        ))}
+    </div>
+</MainGridLayout>
