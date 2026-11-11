@@ -17,7 +17,7 @@ order: 13
 
 答：同等优先级任务轮流享有相同的CPU时间(可设置)，叫**时间片**，在FreeRTOS中，一个时间片就等于SysTick中断周期。
 
-![](./assets/a3fdb706a82f-时间片调度.png)
+![](./assets/c0c5a7f7bd0b-时间片调度.png)
 
 运行过程如下：
 

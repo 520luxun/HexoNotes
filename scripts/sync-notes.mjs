@@ -232,7 +232,23 @@ function makeCategory(rel, data, multiSub) {
 	return multiSub.has(`${parent}\u0000${sub}`) ? `${parent}/${sub}` : parent;
 }
 
-function convertNote(file, attachmentIndex, downloaded, assets, order, multiSub) {
+function preferNearest(list, noteDir) {
+	const key = noteDir.toLowerCase();
+	let best = list[0];
+	let bestScore = -1;
+	for (const p of list) {
+		const a = p.toLowerCase();
+		let i = 0;
+		while (i < a.length && i < key.length && a[i] === key[i]) i++;
+		if (i > bestScore) {
+			bestScore = i;
+			best = p;
+		}
+	}
+	return best;
+}
+
+function convertNote(file, attachments, downloaded, assets, order, multiSub) {
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
@@ -245,6 +261,23 @@ function convertNote(file, attachmentIndex, downloaded, assets, order, multiSub)
 		normalizeDate(basename) ??
 		normalizeDate(fs.statSync(file.full).mtime);
 
+	const registerImage = (candidate) => {
+		let name = safeName(path.basename(candidate));
+		if (assets.has(name) && assets.get(name) !== candidate) {
+			name = `${sha(candidate)}-${name}`;
+		}
+		assets.set(name, candidate);
+		return `./assets/${name}`;
+	};
+
+	const isFile = (p) => {
+		try {
+			return fs.existsSync(p) && fs.statSync(p).isFile();
+		} catch {
+			return false;
+		}
+	};
+
 	const resolveImage = (ref) => {
 		const r = ref.trim();
 		if (/^https?:\/\//i.test(r)) {
@@ -256,19 +289,54 @@ function convertNote(file, attachmentIndex, downloaded, assets, order, multiSub)
 			assets.set(name, item.path);
 			return `./assets/${name}`;
 		}
-		if (/^(data:|#|\/)/i.test(r)) return r;
-		const decoded = decodeURIComponent(r.split("?")[0].split("#")[0]);
-		const sameDir = path.join(path.dirname(file.full), decoded);
-		const candidate = fs.existsSync(sameDir)
-			? sameDir
-			: attachmentIndex.get(path.basename(decoded));
-		if (!candidate) return null; // missing source file: drop the broken image
-		let name = safeName(path.basename(decoded));
-		if (assets.has(name) && assets.get(name) !== candidate) {
-			name = `${sha(file.rel)}-${name}`;
+		if (/^(data:|#)/i.test(r)) return r;
+
+		const decoded = decodeURIComponent(r.split("?")[0].split("#")[0]).replace(/\\/g, "/");
+		const norm = decoded.replace(/^\.\//, "");
+		const noteDir = path.dirname(file.full);
+		const candidates = [];
+
+		// Path-style refs ("SchoolStudy/计算机操作系统/asserts/Photo/1.png"):
+		// try the vault root, the implicit "Embedded" prefix Obsidian links use,
+		// the note folder and each ancestor folder.
+		if (norm.includes("/")) {
+			candidates.push(path.join(attachments.root, norm));
+			candidates.push(path.join(attachments.root, "Embedded", norm));
+			let dir = noteDir;
+			for (let i = 0; i < 6 && dir.length >= attachments.root.length; i++) {
+				candidates.push(path.join(dir, norm));
+				dir = path.dirname(dir);
+			}
+			for (const c of candidates) if (isFile(c)) return registerImage(c);
+
+			const suffix = `/${norm.toLowerCase()}`;
+			const hits = [];
+			for (const [key, full] of attachments.byPath) {
+				if (key.endsWith(suffix)) hits.push(full);
+			}
+			if (hits.length) return registerImage(preferNearest(hits, noteDir));
+			return null;
 		}
-		assets.set(name, candidate);
-		return `./assets/${name}`;
+
+		// Bare file names ("a.png"): resolve next to the note and inside its
+		// attachment folders first, walking up the folder tree like Obsidian's
+		// "shortest path" mode. A global basename hit is only a last resort,
+		// otherwise one "1.png" from another chapter would be picked silently.
+		const subdirs = ["", "assets", "asserts", "Photo", "photos", "images", "img", "attachments"];
+		let dir = noteDir;
+		for (let i = 0; i < 6 && dir.length >= attachments.root.length; i++) {
+			for (const sub of subdirs) {
+				candidates.push(sub ? path.join(dir, sub, norm) : path.join(dir, norm));
+			}
+			candidates.push(path.join(dir, `${path.basename(dir)}.assets`, norm));
+			dir = path.dirname(dir);
+		}
+		for (const c of candidates) if (isFile(c)) return registerImage(c);
+
+		const all = attachments.byBase.get(norm.toLowerCase()) ?? [];
+		if (all.length === 1) return registerImage(all[0]);
+		if (all.length > 1) return registerImage(preferNearest(all, noteDir));
+		return null; // missing source file: drop the broken image rather than guess
 	};
 
 	let output = body
@@ -318,10 +386,14 @@ async function main() {
 	}
 
 	const files = collectFiles(sourceDir);
-	const attachmentIndex = new Map();
+	const attachments = { root: sourceDir, byPath: new Map(), byBase: new Map() };
 	for (const f of files) {
-		if (!f.rel.toLowerCase().endsWith(".md") && !attachmentIndex.has(path.basename(f.rel)))
-			attachmentIndex.set(path.basename(f.rel), f.full);
+		if (f.rel.toLowerCase().endsWith(".md")) continue;
+		attachments.byPath.set(f.rel.split(path.sep).join("/").toLowerCase(), f.full);
+		const base = path.basename(f.rel).toLowerCase();
+		const list = attachments.byBase.get(base);
+		if (list) list.push(f.full);
+		else attachments.byBase.set(base, [f.full]);
 	}
 
 	const candidates = files.filter(
@@ -382,7 +454,7 @@ async function main() {
 	const multiSub = new Set([...subCounts].filter(([, n]) => n >= 2).map(([k]) => k));
 
 	for (const [index, file] of ordered.entries()) {
-		const note = convertNote(file, attachmentIndex, downloaded, assets, index + 1, multiSub);
+		const note = convertNote(file, attachments, downloaded, assets, index + 1, multiSub);
 		if (!note) {
 			console.log(`  - skipped (empty): ${file.rel}`);
 			continue;
