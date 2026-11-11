@@ -75,6 +75,11 @@ export const profileConfig: ProfileConfig = {
 			icon: "fa6-regular:envelope",
 			url: "https://mail.qq.com/",
 		},
+		{
+			name: "Obsidian",
+			icon: "obsidian", // local icon file: src/icons/obsidian.svg
+			url: "obsidian://open?vault=ObsidianFirstNotes",
+		},
 	],
 };
 
