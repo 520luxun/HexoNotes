@@ -1,0 +1,900 @@
+<!DOCTYPE html><html lang="zh-CN" class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]" data-overlayscrollbars-initialize data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--configHue: 250;--page-width: 75rem;"> <head><title>1-7 开关电源工作原理 - 晚霞小站</title><meta charset="UTF-8"><meta name="description" content="17 开关电源工作原理 [!info] 说明 本文档整理自课堂笔记《17 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 "><meta name="author" content="520luxun"><meta property="og:site_name" content="晚霞小站"><meta property="og:url" content="https://520luxun.github.io/HexoNotes/posts/notes/embedded/pcb/docs/1-7_%E5%BC%80%E5%85%B3%E7%94%B5%E6%BA%90%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/"><meta property="og:title" content="1-7 开关电源工作原理 - 晚霞小站"><meta property="og:description" content="17 开关电源工作原理 [!info] 说明 本文档整理自课堂笔记《17 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 "><meta property="og:type" content="article"><meta name="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://520luxun.github.io/HexoNotes/posts/notes/embedded/pcb/docs/1-7_%E5%BC%80%E5%85%B3%E7%94%B5%E6%BA%90%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/"><meta name="twitter:title" content="1-7 开关电源工作原理 - 晚霞小站"><meta name="twitter:description" content="17 开关电源工作原理 [!info] 说明 本文档整理自课堂笔记《17 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 "><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.10"><link rel="icon" href="/HexoNotes/favicon/favicon-light-32.png" sizes="32x32" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-128.png" sizes="128x128" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-180.png" sizes="180x180" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-192.png" sizes="192x192" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-32.png" sizes="32x32" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-128.png" sizes="128x128" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-180.png" sizes="180x180" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-192.png" sizes="192x192" media="(prefers-color-scheme: dark)"><!-- Set the theme before the page is rendered to avoid a flash --><script>(function(){const DEFAULT_THEME = "auto";
+const LIGHT_MODE = "light";
+const DARK_MODE = "dark";
+const AUTO_MODE = "auto";
+const BANNER_HEIGHT_EXTEND = 30;
+const PAGE_WIDTH = 75;
+const configHue = 250;
+
+			// Load the theme from local storage
+			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+			switch (theme) {
+				case LIGHT_MODE:
+					document.documentElement.classList.remove('dark');
+					break
+				case DARK_MODE:
+					document.documentElement.classList.add('dark');
+					break
+				case AUTO_MODE:
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+			}
+
+			// Load the hue from local storage
+			const hue = localStorage.getItem('hue') || configHue;
+			document.documentElement.style.setProperty('--hue', hue);
+
+			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+			offset = offset - offset % 4;
+			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		})();</script><!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"1-7 开关电源工作原理","description":"17 开关电源工作原理 [!info] 说明 本文档整理自课堂笔记《17 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 ","keywords":["电源设计","电感"],"author":{"@type":"Person","name":"520luxun","url":"https://520luxun.github.io/HexoNotes/"},"datePublished":"2026-08-25","inLanguage":"zh-CN"}</script><link rel="alternate" type="application/rss+xml" title="520luxun" href="https://520luxun.github.io/HexoNotes/rss.xml"><link rel="stylesheet" href="/HexoNotes/_astro/Layout.y4KPJ9hc.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/Layout.DSulWsr7.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/_page_.Ch2OjHMk.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/about.JLkcjWQJ.css">
+<style>#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k){-webkit-appearance:none;height:1.5rem;background-image:var(--color-selection-bar);transition:background-image .15s ease-in-out}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb:active{background:#fff9}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;border-width:0;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb:active{background:#fff9}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb:active{background:#fff9}
+input.svelte-1wah7ro:focus{outline:0}.search-panel.svelte-1wah7ro{max-height:calc(100vh - 100px);overflow-y:auto}
+</style><script type="module" src="/HexoNotes/_astro/page.CupyVmFr.js"></script></head> <body class=" min-h-screen transition  enable-banner" data-overlayscrollbars-initialize style="--site-bg: url('/HexoNotes/background.jpg'); --bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--configHue: 250;--page-width: 75rem;" data-astro-cid-sckkx6r4> <div id="config-carrier" data-hue="250"></div>    <div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto"> <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all"> <div id="navbar" class="z-50 onload-animation"> <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation --> <div class="card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"> <a href="/HexoNotes/" class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95"> <div class="flex flex-row text-[var(--primary)] items-center text-md"> <svg width="1em" height="1em" class="text-[1.75rem] mb-1 mr-2" data-icon="material-symbols:home-outline-rounded">   <symbol id="ai:material-symbols:home-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19h3v-5q0-.425.288-.712T10 13h4q.425 0 .713.288T15 14v5h3v-9l-6-4.5L6 10zm-2 0v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-4q-.425 0-.712-.288T13 20v-5h-2v5q0 .425-.288.713T10 21H6q-.825 0-1.412-.587T4 19m8-6.75"/></symbol><use href="#ai:material-symbols:home-outline-rounded"></use>  </svg> 晚霞小站 </div> </a> <div class="hidden md:flex"> <a aria-label="主页" href="/HexoNotes/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 主页  </div> </a><a aria-label="归档" href="/HexoNotes/archive/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 归档  </div> </a><a aria-label="总目录" href="/HexoNotes/catalog/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 总目录  </div> </a><a aria-label="关于" href="/HexoNotes/about/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 关于  </div> </a><a aria-label="GitHub" href="https://github.com/520luxun/HexoNotes" target="_blank" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> GitHub <svg width="1em" height="1em" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]" data-icon="fa6-solid:arrow-up-right-from-square">   <symbol id="ai:fa6-solid:arrow-up-right-from-square" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32zM80 32C35.8 32 0 67.8 0 112v320c0 44.2 35.8 80 80 80h320c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v112c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h112c17.7 0 32-14.3 32-32s-14.3-32-32-32z"/></symbol><use href="#ai:fa6-solid:arrow-up-right-from-square"></use>  </svg> </div> </a> </div> <div class="flex"> <!--<SearchPanel client:load>--> <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="Z1aBrwi" component-url="/HexoNotes/_astro/Search.B8Yvjy-n.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.DtgWYCWT.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;Search&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch"> <svg width="1em" height="1em" class="text-[1.25rem]" data-icon="material-symbols:palette-outline">   <symbol id="ai:material-symbols:palette-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.813-3.9t2.2-3.175T8.25 2.788T12.2 2q2 0 3.775.688t3.113 1.9t2.125 2.875T22 11.05q0 2.875-1.75 4.413T16 17h-1.85q-.225 0-.312.125t-.088.275q0 .3.375.863t.375 1.287q0 1.25-.687 1.85T12 22m-5.5-9q.65 0 1.075-.425T8 11.5t-.425-1.075T6.5 10t-1.075.425T5 11.5t.425 1.075T6.5 13m3-4q.65 0 1.075-.425T11 7.5t-.425-1.075T9.5 6t-1.075.425T8 7.5t.425 1.075T9.5 9m5 0q.65 0 1.075-.425T16 7.5t-.425-1.075T14.5 6t-1.075.425T13 7.5t.425 1.075T14.5 9m3 4q.65 0 1.075-.425T19 11.5t-.425-1.075T17.5 10t-1.075.425T16 11.5t.425 1.075T17.5 13M12 20q.225 0 .363-.125t.137-.325q0-.35-.375-.825T11.75 17.3q0-1.05.725-1.675T14.25 15H16q1.65 0 2.825-.962T20 11.05q0-3.025-2.312-5.038T12.2 4Q8.8 4 6.4 6.325T4 12q0 3.325 2.338 5.663T12 20"/></symbol><use href="#ai:material-symbols:palette-outline"></use>  </svg> </button> <astro-island uid="20d3r6" component-url="/HexoNotes/_astro/LightDarkSwitch.BUcLOF8G.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.DtgWYCWT.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;LightDarkSwitch&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch"> <svg width="1em" height="1em" class="text-[1.25rem]" data-icon="material-symbols:menu-rounded">   <symbol id="ai:material-symbols:menu-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/></symbol><use href="#ai:material-symbols:menu-rounded"></use>  </svg> </button> </div> <div id="nav-menu-panel" class="float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"> <a href="/HexoNotes/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 主页 </div> <svg width="1em" height="1em" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <symbol id="ai:material-symbols:chevron-right-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M12.6 12L8.7 8.1q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.6 4.6q.15.15.213.325t.062.375t-.062.375t-.213.325l-4.6 4.6q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7z"/></symbol><use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/archive/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 归档 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/catalog/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 总目录 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/about/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 关于 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="https://github.com/520luxun/HexoNotes" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        " target="_blank"> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> GitHub </div>  <svg width="1em" height="1em" viewBox="0 0 512 512" class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1" data-icon="fa6-solid:arrow-up-right-from-square">   <use href="#ai:fa6-solid:arrow-up-right-from-square"></use>  </svg> </a> </div> <astro-island uid="Z1OfgCX" component-url="/HexoNotes/_astro/DisplaySettings.DEftobEx.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.DtgWYCWT.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;DisplaySettings&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> </div> </div> <script type="module">function c(){localStorage.theme==="dark"?(document.documentElement.classList.remove("dark"),localStorage.theme="light"):(document.documentElement.classList.add("dark"),localStorage.theme="dark")}function o(){let t=document.getElementById("scheme-switch");t&&(t.onclick=function(){c()});let n=document.getElementById("display-settings-switch");n&&(n.onclick=function(){let e=document.getElementById("display-setting");e&&e.classList.toggle("float-panel-closed")});let l=document.getElementById("nav-menu-switch");l&&(l.onclick=function(){let e=document.getElementById("nav-menu-panel");e&&e.classList.toggle("float-panel-closed")})}o();</script> <script>(function(){const scriptUrl = "/HexoNotes/pagefind/pagefind.js";
+
+async function loadPagefind() {
+    try {
+        const response = await fetch(scriptUrl, { method: 'HEAD' });
+        if (!response.ok) {
+            throw new Error(`Pagefind script not found: ${response.status}`);
+        }
+
+        const pagefind = await import(scriptUrl);
+
+        await pagefind.options({
+            excerptLength: 20
+        });
+
+        window.pagefind = pagefind;
+
+        document.dispatchEvent(new CustomEvent('pagefindready'));
+        console.log('Pagefind loaded and initialized successfully, event dispatched.');
+    } catch (error) {
+        console.error('Failed to load Pagefind:', error);
+        window.pagefind = {
+            search: () => Promise.resolve({ results: [] }),
+            options: () => Promise.resolve(),
+        };
+        document.dispatchEvent(new CustomEvent('pagefindloaderror'));
+        console.log('Pagefind load error, event dispatched.');
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadPagefind);
+} else {
+    loadPagefind();
+}
+})();</script> </div> </div>  <div id="banner-wrapper" class="absolute z-10 w-full transition duration-700 overflow-hidden" style="top: -30vh"> <div id="banner" class="object-cover h-full transition duration-700 opacity-0 scale-105 overflow-hidden relative"> <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div> <img src="/HexoNotes/_astro/banner.jJjfMLUQ_ZG2nsG.webp" alt="Banner image of the blog" style="object-position: center" loading="lazy" decoding="async" fetchpriority="auto" width="2912" height="1536" class="w-full h-full object-cover">  </div> </div> <div class="absolute w-full z-30 pointer-events-none" style="top: calc(35vh - 3.5rem)"> <!-- The pointer-events-none here prevent blocking the click event of the TOC --> <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto"> <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
+    mx-auto gap-4 px-0 md:px-4"> <!-- Banner image credit -->  <div id="sidebar" class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation w-full"> <div class="flex flex-col w-full gap-4 mb-4"> <div class="card-base p-3"> <a aria-label="Go to About Page" href="/HexoNotes/about/" class="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
+       max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95"> <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
+        w-full h-full z-50 flex items-center justify-center"> <svg width="1.13em" height="1em" class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl" data-icon="fa6-regular:address-card">   <symbol id="ai:fa6-regular:address-card" viewBox="0 0 576 512"><path fill="currentColor" d="M512 80c8.8 0 16 7.2 16 16v320c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V96c0-8.8 7.2-16 16-16zM64 32C28.7 32 0 60.7 0 96v320c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64zm144 224a64 64 0 1 0 0-128a64 64 0 1 0 0 128m-32 32c-44.2 0-80 35.8-80 80c0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16c0-44.2-35.8-80-80-80zm200-144c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24z"/></symbol><use href="#ai:fa6-regular:address-card"></use>  </svg> </div> <div class="mx-auto lg:w-full h-full lg:mt-0  overflow-hidden relative"> <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div> <img src="/HexoNotes/_astro/avatar.18vv_OyQ_ZrjH8f.webp" alt="Profile Image of the Author" style="object-position: center" loading="lazy" decoding="async" fetchpriority="auto" width="1327" height="1079" class="w-full h-full object-cover">  </div> </a> <div class="px-2"> <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">520luxun</div> <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div> <div class="text-center text-neutral-400 mb-2.5 transition">嵌入式与计算机学习笔记 · 记录生活与技术</div> <div class="flex flex-wrap gap-2 justify-center mb-1"> <a rel="me" aria-label="GitHub" href="https://github.com/520luxun" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="0.97em" height="1em" class="text-[1.5rem]" data-icon="fa6-brands:github">   <symbol id="ai:fa6-brands:github" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6c-3.3.3-5.6-1.3-5.6-3.6c0-2 2.3-3.6 5.2-3.6c3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9c2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9c.3 2 2.9 3.3 5.9 2.6c2.9-.7 4.9-2.6 4.6-4.6c-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2c12.8 2.3 17.3-5.6 17.3-12.1c0-6.2-.3-40.4-.3-61.4c0 0-70 15-84.7-29.8c0 0-11.4-29.1-27.8-36.6c0 0-22.9-15.7 1.6-15.4c0 0 24.9 2 38.6 25.8c21.9 38.6 58.6 27.5 72.9 20.9c2.3-16 8.8-27.1 16-33.7c-55.9-6.2-112.3-14.3-112.3-110.5c0-27.5 7.6-41.3 23.6-58.9c-2.6-6.5-11.1-33.3 2.6-67.9c20.9-6.5 69 27 69 27c20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27c13.7 34.7 5.2 61.4 2.6 67.9c16 17.7 25.8 31.5 25.8 58.9c0 96.5-58.9 104.2-114.8 110.5c9.2 7.9 17 22.9 17 46.4c0 33.7-.3 75.4-.3 83.6c0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252C496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2c1.6 1.6 3.9 2.3 5.2 1c1.3-1 1-3.3-.7-5.2c-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9c1.6 1 3.6.7 4.3-.7c.7-1.3-.3-2.9-2.3-3.9c-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2c2.3 2.3 5.2 2.6 6.5 1c1.3-1.3.7-4.3-1.3-6.2c-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2c-1.4-2.3-4-3.3-5.6-2"/></symbol><use href="#ai:fa6-brands:github"></use>  </svg> </a><a rel="me" aria-label="BiliBili" href="https://www.bilibili.com/" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="1em" height="1em" class="text-[1.5rem]" data-icon="bilibili">   <symbol id="ai:local:bilibili" viewBox="0 0 24 24"><path fill="currentColor" d="M17.813 4.653h.854q2.266.08 3.773 1.574Q23.946 7.72 24 9.987v7.36q-.054 2.266-1.56 3.773c-1.506 1.507-2.262 1.524-3.773 1.56H5.333q-2.266-.054-3.773-1.56C.053 19.614.036 18.858 0 17.347v-7.36q.054-2.267 1.56-3.76t3.773-1.574h.774l-1.174-1.12a1.23 1.23 0 0 1-.373-.906q0-.534.373-.907l.027-.027q.4-.373.92-.373t.92.373L9.653 4.44q.107.106.187.213h4.267a.8.8 0 0 1 .16-.213l2.853-2.747q.4-.373.92-.373c.347 0 .662.151.929.4s.391.551.391.907q0 .532-.373.906zM5.333 7.24q-1.12.027-1.88.773-.76.748-.786 1.894v7.52q.026 1.146.786 1.893t1.88.773h13.334q1.12-.026 1.88-.773t.786-1.893v-7.52q-.026-1.147-.786-1.894t-1.88-.773zM8 11.107q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q0-.56.386-.947.387-.386.947-.386m8 0q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q.025-.586.4-.96.373-.373.933-.373"/></symbol><use href="#ai:local:bilibili"></use>  </svg> </a><a rel="me" aria-label="Obsidian" href="obsidian://open?vault=Embedded" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="1em" height="1em" class="text-[1.5rem]" data-icon="obsidian">   <symbol id="ai:local:obsidian" viewBox="0 0 24 24"><path fill="currentColor" d="M19.355 18.538a68.967 68.959 0 0 0 1.858-2.954.81.81 0 0 0-.062-.9c-.516-.685-1.504-2.075-2.042-3.362-.553-1.321-.636-3.375-.64-4.377a1.7 1.7 0 0 0-.358-1.05l-3.198-4.064a4 4 0 0 1-.076.543c-.106.503-.307 1.004-.536 1.5-.134.29-.29.6-.446.914l-.31.626c-.516 1.068-.997 2.227-1.132 3.59-.124 1.26.046 2.73.815 4.481q.192.016.386.044a6.36 6.36 0 0 1 3.326 1.505c.916.79 1.744 1.922 2.415 3.5zM8.199 22.569q.11.019.22.02c.78.024 2.095.092 3.16.29.87.16 2.593.64 4.01 1.055 1.083.316 2.198-.548 2.355-1.664.114-.814.33-1.735.725-2.58l-.01.005c-.67-1.87-1.522-3.078-2.416-3.849a5.3 5.3 0 0 0-2.778-1.257c-1.54-.216-2.952.19-3.84.45.532 2.218.368 4.829-1.425 7.531zM5.533 9.938q-.035.15-.098.29L2.82 16.059a1.6 1.6 0 0 0 .313 1.772l4.116 4.24c2.103-3.101 1.796-6.02.836-8.3-.728-1.73-1.832-3.081-2.55-3.831zM9.32 14.01c.615-.183 1.606-.465 2.745-.534-.683-1.725-.848-3.233-.716-4.577.154-1.552.7-2.847 1.235-3.95q.17-.35.328-.664c.149-.297.288-.577.419-.86.217-.47.379-.885.46-1.27.08-.38.08-.72-.014-1.043-.095-.325-.297-.675-.68-1.06a1.6 1.6 0 0 0-1.475.36l-4.95 4.452a1.6 1.6 0 0 0-.513.952l-.427 2.83c.672.59 2.328 2.316 3.335 4.711q.136.317.253.653"/></symbol><use href="#ai:local:obsidian"></use>  </svg> </a>  </div> </div> </div> </div> <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4"> <widget-layout data-id="categories" data-is-collapsed="true" class="pb-4 card-base onload-animation" style="animation-delay: 150ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+        before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">分类</div> <div id="categories" class="collapse-wrapper px-4 overflow-hidden collapsed" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=%E9%9A%8F%E7%AC%94" aria-label="View all posts in the 随笔 category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> 随笔 </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=Claude" aria-label="View all posts in the Claude category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> Claude </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 2 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=FreeRTOS" aria-label="View all posts in the FreeRTOS category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> FreeRTOS </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 24 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=KnowledgePoints" aria-label="View all posts in the KnowledgePoints category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> KnowledgePoints </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 3 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=Linux" aria-label="View all posts in the Linux category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> Linux </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=OTA-BootLoader" aria-label="View all posts in the OTA-BootLoader category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> OTA-BootLoader </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=PCB" aria-label="View all posts in the PCB category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> PCB </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 23 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=PID" aria-label="View all posts in the PID category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> PID </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=SchoolStudy" aria-label="View all posts in the SchoolStudy category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> SchoolStudy </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 34 </div> </div> </button> </a> </div> </div> <div class="expand-btn px-4 -mb-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <button class="btn-plain rounded-lg w-full h-9" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <svg width="1em" height="1em" class="text-[1.75rem]" data-astro-cid-ucso7hve="true" data-icon="material-symbols:more-horiz">   <symbol id="ai:material-symbols:more-horiz" viewBox="0 0 24 24"><path fill="currentColor" d="M6 14q-.825 0-1.412-.587T4 12t.588-1.412T6 10t1.413.588T8 12t-.587 1.413T6 14m6 0q-.825 0-1.412-.587T10 12t.588-1.412T12 10t1.413.588T14 12t-.587 1.413T12 14m6 0q-.825 0-1.412-.587T16 12t.588-1.412T18 10t1.413.588T20 12t-.587 1.413T18 14"/></symbol><use href="#ai:material-symbols:more-horiz"></use>  </svg> 更多 </div> </button> </div> </widget-layout>  <script type="module">class d extends HTMLElement{constructor(){if(super(),this.dataset.isCollapsed!=="true")return;const e=this.dataset.id,t=this.querySelector(".expand-btn"),s=this.querySelector(`#${e}`);t.addEventListener("click",()=>{s.classList.remove("collapsed"),t.classList.add("hidden")})}}customElements.get("widget-layout")||customElements.define("widget-layout",d);</script> <widget-layout data-id="tags" data-is-collapsed="true" class="pb-4 card-base onload-animation" style="animation-delay: 200ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+        before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">标签</div> <div id="tags" class="collapse-wrapper px-4 overflow-hidden collapsed" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">  <div class="flex gap-2 flex-wrap"> <a href="/HexoNotes/archive/?tag=EMC" aria-label="View all posts with the EMC tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  EMC </a><a href="/HexoNotes/archive/?tag=Fuwari" aria-label="View all posts with the Fuwari tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Fuwari </a><a href="/HexoNotes/archive/?tag=Linux" aria-label="View all posts with the Linux tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Linux </a><a href="/HexoNotes/archive/?tag=MOS%E7%AE%A1" aria-label="View all posts with the MOS管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  MOS管 </a><a href="/HexoNotes/archive/?tag=Obsidian" aria-label="View all posts with the Obsidian tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Obsidian </a><a href="/HexoNotes/archive/?tag=PCB%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the PCB设计 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  PCB设计 </a><a href="/HexoNotes/archive/?tag=Shell" aria-label="View all posts with the Shell tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Shell </a><a href="/HexoNotes/archive/?tag=%E4%B8%89%E6%9E%81%E7%AE%A1" aria-label="View all posts with the 三极管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  三极管 </a><a href="/HexoNotes/archive/?tag=%E4%BA%8C%E6%9E%81%E7%AE%A1" aria-label="View all posts with the 二极管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  二极管 </a><a href="/HexoNotes/archive/?tag=%E4%BA%A4%E6%B5%81%E7%94%B5%E8%B7%AF" aria-label="View all posts with the 交流电路 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  交流电路 </a><a href="/HexoNotes/archive/?tag=%E4%BC%A0%E6%84%9F%E5%99%A8" aria-label="View all posts with the 传感器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  传感器 </a><a href="/HexoNotes/archive/?tag=%E5%81%8F%E7%BD%AE" aria-label="View all posts with the 偏置 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  偏置 </a><a href="/HexoNotes/archive/?tag=%E5%85%B1%E6%A8%A1%E7%94%B5%E6%84%9F" aria-label="View all posts with the 共模电感 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  共模电感 </a><a href="/HexoNotes/archive/?tag=%E5%8E%BB%E8%80%A6%E7%94%B5%E5%AE%B9" aria-label="View all posts with the 去耦电容 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  去耦电容 </a><a href="/HexoNotes/archive/?tag=%E6%88%AA%E6%AD%A2%E9%A2%91%E7%8E%87" aria-label="View all posts with the 截止频率 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  截止频率 </a><a href="/HexoNotes/archive/?tag=%E6%8C%AF%E8%8D%A1" aria-label="View all posts with the 振荡 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  振荡 </a><a href="/HexoNotes/archive/?tag=%E6%95%88%E7%8E%87" aria-label="View all posts with the 效率 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  效率 </a><a href="/HexoNotes/archive/?tag=%E6%A8%A1%E6%8B%9F%E7%94%B5%E8%B7%AF" aria-label="View all posts with the 模拟电路 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  模拟电路 </a><a href="/HexoNotes/archive/?tag=%E6%BB%A4%E6%B3%A2%E5%99%A8" aria-label="View all posts with the 滤波器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  滤波器 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E5%AE%B9" aria-label="View all posts with the 电容 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电容 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%84%9F" aria-label="View all posts with the 电感 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电感 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%B5%81%E6%A3%80%E6%B5%8B" aria-label="View all posts with the 电流检测 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电流检测 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%BA%90%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the 电源设计 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电源设计 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E8%B7%AF%E5%88%86%E6%9E%90" aria-label="View all posts with the 电路分析 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电路分析 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E9%98%BB" aria-label="View all posts with the 电阻 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电阻 </a><a href="/HexoNotes/archive/?tag=%E7%A1%AC%E4%BB%B6%E5%9F%BA%E7%A1%80" aria-label="View all posts with the 硬件基础 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  硬件基础 </a><a href="/HexoNotes/archive/?tag=%E7%A4%BA%E6%B3%A2%E5%99%A8" aria-label="View all posts with the 示波器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  示波器 </a><a href="/HexoNotes/archive/?tag=%E8%87%AA%E4%B8%BE" aria-label="View all posts with the 自举 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  自举 </a><a href="/HexoNotes/archive/?tag=%E8%B0%90%E6%8C%AF" aria-label="View all posts with the 谐振 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  谐振 </a><a href="/HexoNotes/archive/?tag=%E8%B4%9F%E5%8F%8D%E9%A6%88" aria-label="View all posts with the 负反馈 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  负反馈 </a><a href="/HexoNotes/archive/?tag=%E8%BF%90%E7%AE%97%E6%94%BE%E5%A4%A7%E5%99%A8" aria-label="View all posts with the 运算放大器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  运算放大器 </a><a href="/HexoNotes/archive/?tag=%E9%9B%B6%E5%9F%BA%E7%A1%80" aria-label="View all posts with the 零基础 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  零基础 </a> </div>  </div> <div class="expand-btn px-4 -mb-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <button class="btn-plain rounded-lg w-full h-9" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <svg width="1em" height="1em" viewBox="0 0 24 24" class="text-[1.75rem]" data-astro-cid-ucso7hve="true" data-icon="material-symbols:more-horiz">   <use href="#ai:material-symbols:more-horiz"></use>  </svg> 更多 </div> </button> </div> </widget-layout>   </div> </div> <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden"> <div id="content-wrapper" class="onload-animation"> <!-- the overflow-hidden here prevent long text break the layout--> <!-- make id different from windows.swup global property -->   <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"> <div id="post-container" class="card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full "> <!-- word count and reading time --> <div class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation"> <div class="flex flex-row items-center"> <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"> <svg width="1em" height="1em" data-icon="material-symbols:notes-rounded">   <symbol id="ai:material-symbols:notes-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h10q.425 0 .713.288T15 17t-.288.713T14 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/></symbol><use href="#ai:material-symbols:notes-rounded"></use>  </svg> </div> <div class="text-sm">9324  字</div> </div> <div class="flex flex-row items-center"> <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"> <svg width="1em" height="1em" data-icon="material-symbols:schedule-outline-rounded">   <symbol id="ai:material-symbols:schedule-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M13 11.6V8q0-.425-.288-.712T12 7t-.712.288T11 8v3.975q0 .2.075.388t.225.337l3.3 3.3q.275.275.7.275T16 16t.275-.7t-.275-.7zM12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.325 0 5.663-2.337T20 12t-2.337-5.663T12 4T6.337 6.338T4 12t2.338 5.663T12 20"/></symbol><use href="#ai:material-symbols:schedule-outline-rounded"></use>  </svg> </div> <div class="text-sm"> 47  分钟 </div> </div> </div> <!-- title --> <div class="relative onload-animation"> <div data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title" class="transition w-full block font-bold mb-3
+                    text-3xl md:text-[2.25rem]/[2.75rem]
+                    text-black/90 dark:text-white/90
+                    md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+                    before:absolute before:top-[0.75rem] before:left-[-1.125rem]
+                "> 1-7 开关电源工作原理 </div> </div> <!-- metadata --> <div class="onload-animation"> <div class="flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2 mb-5"> <!-- publish date --> <div class="flex items-center"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:calendar-today-outline-rounded">   <symbol id="ai:material-symbols:calendar-today-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M5 22q-.825 0-1.412-.587T3 20V6q0-.825.588-1.412T5 4h1V3q0-.425.288-.712T7 2t.713.288T8 3v1h8V3q0-.425.288-.712T17 2t.713.288T18 3v1h1q.825 0 1.413.588T21 6v14q0 .825-.587 1.413T19 22zm0-2h14V10H5zM5 8h14V6H5zm0 0V6z"/></symbol><use href="#ai:material-symbols:calendar-today-outline-rounded"></use>  </svg> </div> <span class="text-50 text-sm font-medium">2026-08-25</span> </div> <!-- update date -->  <!-- categories --> <div class="flex items-center"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:book-2-outline-rounded">   <symbol id="ai:material-symbols:book-2-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M6 15.325q.35-.175.725-.25T7.5 15H8V4h-.5q-.625 0-1.062.438T6 5.5zM10 15h8V4h-8zm-4 .325V4zM7.5 22q-1.45 0-2.475-1.025T4 18.5v-13q0-1.45 1.025-2.475T7.5 2H18q.825 0 1.413.587T20 4v12.525q0 .2-.162.363t-.588.362q-.35.175-.55.5t-.2.75t.2.763t.55.487t.55.413t.2.562v.25q0 .425-.288.725T19 22zm0-2h9.325q-.15-.35-.237-.712T16.5 18.5q0-.4.075-.775t.25-.725H7.5q-.65 0-1.075.438T6 18.5q0 .65.425 1.075T7.5 20"/></symbol><use href="#ai:material-symbols:book-2-outline-rounded"></use>  </svg> </div> <div class="flex flex-row flex-nowrap items-center"> <a href="/HexoNotes/archive/?category=PCB" aria-label="View all posts in the PCB category" class="link-lg transition text-50 text-sm font-medium
+                            hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> PCB </a> </div> </div> <!-- tags --> <div class="items-center flex"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:tag-rounded">   <symbol id="ai:material-symbols:tag-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m9 16l-.825 3.275q-.075.325-.325.525t-.6.2q-.475 0-.775-.375T6.3 18.8L7 16H4.275q-.5 0-.8-.387T3.3 14.75q.075-.35.35-.55t.625-.2H7.5l1-4H5.775q-.5 0-.8-.387T4.8 8.75q.075-.35.35-.55t.625-.2H9l.825-3.275Q9.9 4.4 10.15 4.2t.6-.2q.475 0 .775.375t.175.825L11 8h4l.825-3.275q.075-.325.325-.525t.6-.2q.475 0 .775.375t.175.825L17 8h2.725q.5 0 .8.387t.175.863q-.075.35-.35.55t-.625.2H16.5l-1 4h2.725q.5 0 .8.388t.175.862q-.075.35-.35.55t-.625.2H15l-.825 3.275q-.075.325-.325.525t-.6.2q-.475 0-.775-.375T12.3 18.8L13 16zm.5-2h4l1-4h-4z"/></symbol><use href="#ai:material-symbols:tag-rounded"></use>  </svg> </div> <div class="flex flex-row flex-nowrap items-center"> <div class="hidden mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                <a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%BA%90%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the 电源设计 tag" class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> 电源设计 </a><div class="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                <a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%84%9F" aria-label="View all posts with the 电感 tag" class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> 电感 </a>  </div> </div> </div> <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div> </div> <!-- always show cover as long as it has one -->  <div data-pagefind-body class="prose dark:prose-invert prose-base !max-w-none custom-md mb-6 markdown-content onload-animation"> <!--<div class="prose dark:prose-invert max-w-none custom-md">--> <!--<div class="max-w-none custom-md">-->  <section><h1 id="1-7-开关电源工作原理">1-7 开关电源工作原理<a class="anchor" href="#1-7-开关电源工作原理"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h1><blockquote>
+<p><strong>说明</strong>
+本文档整理自课堂笔记《1-7 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>章节</th><th>笔记中的核心知识点</th></tr></thead><tbody><tr><td>最原始的开关电源电路</td><td>手动开关实现 12V→5V 降压稳压、带负载循环稳压、纹波</td></tr><tr><td>BUCK 工作原理</td><td>Buck 拓扑设计推导（从雏形到成型）、续流二极管、完整开关周期与占空比</td></tr><tr><td>案例</td><td>12V→5V 集成式 Buck 芯片电路逐模块拆解：输入滤波、使能、自举、反馈、输出指示、稳压流程</td></tr><tr><td>Boost 升压电路</td><td>电感升压前提、四步推导、两个工作阶段、稳压逻辑、核心公式、Buck/Boost 对比</td></tr><tr><td>电感饱和</td><td>饱和电流选型规范、电流变化率公式、饱和现象与严重恶果、终极总结</td></tr><tr><td>电荷泵升压工作原理</td><td>电容叠加电压升压、二极管+输出电容改进、电荷泵 vs 电感型电源</td></tr><tr><td>电荷泵负压电路</td><td>负压产生原理、两个工作阶段、掉压问题解决、对称逻辑与应用</td></tr><tr><td>全篇终极大总结</td><td>两大拓扑核心逻辑、电感两大特性、二极管保命作用</td></tr></tbody></table><hr><section><h2 id="最原始的开关电源电路">最原始的开关电源电路<a class="anchor" href="#最原始的开关电源电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="998" height="561" src="/HexoNotes/_astro/1.Oq8Eyyqn_Z1Wgkq8.webp" ></p><section><h3 id="手动开关控制实现12v5v降压稳压">手动开关控制：实现12V→5V降压稳压<a class="anchor" href="#手动开关控制实现12v5v降压稳压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>我们的目标：不让电容充到12V，稳定输出约5V电压</p><ol>
+<li>
+<p><strong>充电升压</strong>
+闭合开关，电源给电容充电，输出电压缓慢上升；
+当电压上升到目标上限（约5V）→ <strong>立刻断开开关</strong>
+空载时电容无放电通路，电压会稳定维持在峰值</p>
+</li>
+<li>
+<p><strong>带负载后的循环稳压</strong>
+给输出端并联100Ω负载电阻后：</p>
+</li>
+</ol><ul>
+<li>开关断开：电容为负载供电，电压缓慢下降；</li>
+<li>电压跌到下限（约4.9V）：再次闭合开关，电容补电、电压回升；</li>
+<li>电压回到上限（约5.1V）：再次断开开关。</li>
+</ul><ol start="3">
+<li><strong>最终效果</strong>
+往复循环开合开关，输出电压只会在<strong>5V附近小幅上下抖动（纹波）</strong>，整体牢牢稳定在目标值，成功把12V输入降压稳压到5V✅</li>
+</ol></section></section><section><h2 id="降压型开关电源">降压型开关电源<a class="anchor" href="#降压型开关电源"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><section><h3 id="buck-工作原理">BUCK 工作原理<a class="anchor" href="#buck-工作原理"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><section><h4 id="buck-拓扑是如何设计出来的">BUCK 拓扑是如何设计出来的？<a class="anchor" href="#buck-拓扑是如何设计出来的"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这段讲解完整还原了<strong>经典Buck（降压型）开关电源</strong>，从简陋雏形一步步迭代、解决矛盾、优化缺陷，最终成型的全过程，把开关电源的底层设计逻辑讲得非常透彻👇</p><hr></section><section><h4 id="一初代雏形简易rc开关降压电路">一、初代雏形：简易RC开关降压电路<a class="anchor" href="#一初代雏形简易rc开关降压电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="998" height="561" src="/HexoNotes/_astro/1.Oq8Eyyqn_Z1Wgkq8.webp" ></p><section><h5 id="电路结构">电路结构<a class="anchor" href="#电路结构"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>12V直流电源 + 手动开关 + <strong>100Ω串联电阻</strong> + 后端并联100Ω负载电阻 + 100μF输出电容</p></section><section><h5 id="能实现的效果">能实现的效果<a class="anchor" href="#能实现的效果"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>确实可以完成降压稳压：</p><ul>
+<li>开关闭合：电容充电，电压缓慢上升</li>
+<li>电压冲到目标值（如5V），断开开关</li>
+<li>接负载后电压下跌，跌到下限再次闭合开关补电</li>
+<li>反复通断，最终输出稳定在5V附近</li>
+</ul></section><section><h5 id="致命原生缺陷">致命原生缺陷<a class="anchor" href="#致命原生缺陷"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>串联电阻是<strong>耗能元件</strong>，电流流过电阻就会持续发热、消耗功率（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><msup><mi>I</mi><mn>2</mn></msup><mi>R</mi></mrow><annotation encoding="application/x-tex">P=I^2R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span></span></span>），大量电能直接浪费成热量，效率极低。
+完全违背开关电源「<strong>超高效率能量转换、减少发热损耗</strong>」的研发初衷。</p><hr></section></section><section><h4 id="二错误优化尝试直接去掉串联电阻">二、错误优化尝试：直接去掉串联电阻<a class="anchor" href="#二错误优化尝试直接去掉串联电阻"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="直观想法">直观想法<a class="anchor" href="#直观想法"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>电阻耗电，直接拆掉电阻，就没有额外损耗了。</p></section><section><h5 id="彻底失效的后果">彻底失效的后果<a class="anchor" href="#彻底失效的后果"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>电容充放电时间常数公式：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mi>R</mi><mo>×</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">\tau = R \times C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span></p><ul>
+<li>拆掉电阻后，回路等效电阻<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>≈</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">R≈0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>，充电时间常数<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi></mrow><annotation encoding="application/x-tex">\tau</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.1132em;">τ</span></span></span></span>几乎为0</li>
+<li>电容充电速度瞬间拉满，<strong>开关一闭合，输出电压一瞬间直接冲到满幅12V</strong></li>
+<li>哪怕是高速电子控制电路，响应速度都跟不上；手动操作更是完全来不及在目标电压断开开关，彻底丧失降压控制能力。</li>
+</ul><hr></section></section><section><h4 id="三神来之笔电阻替换为功率电感核心质变">三、神来之笔：电阻替换为功率电感（核心质变）<a class="anchor" href="#三神来之笔电阻替换为功率电感核心质变"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>把耗能的串联电阻，换成<strong>储能电感</strong>，是整个开关电源设计最巧妙的一步。</p><section><h5 id="电阻-vs-电感-本质区别">电阻 vs 电感 本质区别<a class="anchor" href="#电阻-vs-电感-本质区别"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>对比维度</th><th>串联电阻</th><th>串联理想电感</th></tr></thead><tbody><tr><td>能量属性</td><td>耗能元件，通电必发热损耗</td><td>储能元件，仅储存/释放磁场能量，<strong>理想状态零损耗、效率100%</strong></td></tr><tr><td>电流特性</td><td>可限流，电压、电流可瞬间突变</td><td><strong>核心特性：电感电流绝对不能突变</strong>，天生抑制电流瞬间飙升</td></tr><tr><td>控制友好度</td><td>拉长充电时间，降低开关控制难度</td><td>同样拉长电流、电压爬升速度，给控制电路留出充足反应时间</td></tr></tbody></table></section><section><h5 id="替换后的完美收益">替换后的完美收益<a class="anchor" href="#替换后的完美收益"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>✅ 一举解决两大问题：</p><ol>
+<li>彻底消除电阻发热损耗，真正实现开关电源超高效率的核心优势</li>
+<li>依然可以限制电流上升速度，电容电压缓慢爬升，开关控制难度大幅降低</li>
+</ol><hr></section></section><section><h4 id="四电感带来的新致命问题高压击穿开关">四、电感带来的新致命问题：高压击穿开关<a class="anchor" href="#四电感带来的新致命问题高压击穿开关"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>电感「电流不能突变」的特性，带来了新的电路危机：</p><ol>
+<li>开关闭合导通时：电感电流从0缓慢线性上升，能量储存在电感的磁场中</li>
+<li>开关瞬间断开的一刹那：
+<ul>
+<li>原有供电回路被彻底切断</li>
+<li>电感为了维持自身电流不突变，会根据感应电压公式 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mo>=</mo><mi>L</mi><mo>⋅</mo><mfrac><mrow><mi>d</mi><mi>i</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">U=L \cdot \frac{di}{dt}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2251em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，瞬间感应出<strong>几百上千伏的尖峰高压</strong></li>
+<li>这个超高电压会直接击穿、烧毁功率开关器件（MOS管/晶体管），电路直接损坏。</li>
+</ul>
+</li>
+</ol><hr></section><section><h4 id="五配套解决方案增加续流二极管">五、配套解决方案：增加续流二极管<a class="anchor" href="#五配套解决方案增加续流二极管"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>在开关后端、电感前端，对地反向并联一个二极管，也就是<strong>续流二极管</strong>。</p><section><h5 id="续流二极管的工作原理">续流二极管的工作原理<a class="anchor" href="#续流二极管的工作原理"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>开关闭合时：二极管反向截止，完全不参与电路工作，无任何影响</li>
+<li>开关断开瞬间：
+电感原有供电通路被切断，此时二极管<strong>正向导通</strong>，给电感搭建了一条全新的、安全的电流回路
+电感储存的能量，会通过二极管续流，持续向后端负载、电容供电
+既避免了电感产生高压尖峰、保护开关器件，又保证了输出电压不会断崖式下跌。</li>
+</ul><blockquote>
+<p><strong>命名由来</strong>
+这个二极管唯一的核心作用，就是给断电后的电感提供「电流继续流动的通路」，因此被叫做<strong>续流二极管</strong>，是Buck拓扑必不可少的核心元件。</p>
+</blockquote><hr></section></section><section><h4 id="六最终成型标准-buck-降压开关电源">六、最终成型：标准 Buck 降压开关电源<a class="anchor" href="#六最终成型标准-buck-降压开关电源"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="714" height="402" src="/HexoNotes/_astro/2.BfM43sDz_Z18bB1b.webp" ></p><section><h5 id="完整电路各元件精准作用">完整电路各元件精准作用<a class="anchor" href="#完整电路各元件精准作用"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ol>
+<li><strong>输入侧100μF电容（输入滤波电容）</strong>
+平滑12V输入电源，抑制电源侧纹波、尖峰干扰，给功率开关提供低阻抗、稳定的供电。</li>
+<li><strong>可控功率开关</strong>（图中按键，实际电路为高速MOS管）
+高频、周期性通断，通过改变导通时间占比（PWM占空比），精准控制输出平均电压。</li>
+<li><strong>续流二极管</strong>
+开关关断时为电感提供续流回路，吸收高压尖峰，保护功率器件。</li>
+<li><strong>功率储能电感L1（10μH）</strong>
+限流、抑制电流突变、储能传递能量，全程几乎无额外损耗。</li>
+<li><strong>输出侧470μF电容（输出滤波电容）</strong>
+进一步平滑输出电压，大幅减小输出电压纹波，给负载提供平稳纯净的供电。</li>
+<li><strong>负载RL1</strong>：后端用电负载设备。</li>
+</ol><hr></section></section><section><h4 id="七buck-电源完整开关周期">七、Buck 电源完整开关周期<a class="anchor" href="#七buck-电源完整开关周期"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li><strong>开关导通阶段</strong>
+12V电源→开关→电感→输出电容+负载
+电感电流线性缓慢上升，电感储存磁场能量，输出电容充电、电压抬升。</li>
+<li><strong>开关关断阶段</strong>
+输入供电切断
+电感通过续流二极管形成独立回路，释放储存的磁场能量，持续为负载和电容供电，输出电压缓慢小幅下降。</li>
+<li><strong>循环往复</strong>
+高速上万次/秒反复通断开关，通过控制**导通时间占总周期的比例（占空比D）**精准调压。
+理想Buck降压核心公式：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mtext>输出</mtext></msub><mo>=</mo><msub><mi>V</mi><mtext>输入</mtext></msub><mo>×</mo><mtext>占空比</mtext><mi>D</mi></mrow><annotation encoding="application/x-tex">V_{输出} = V_{输入} \times 占空比D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">输出</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">输入</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord cjk_fallback">占空比</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span>
+例：12V输入想要稳定5V输出，仅需把占空比稳定控制在≈41.7%，整体能量损耗极低，实际量产效率轻松可达90%~95%以上。</li>
+</ol><hr></section><section><h4 id="整体设计逻辑复盘">整体设计逻辑复盘<a class="anchor" href="#整体设计逻辑复盘"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li>先实现简单开关降压 → 发现串联电阻耗能、效率极低</li>
+<li>尝试去掉电阻追求零损耗 → 电容充电过快，完全无法控制稳压</li>
+<li>电感替换电阻 → 兼顾零损耗+可控的电压爬升</li>
+<li>解决电感断电高压问题 → 增加续流二极管</li>
+<li>补充输入输出滤波电容优化性能 → 最终得到成熟、高效、稳定的经典Buck降压开关电源</li>
+</ol><hr></section></section><section><h3 id="案例">案例<a class="anchor" href="#案例"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="1384" height="579" src="/HexoNotes/_astro/3.B9QUOjOv_Z1hwWQO.webp" ></p><p>这是一个<strong>12V转5V的DC-DC Buck降压开关电源电路</strong>，采用集成式Buck控制芯片，实现高效率的直流降压稳压，为后端负载提供稳定的5V供电。下面按模块拆解，带你把每个部分的作用、原理讲透👇</p><hr><section><h4 id="一整体电路结构总览">一、整体电路结构总览<a class="anchor" href="#一整体电路结构总览"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这是一个典型的同步/异步Buck降压拓扑，核心是集成Buck芯片，配合输入滤波、使能控制、自举驱动、反馈分压、输出滤波和负载指示几部分组成，把12V直流输入，高效率地转换为稳定的5V直流输出。</p><hr></section><section><h4 id="二模块1输入电源与滤波电路">二、模块1：输入电源与滤波电路<a class="anchor" href="#二模块1输入电源与滤波电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这部分负责给芯片提供干净、稳定的12V输入电源，抑制纹波和尖峰。</p><ul>
+<li><strong>R43 (0Ω电阻)</strong>：通常作为过线/跳线使用，也可预留位置用于串联保险丝/磁珠，实现过流保护或EMI滤波，这里仅作为电源通路。</li>
+<li><strong>C38 (22μF) + C39 (100nF)</strong>：
+这是典型的「大容量+小容量」组合输入滤波：
+<ul>
+<li>22μF大容量电容（通常为陶瓷/电解）：滤除低频纹波，同时提供瞬态大电流的储能支撑，抑制电源电压波动。</li>
+<li>100nF小容量陶瓷电容：滤除高频尖峰和开关噪声，降低电源阻抗，防止芯片工作时的高频干扰串入前级电源。</li>
+</ul>
+</li>
+</ul><hr></section><section><h4 id="三模块2芯片供电与使能电路">三、模块2：芯片供电与使能电路<a class="anchor" href="#三模块2芯片供电与使能电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这部分是Buck芯片的基础工作条件配置：</p><ul>
+<li><strong><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{in}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>引脚（Pin3）</strong>：芯片供电脚，直接接12V输入，为芯片内部的控制电路、驱动电路供电。</li>
+<li><strong>EN引脚（Pin5，使能脚）</strong>：
+Buck芯片的使能脚，高电平开启、低电平关闭。这里通过<strong>R32(10kΩ) + R33(5.1kΩ)</strong> 分压，把12V转换为约4V的稳定电压，送到EN脚，强制芯片一直处于开启状态。
+分压计算：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>E</mi><mi>N</mi></mrow></msub><mo>=</mo><mn>12</mn><mi>V</mi><mo>×</mo><mfrac><mrow><mn>5.1</mn><mi>k</mi></mrow><mrow><mn>10</mn><mi>k</mi><mo>+</mo><mn>5.1</mn><mi>k</mi></mrow></mfrac><mo>≈</mo><mn>4.05</mn><mi>V</mi></mrow><annotation encoding="application/x-tex">V_{EN} = 12V \times \frac{5.1k}{10k+5.1k} \approx 4.05V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">EN</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">12</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2834em;vertical-align:-0.4033em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">10</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">5.1</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5.1</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4033em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">4.05</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>，超过芯片EN脚的开启阈值（通常1-2V），实现上电自动工作。</li>
+<li><strong>C40 (100nF)</strong>：EN脚的滤波电容，滤除噪声干扰，防止电源波动导致的EN脚误触发，保证芯片稳定开启。</li>
+<li><strong>GND引脚（Pin1）</strong>：芯片地，提供完整的电流回路。</li>
+</ul><hr></section><section><h4 id="四模块3核心-buck-开关与自举电路">四、模块3：核心 Buck 开关与自举电路<a class="anchor" href="#四模块3核心-buck-开关与自举电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这部分是降压电源的核心能量转换部分，也是你之前学到的Buck拓扑的完整实现：</p><ul>
+<li><strong>SW引脚（Pin2，开关节点）</strong>：
+芯片内部MOS管的开关输出端，是整个Buck电路的能量核心节点。芯片内部的上管MOS管高频通断，控制SW节点的电压在12V和地之间快速切换，实现能量的间歇性传输。</li>
+<li><strong>BS引脚（Pin6，自举脚）+ C37 (1μF)</strong>：
+这是Buck芯片必备的<strong>自举驱动电路</strong>：
+<ul>
+<li>当SW节点为低电平时，芯片内部的自举二极管给C37充电，C37两端电压约等于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{in}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>（12V）。</li>
+<li>当SW节点被上管拉到高电平（接近12V）时，C37两端电压保持不变，此时BS脚电压=SW电压+12V，给上管MOS管的栅极提供足够的驱动电压，保证上管能完全导通。</li>
+<li>没有这个自举电容，上管会因为栅极电压不足而无法完全导通，效率会大幅下降甚至无法工作。</li>
+</ul>
+</li>
+<li><strong>电感（SW脚后级）</strong>：
+储能电感，是Buck拓扑的核心元件。工作时：
+<ul>
+<li>开关导通：12V→SW→电感→负载，电感储存磁场能量，电流线性上升。</li>
+<li>开关关断：电感电流通过内部续流二极管（或同步下管）继续流向负载，释放能量，电流线性下降。
+电感的存在既实现了能量传递，又抑制了电流突变，避免了之前你看到的「直接开关电容导致电压瞬间冲到12V」的问题。</li>
+</ul>
+</li>
+</ul><hr></section><section><h4 id="五模块4反馈分压与补偿电路">五、模块4：反馈分压与补偿电路<a class="anchor" href="#五模块4反馈分压与补偿电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这部分是实现「稳定输出5V」的关键闭环控制部分：</p><ul>
+<li><strong>FB引脚（Pin4，反馈脚）</strong>：
+Buck芯片内部误差放大器的输入端，会将FB脚电压与内部的基准电压（常见为0.8V/1V，这里按5V输出计算为0.8V）进行比较，从而调整开关的占空比，稳定输出电压。</li>
+<li><strong>R34 (100kΩ) + R35 (19kΩ) 分压电阻</strong>：
+把输出的5V电压按比例缩小，送到FB脚，分压公式：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>F</mi><mi>B</mi></mrow></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>O</mi><mi>U</mi><mi>T</mi></mrow></msub><mo>×</mo><mfrac><mrow><mi>R</mi><mn>35</mn></mrow><mrow><mi>R</mi><mn>34</mn><mo>+</mo><mi>R</mi><mn>35</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">V_{FB} = V_{OUT} \times \frac{R35}{R34+R35}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">FB</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">O</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">U</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2757em;vertical-align:-0.4033em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mtight">34</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mtight">35</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mtight">35</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4033em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>
+反推输出电压：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>O</mi><mi>U</mi><mi>T</mi></mrow></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>F</mi><mi>B</mi></mrow></msub><mo>×</mo><mfrac><mrow><mi>R</mi><mn>34</mn><mo>+</mo><mi>R</mi><mn>35</mn></mrow><mrow><mi>R</mi><mn>35</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">V_{OUT} = V_{FB} \times \frac{R34+R35}{R35}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">O</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">U</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">FB</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2173em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mtight">35</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mtight">34</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mtight">35</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>
+代入数值：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>O</mi><mi>U</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>0.8</mn><mi>V</mi><mo>×</mo><mfrac><mrow><mn>100</mn><mi>k</mi><mo>+</mo><mn>19</mn><mi>k</mi></mrow><mrow><mn>19</mn><mi>k</mi></mrow></mfrac><mo>≈</mo><mn>5</mn><mi>V</mi></mrow><annotation encoding="application/x-tex">V_{OUT} = 0.8V \times \frac{100k+19k}{19k} \approx 5V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">O</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">U</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">0.8</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2251em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">19</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">100</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">19</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">5</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>，和目标输出电压完全匹配。</li>
+<li><strong>C41 (22pF)</strong>：
+反馈补偿电容，和分压电阻组成RC补偿网络，优化电源环路的稳定性，防止输出电压出现振荡、过冲，提升动态响应速度。</li>
+</ul><hr></section><section><h4 id="六模块5输出滤波与负载指示电路">六、模块5：输出滤波与负载指示电路<a class="anchor" href="#六模块5输出滤波与负载指示电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这部分负责输出纯净、稳定的5V电压，并提供工作状态指示：</p><ul>
+<li><strong>C42 (100nF) + C43 (10μF)</strong>：
+输出LC滤波的电容部分，和前级电感组成低通滤波器：
+<ul>
+<li>10μF大容量电容：滤除低频纹波，同时为负载提供瞬态电流支撑，避免负载突变时电压下跌。</li>
+<li>100nF小容量陶瓷电容：滤除高频开关噪声，降低输出纹波，保证5V输出的纯净度。</li>
+</ul>
+</li>
+<li><strong>D11 + R36</strong>：
+电源工作指示灯电路：
+<ul>
+<li>D11是LED指示灯，R36是限流电阻（防止LED过流烧坏）。</li>
+<li>当5V输出正常时，电流通过R36点亮LED，直观指示电源处于正常工作状态。</li>
+</ul>
+</li>
+</ul><hr></section><section><h4 id="七整个电路的稳压工作流程">七、整个电路的稳压工作流程<a class="anchor" href="#七整个电路的稳压工作流程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li><strong>上电启动</strong>：12V输入，EN脚分压得到高电平，Buck芯片开启，开始工作。</li>
+<li><strong>开关导通阶段</strong>：芯片内部上管MOS管导通，12V→电感→输出电容+负载，电感储能，输出电压缓慢抬升。</li>
+<li><strong>反馈采样与调整</strong>：输出电压通过R34/R35分压后送入FB脚，芯片将其与内部基准电压比较：
+<ul>
+<li>若输出电压低于5V：芯片增加开关导通时间（占空比变大），电感传递更多能量，输出电压抬升。</li>
+<li>若输出电压高于5V：芯片减少开关导通时间（占空比变小），电感传递能量减少，输出电压回落。</li>
+</ul>
+</li>
+<li><strong>开关关断阶段</strong>：上管关断，电感通过续流回路继续向负载供电，电流缓慢下降，输出电压小幅回落。</li>
+<li><strong>循环往复</strong>：芯片通过高频（通常几百kHz）的开关通断，动态调整占空比，最终输出电压稳定在5V附近，纹波被LC滤波大幅抑制，实现高效率稳压。</li>
+</ol><hr></section></section></section><section><h2 id="升压型开关电源">升压型开关电源<a class="anchor" href="#升压型开关电源"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="800" height="448" src="/HexoNotes/_astro/4.BssfxIdU_Z25u8fc.webp" ></p><section><h3 id="boost-升压电路">Boost 升压电路<a class="anchor" href="#boost-升压电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><hr><section><h4 id="一核心前提为什么一定要用电感才能升压">一、核心前提：为什么一定要用电感才能升压？<a class="anchor" href="#一核心前提为什么一定要用电感才能升压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li>只用<strong>电阻、电容</strong>、普通线材：<strong>永远无法升压</strong>
+无源器件只能分压、耗电、储存少量电荷，遵循能量守恒，不可能把 5V 变成 10V、12V。</li>
+<li>想要升压只有一条路：</li>
+</ol><section><h5 id="利用电感独有特性">利用电感独有特性<a class="anchor" href="#利用电感独有特性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>电感：<strong>电流不能突变</strong></li>
+<li>电感：<strong>电压可以瞬间突变、感应出高压</strong></li>
+</ul><ol start="3">
+<li>配合「开关」控制：
+先给电感<strong>储存磁场能量</strong>，再突然切断回路，电感被迫感应高压，把能量叠加到输入电压上，实现升压。</li>
+</ol><hr></section></section><section><h4 id="二boost-电路一步步推导你讲课原版逻辑">二、Boost 电路一步步推导（你讲课原版逻辑）<a class="anchor" href="#二boost-电路一步步推导你讲课原版逻辑"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="1-最简雏形5v输入--电感--开关">1. 最简雏形：5V输入 + 电感 + 开关<a class="anchor" href="#1-最简雏形5v输入--电感--开关"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>
+<p>开关<strong>闭合</strong>：
+5V电源 → 电感 → 开关 → 地
+电感电流慢慢上升，<strong>电能转化为磁场能量储存在电感里</strong>。</p>
+</li>
+<li>
+<p>开关<strong>瞬间断开</strong>：
+电感电流不能突然消失，必须维持原来流向；
+回路突然断开 → 电感瞬间感应<strong>超高反向电压</strong>。
+👉 这就是升压的源头。</p>
+</li>
+</ul></section><section><h5 id="2-加输出电容收集升压能量">2. 加输出电容：收集升压能量<a class="anchor" href="#2-加输出电容收集升压能量"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>后面加一颗输出电容，用来接收电感释放的高压能量：
+公式：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi><mrow><mi mathvariant="bold-italic">V</mi><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi mathvariant="bold-italic">Q</mi><mi mathvariant="bold-italic">C</mi></mfrac></mstyle></mrow></mi></mrow><annotation encoding="application/x-tex">\boldsymbol{V=\dfrac{Q}{C}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.0491em;vertical-align:-0.686em;"></span><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.25555em;">V</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel mathbf">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3631em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord boldsymbol" style="margin-right:0.06979em;">C</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord boldsymbol">Q</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p><ul>
+<li>电感强行往电容里灌电荷 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">Q</span></span></span></span></li>
+<li>电容容量 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span> 不变</li>
+<li>电荷越多 → 输出电压 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi></mrow><annotation encoding="application/x-tex">V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span> 就越高
+所以：<strong>开关断开一次，电压往上跳一个台阶</strong>。</li>
+</ul></section><section><h5 id="3-出现致命问题不加二极管必失败">3. 出现致命问题（不加二极管必失败）<a class="anchor" href="#3-出现致命问题不加二极管必失败"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>开关再次闭合时：
+开关一端直接接地，
+如果没有隔离元件，<strong>后面电容好不容易升上去的高压</strong>，会直接通过开关短路放电、瞬间归零。
+每次充能一次、放电一次，永远升不上压，白做功。</p></section><section><h5 id="4-关键新增升压必备单向二极管">4. 关键新增：升压必备「单向二极管」<a class="anchor" href="#4-关键新增升压必备单向二极管"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>二极管作用（唯一核心两点）：</p><ol>
+<li><strong>开关闭合时</strong>
+二极管反向截止，<strong>隔断后级高压电容</strong>，电容电压不会倒流、不会被拉低。</li>
+<li><strong>开关断开时</strong>
+电感感应高压 → 二极管正向导通，
+电感+输入电源 一起向后级电容充电，电压稳步抬升。</li>
+</ol><p>✅ 到此：<strong>标准Boost升压拓扑正式成型</strong></p><blockquote>
+<p><strong>标准 Boost 拓扑结构</strong>
+输入电压 → 电感 → 开关下地 + 二极管单向阀 → 输出电容+负载</p>
+</blockquote><hr></section></section><section><h4 id="三boost-完整两个工作阶段必考核心">三、Boost 完整两个工作阶段（必考核心）<a class="anchor" href="#三boost-完整两个工作阶段必考核心"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="阶段-开关闭合--电感储能只存电不升压">阶段① 开关闭合 —— 电感储能（只存电，不升压）<a class="anchor" href="#阶段-开关闭合--电感储能只存电不升压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ol>
+<li>电流走：电源 → 电感 → 开关 → GND</li>
+<li>电感电流线性上升，储存磁场能量</li>
+<li>开关节点被拉到0V</li>
+<li>二极管反偏截止，<strong>输出电容独立给负载供电，电压不掉</strong></li>
+</ol></section><section><h5 id="阶段-开关断开--电感释能--叠加升压">阶段② 开关断开 —— 电感释能 + 叠加升压<a class="anchor" href="#阶段-开关断开--电感释能--叠加升压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ol>
+<li>开关断开，电感电流不能突变</li>
+<li>电感感应出高压，叠加原本的5V输入</li>
+<li>二极管导通，电感能量+电源能量一起灌入输出电容</li>
+<li>电容电荷增加 → 输出电压<strong>抬升一个台阶</strong></li>
+</ol><hr></section></section><section><h4 id="四仿真现象对应你实操看到的效果">四、仿真现象对应（你实操看到的效果）<a class="anchor" href="#四仿真现象对应你实操看到的效果"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li>反复：闭合 → 断开 → 闭合 → 断开</li>
+<li>每断开一次，电压就上一个台阶</li>
+<li>带负载后：</li>
+</ol><ul>
+<li>电压高了：电容慢慢放电、电压小幅回落</li>
+<li>电压低了：再开关补一次能量、抬升电压</li>
+</ul><ol start="4">
+<li>循环往复，最终<strong>稳定在设定高压（如10V、12V）</strong></li>
+</ol><blockquote>
+<p><strong>仿真中提到的关键问题解释</strong></p>
+<ol>
+<li><strong>为什么要加负载？</strong>
+如果没有负载，后级电容会被电感一直充电，电压会持续上升，直到电感能量耗尽或元件击穿，实际电路中必须带负载，或者增加过压保护。</li>
+<li><strong>为什么开关断开太快/太慢会影响升压？</strong>
+开关断开时间太长，电感的能量会全部释放，电压升到峰值后就不会再上升；断开时间太短，电感储存的能量不足，电压抬升的台阶就很小，升压效率低。</li>
+<li><strong>二极管为什么必须存在？</strong>
+如果没有二极管，开关闭合时，后级电容的能量会直接通过开关泄放到地，之前充的电会瞬间归零，完全无法实现升压，二极管是能量单向流动的“阀门”。</li>
+</ol>
+</blockquote><hr></section><section><h4 id="五boost-稳压逻辑和你手动操作一致">五、Boost 稳压逻辑（和你手动操作一致）<a class="anchor" href="#五boost-稳压逻辑和你手动操作一致"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li>
+<p>当输出电压低于目标值（比如 10V）：开关闭合，电感充能，然后断开，电感释能给电容充电，电压抬升一个台阶。</p>
+</li>
+<li>
+<p>开关再次闭合时：二极管反偏，电容电压不会被拉低，只是电感再次充能。</p>
+</li>
+<li>
+<p>当电压升到目标值以上：开关断开，电感释能结束，二极管截止，电容给负载供电，电压缓慢下跌。</p>
+</li>
+<li>
+<p>电压跌到目标值以下时：重复 “开关闭合→断开” 的循环，最终输出电压会在目标值附近小幅波动，实现稳定的高压输出。</p>
+</li>
+<li>
+<p>输出＜目标电压：
+频繁开关，多给电感充能、多次释放，抬高输出</p>
+</li>
+<li>
+<p>输出＞目标电压：
+减少开关次数、减少电感能量释放，让负载慢慢拉低电压</p>
+</li>
+<li>
+<p>实际芯片：
+用PWM自动控制开关快慢、占空比，替代人手，实现全自动稳压</p>
+</li>
+</ol><hr></section><section><h4 id="六boost-核心公式理解升压倍数">六、Boost 核心公式（理解升压倍数）<a class="anchor" href="#六boost-核心公式理解升压倍数"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>和Buck降压电路类似，Boost电路也有理想状态下的输出电压公式，能帮你直观理解“升压倍数”和开关占空比的关系：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>O</mi><mi>U</mi><mi>T</mi></mrow></msub><mo>=</mo><mfrac><msub><mi>V</mi><mrow><mi>I</mi><mi>N</mi></mrow></msub><mrow><mn>1</mn><mo>−</mo><mi>D</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">V_{OUT} = \frac{V_{IN}}{1-D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">O</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">U</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.292em;vertical-align:-0.4033em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8886em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4103em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3567em;margin-left:-0.2222em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.07847em;">I</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1433em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4033em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></p><ul>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi></mrow><annotation encoding="application/x-tex">D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span> 是开关导通的占空比（导通时间/周期总时间）</li>
+<li>举例：想要5V输入升到10V输出，需要的占空比 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mn>50</mn><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">D=50\%</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord">50%</span></span></span></span>；想要升到12V，占空比约为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>58.3</mn><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">58.3\%</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord">58.3%</span></span></span></span></li>
+<li>占空比越高，升压倍数越大，但也会带来更大的电感电流和开关损耗，实际电路中占空比一般不会超过90%。</li>
+</ul><hr></section><section><h4 id="七boost--buck-最强对比总结一套吃透开关电源">七、Boost &#x26; Buck 最强对比总结（一套吃透开关电源）<a class="anchor" href="#七boost--buck-最强对比总结一套吃透开关电源"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="center">项目</th><th align="center">Buck 降压</th><th align="center">Boost 升压</th></tr></thead><tbody><tr><td align="center">功能</td><td align="center">高电压 → 低电压</td><td align="center">低电压 → 高电压</td></tr><tr><td align="center">电感作用</td><td align="center">限流+储能，平缓电压</td><td align="center">储能+感应高压，叠加升压</td></tr><tr><td align="center">核心器件</td><td align="center">续流二极管</td><td align="center">升压单向二极管</td></tr><tr><td align="center">开关位置</td><td align="center">电感前端</td><td align="center">电感后端</td></tr><tr><td align="center">导通时</td><td align="center">给负载+电感供电</td><td align="center">只给电感储能</td></tr><tr><td align="center">断开时</td><td align="center">电感续流放电</td><td align="center">电感感应高压升压</td></tr><tr><td align="center">共同优点</td><td align="center">用电感储能，<strong>无电阻发热，效率极高</strong></td><td align="center"></td></tr><tr><td align="center">共同核心</td><td align="center">依靠：电感电流不能突变</td><td align="center"></td></tr></tbody></table><hr></section></section><section><h3 id="电感饱和">电感饱和<a class="anchor" href="#电感饱和"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><section><h4 id="饱和电流公式原理饱和现象烧坏原因选型规范">饱和电流、公式原理、饱和现象、烧坏原因、选型规范<a class="anchor" href="#饱和电流公式原理饱和现象烧坏原因选型规范"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><hr></section><section><h4 id="一开关电源电感最重要选型原则">一、开关电源电感最重要选型原则<a class="anchor" href="#一开关电源电感最重要选型原则"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>开关电源选电感，<strong>第一指标：饱和电流 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>I</mi><mrow><mi>s</mi><mi>a</mi><mi>t</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(I_{sat})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></strong></p><ol>
+<li>电感饱和电流，<strong>必须大于电路实际最大峰值电流</strong>；</li>
+<li>必须留安全余量：
+<ul>
+<li>最低标准：取 <strong>1.2倍</strong></li>
+<li>稳妥标准：取 <strong>1.5倍</strong></li>
+</ul>
+</li>
+<li>举例：
+电路理论电感峰值电流 = 10A
+<ul>
+<li>保守选型：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>I</mi><mrow><mi>s</mi><mi>a</mi><mi>t</mi></mrow></msub><mo>≥</mo><mn>12</mn><mi>A</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(I_{sat} \ge 12A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">12</span><span class="mord mathnormal">A</span><span class="mclose">)</span></span></span></span>（1.2倍）</li>
+<li>优质选型：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>I</mi><mrow><mi>s</mi><mi>a</mi><mi>t</mi></mrow></msub><mo>≥</mo><mn>15</mn><mi>A</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(I_{sat} \ge 15A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">15</span><span class="mord mathnormal">A</span><span class="mclose">)</span></span></span></span>（1.5倍）</li>
+</ul>
+</li>
+</ol><blockquote>
+<p><strong>反面错误选型</strong>
+实际峰值10A，你选饱和电流只有1A的电感；
+👉 电感<strong>百分百饱和</strong>，电路直接工作异常、烧毁器件。</p>
+</blockquote><hr></section><section><h4 id="二核心公式你讲课用到的关键">二、核心公式（你讲课用到的关键）<a class="anchor" href="#二核心公式你讲课用到的关键"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>电感基础电压电流公式：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mi>L</mi><mo>⋅</mo><mfrac><mrow><mi mathvariant="normal">Δ</mi><mi>I</mi></mrow><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">V = L \cdot \frac{\Delta I}{\Delta t}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2173em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Δ</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Δ</span><span class="mord mathnormal mtight" style="margin-right:0.07847em;">I</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>
+去掉负号、变形得到<strong>电流变化率公式</strong>：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi><mrow><mfrac><mrow><mi mathvariant="bold">Δ</mi><mi mathvariant="bold-italic">I</mi></mrow><mrow><mi mathvariant="bold">Δ</mi><mi mathvariant="bold-italic">t</mi></mrow></mfrac><mo>=</mo><mfrac><mi mathvariant="bold-italic">V</mi><mi mathvariant="bold-italic">L</mi></mfrac></mrow></mi></mrow><annotation encoding="application/x-tex">\boldsymbol{\frac{\Delta I}{\Delta t} = \frac{V}{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2193em;vertical-align:-0.345em;"></span><span class="mord"><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8743em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">Δ</span><span class="mord boldsymbol mtight">t</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">Δ</span><span class="mord boldsymbol mtight" style="margin-right:0.07778em;">I</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel mathbf">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8743em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord boldsymbol mtight">L</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord boldsymbol mtight" style="margin-right:0.25555em;">V</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p><section><h5 id="用你现场的例子计算">用你现场的例子计算<a class="anchor" href="#用你现场的例子计算"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>输入电压 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>V</mi><mo>=</mo><mn>5</mn><mi mathvariant="normal">V</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(V=5\mathrm{V})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">5</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span><span class="mclose">)</span></span></span></span>，电感<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>L</mi><mo>=</mo><mn>10</mn><mrow><mi>μ</mi><mi mathvariant="normal">H</mi></mrow><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(L=10\mathrm{\mu H})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">10</span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">H</span></span><span class="mclose">)</span></span></span></span></p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi mathvariant="normal">Δ</mi><mi>I</mi></mrow><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mfrac><mn>5</mn><mrow><mn>10</mn><mrow><mi>μ</mi><mi mathvariant="normal">H</mi></mrow></mrow></mfrac><mo>=</mo><mn>500000</mn><mtext> </mtext><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">s</mi></mrow><mo>=</mo><mi><mrow><mn mathvariant="bold">0.5</mn><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">/</mi><mi>μ</mi><mi mathvariant="normal">s</mi></mrow></mrow></mi></mrow><annotation encoding="application/x-tex">\frac{\Delta I}{\Delta t}
+= \frac{5}{10\mathrm{\mu H}}
+= 500000\ \mathrm{A/s}
+= \boldsymbol{0.5\mathrm{A/\mu s}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">Δ</span><span class="mord mathnormal">t</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.07847em;">I</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2019em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">10</span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">H</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">500000</span><span class="mspace"> </span><span class="mord"><span class="mord mathrm">A/s</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord"><span class="mord mathbf">0.5</span><span class="mord"><span class="mord mathrm">A/</span><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span></span></span><p>意思：</p></section><section><h5 id="电感不饱和时每-1微秒电流只会平缓上涨-05a">电感不饱和时，每 1微秒，电流只会平缓上涨 0.5A<a class="anchor" href="#电感不饱和时每-1微秒电流只会平缓上涨-05a"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>→ 电流线性、缓慢、可控上升，这就是电感的限流作用。</p><hr></section></section><section><h4 id="三正常不饱和电感工作状态">三、正常不饱和电感工作状态<a class="anchor" href="#三正常不饱和电感工作状态"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li>电感未饱和 → 电感量 (L) 稳定不变</li>
+<li>电感两端电压 (V) 不变、(L) 不变</li>
+<li><strong>电流变化率固定</strong>，电流缓慢斜着往上走</li>
+<li>核心作用：
+抑制电流突变、限制电流上升速度、正常储能、稳压</li>
+<li>开关闭合时：
+电流匀速缓慢爬升，电路可控、安全、无冲击。</li>
+</ol><hr></section><section><h4 id="四电感一旦饱和--彻底废掉">四、电感一旦饱和 = 彻底废掉<a class="anchor" href="#四电感一旦饱和--彻底废掉"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="1-饱和本质">1. 饱和本质<a class="anchor" href="#1-饱和本质"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>当电感实际电流 <strong>超过自身饱和电流</strong>：</p><ul>
+<li>磁芯磁通饱和；</li>
+<li><strong>电感量 L 急剧暴跌、几乎归零</strong>；</li>
+<li>电感不再具备「抑制电流」的能力；</li>
+<li>👉 <strong>电感直接等同于一根普通导线</strong>。</li>
+</ul></section><section><h5 id="2-代入公式看后果">2. 代入公式看后果<a class="anchor" href="#2-代入公式看后果"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi mathvariant="normal">Δ</mi><mi>I</mi></mrow><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mfrac><mi>V</mi><mi>L</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{\Delta I}{\Delta t} = \frac{V}{L}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2173em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Δ</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Δ</span><span class="mord mathnormal mtight" style="margin-right:0.07847em;">I</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2173em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.22222em;">V</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>L</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(L)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">L</span><span class="mclose">)</span></span></span></span> 无限变小 → 电流变化率<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi mathvariant="bold">Δ</mi><mi mathvariant="bold-italic">I</mi></mrow><mrow><mi mathvariant="bold">Δ</mi><mi mathvariant="bold-italic">t</mi></mrow></mfrac></mstyle></mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\boldsymbol{\dfrac{\Delta I}{\Delta t}})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.0491em;vertical-align:-0.686em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3631em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathbf">Δ</span><span class="mord boldsymbol">t</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathbf">Δ</span><span class="mord boldsymbol" style="margin-right:0.07778em;">I</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span><span class="mclose">)</span></span></span></span> 无限变大
+✅ 通俗讲：
+<strong>电流不再慢慢涨，而是一瞬间爆炸式飙升、直冲最大值</strong>，完全不受控。</p><hr></section></section><section><h4 id="五电感饱和带来的严重恶果">五、电感饱和带来的严重恶果<a class="anchor" href="#五电感饱和带来的严重恶果"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ol>
+<li><strong>电流瞬间暴冲</strong>
+原本缓慢上升的电流，瞬间拉满，形成巨大尖峰电流；</li>
+<li><strong>开关器件直接烧毁</strong>
+MOS管/开关承受超大过流、过热、击穿炸裂；</li>
+<li><strong>电感严重发烫、发烫短路</strong>
+磁芯饱和损耗暴增，线圈发热严重，甚至烧绝缘、短路；</li>
+<li><strong>整个电源系统崩溃</strong>
+输出电压拉垮、稳压失效、掉压、重启、炸机；</li>
+<li>完全失去Buck/Boost原本的降压、升压功能。</li>
+</ol><hr></section><section><h4 id="六一句话区分两种状态">六、一句话区分两种状态<a class="anchor" href="#六一句话区分两种状态"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>不饱和</strong>：电感=储能+限流元件，电流线性缓慢上升，电源稳定工作；</li>
+<li><strong>饱和</strong>：电感=一根导线，无限流、无储能，电流暴走，硬件烧毁。</li>
+</ul><hr><blockquote>
+<p><strong>全文终极总结（可直接背诵/讲课用）</strong></p>
+<ol>
+<li>开关电源选电感，<strong>饱和电流是第一参数</strong>，比电感值更重要；</li>
+<li>电感饱和电流必须大于电路最大峰值电流，预留 <strong>1.2~1.5倍余量</strong>；</li>
+<li>公式 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi mathvariant="bold">Δ</mi><mi mathvariant="bold-italic">I</mi></mrow><mrow><mi mathvariant="bold">Δ</mi><mi mathvariant="bold-italic">t</mi></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi mathvariant="bold-italic">V</mi><mi mathvariant="bold-italic">L</mi></mfrac></mstyle></mrow></mi></mrow><annotation encoding="application/x-tex">\boldsymbol{\dfrac{\Delta I}{\Delta t}=\dfrac{V}{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.0491em;vertical-align:-0.686em;"></span><span class="mord"><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3631em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathbf">Δ</span><span class="mord boldsymbol">t</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathbf">Δ</span><span class="mord boldsymbol" style="margin-right:0.07778em;">I</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel mathbf">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3631em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord boldsymbol">L</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord boldsymbol" style="margin-right:0.25555em;">V</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span> 决定：电感量越大，电流上升越慢，越安全；</li>
+<li>电感正常工作时，电流匀速缓慢爬升，依靠电感特性限流、储能；</li>
+<li>电流超标→电感饱和→电感量骤降，失去限流能力；</li>
+<li>饱和后电感变成纯导线，电流瞬间猛增；</li>
+<li>最终会导致：开关烧毁、电感发烫、电源崩溃、稳压失效；</li>
+<li>核心结论：
+<strong>开关电源电感，饱和电流一定要往大留余量，绝对不能刚好卡着最大工作电流选。</strong></li>
+</ol>
+</blockquote></section></section><section><h3 id="电荷泵升压工作原理">电荷泵升压工作原理<a class="anchor" href="#电荷泵升压工作原理"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>这个讲的这个就是<strong>电荷泵（也叫自举电源、电容倍压电路）</strong>，它是一种<strong>无电感的开关电源拓扑</strong>，核心是靠「电容储能+开关切换」实现电压变换，和之前讲的Buck/Boost电感型电源是完全不同的思路。我们顺着你的讲解逻辑，把原理、问题、解决方案一次性讲透👇</p><hr><section><h4 id="一核心思想不用电感靠电容叠加电压升压">一、核心思想：不用电感，靠电容“叠加电压”升压<a class="anchor" href="#一核心思想不用电感靠电容叠加电压升压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>电荷泵的本质，是利用<strong>电容两端电压不能突变</strong>的特性，通过开关切换电容的连接方式，把输入电压和电容储存的电压“叠加”起来，实现升压（甚至负压），全程不需要电感。</p><hr></section><section><h4 id="二基础电荷泵的升压过程">二、基础电荷泵的升压过程<a class="anchor" href="#二基础电荷泵的升压过程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="542" height="333" src="/HexoNotes/_astro/5.BJ18YRX9_Z1CbO02.webp" ></p><p>我们以你仿真的“5V→10V升压”为例，拆解两个关键阶段：</p><section><h5 id="阶段1飞电容充电上下开关闭合中间开关断开">阶段1：飞电容充电（上、下开关闭合，中间开关断开）<a class="anchor" href="#阶段1飞电容充电上下开关闭合中间开关断开"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>电流路径</strong>：<code>5V电源 → 上开关 → 中间100μF电容（飞电容） → 下开关 → GND</code></li>
+<li>飞电容两端电压被缓慢充到<strong>5V</strong>，极性保持“上正下负”。</li>
+<li>此时负载直接接在飞电容两端，电压为5V（但这不是我们的目标）。</li>
+</ul></section><section><h5 id="阶段2电压叠加上下开关断开中间开关闭合">阶段2：电压叠加（上、下开关断开，中间开关闭合）<a class="anchor" href="#阶段2电压叠加上下开关断开中间开关闭合"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>飞电容的下端，通过中间开关被直接接到5V输入电源；</li>
+<li>电容两端电压不能突变，因此上端电压 = 下端电压（5V） + 电容储存的电压（5V） = <strong>10V</strong>；</li>
+<li>此时飞电容直接给负载供电，负载得到10V电压，完成一次升压。</li>
+</ul></section><section><h5 id="致命缺陷负载电压大幅波动">致命缺陷：负载电压大幅波动<a class="anchor" href="#致命缺陷负载电压大幅波动"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>当开关切回阶段1时，飞电容的下端被拉回GND，上端电压瞬间从10V掉到5V，负载电压直接“断崖式下跌”，根本无法正常工作——这就是你说的“掉压问题”。</p><hr></section></section><section><h4 id="三关键改进加二极管输出电容第二张图">三、关键改进：加二极管+输出电容（第二张图）<a class="anchor" href="#三关键改进加二极管输出电容第二张图"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="606" height="311" src="/HexoNotes/_astro/6.mBvcl2ia_9F2g6.webp" ></p><p>为了解决掉压问题，你加了<strong>单向二极管</strong>和<strong>输出电容</strong>，这是电荷泵能稳定工作的核心。我们看改进后的两个阶段：</p><section><h5 id="阶段1飞电容充电上下开关闭合中间开关断开-1">阶段1：飞电容充电（上、下开关闭合，中间开关断开）<a class="anchor" href="#阶段1飞电容充电上下开关闭合中间开关断开-1"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>飞电容被充到5V，此时二极管的阳极电压=5V，阴极电压=输出电容的电压（比如9V）；</li>
+<li>二极管<strong>反向截止</strong>，输出电容和负载完全不受影响，输出电容继续给负载供电，电压保持稳定，不会掉回5V。</li>
+</ul></section><section><h5 id="阶段2电压叠加输出电容充电上下开关断开中间开关闭合">阶段2：电压叠加+输出电容充电（上、下开关断开，中间开关闭合）<a class="anchor" href="#阶段2电压叠加输出电容充电上下开关断开中间开关闭合"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>飞电容上端电压升到10V，超过二极管阴极电压，二极管<strong>正向导通</strong>；</li>
+<li>飞电容的能量通过二极管，给输出电容充电，输出电容的电压被抬升（比如从9V升到9.7V，减去肖特基二极管0.3V的压降）；</li>
+<li>输出电容同时给负载供电，电压只会小幅波动，不会出现断崖式下跌。</li>
+</ul></section><section><h5 id="循环往复实现稳定输出">循环往复，实现稳定输出<a class="anchor" href="#循环往复实现稳定输出"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>每个开关周期，飞电容都会给输出电容补充一点能量，输出电容的电压会慢慢抬升到稳定值（接近10V减去二极管压降），最终稳定在目标电压附近，纹波很小，负载可以正常工作。</p><hr></section></section><section><h4 id="四电荷泵的拓展不仅能升压还能产生负压">四、电荷泵的拓展：不仅能升压，还能产生负压<a class="anchor" href="#四电荷泵的拓展不仅能升压还能产生负压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>你提到电荷泵“既可以升压也可以产生负压”，原理是一样的，只是电容极性的切换方式不同：</p><ul>
+<li><strong>升压</strong>：电容充电时上正下负，叠加时把下端接正电压，上端电压=正电压+电容电压；</li>
+<li><strong>负压</strong>：电容充电时下正上负，叠加时把上端接GND，下端电压=GND - 电容电压，得到负电压。</li>
+</ul><p>比如用5V输入，就能轻松得到-5V的负压，非常适合给运放、传感器等需要双电源供电的器件提供负电源。</p><hr></section><section><h4 id="五电荷泵-vs-电感型开关电源buckboost">五、电荷泵 vs 电感型开关电源（Buck/Boost）<a class="anchor" href="#五电荷泵-vs-电感型开关电源buckboost"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>对比项</th><th>电荷泵（Charge Pump）</th><th>电感型Boost/Buck</th></tr></thead><tbody><tr><td>核心元件</td><td>电容+开关+二极管</td><td>电感+开关+二极管</td></tr><tr><td>升压原理</td><td>电容电压叠加</td><td>电感储能+感应高压</td></tr><tr><td>体积/成本</td><td>小、低（无电感）</td><td>大、高（需要功率电感）</td></tr><tr><td>EMI噪声</td><td>低（无电感辐射）</td><td>较高（电感和开关的高频噪声）</td></tr><tr><td>带载能力</td><td>小电流（mA级，适合轻载）</td><td>大电流（A级，适合重载）</td></tr><tr><td>效率</td><td>轻载时效率接近100%</td><td>重载时效率更高</td></tr><tr><td>典型应用</td><td>小功率、低噪声场景（如运放负电源、USB供电、电池升压）</td><td>大功率、高效率场景（如笔记本电源、电机驱动、电源适配器）</td></tr></tbody></table><hr><p>电荷泵的本质，是<strong>用“电容储能+开关切换”替代了电感的储能升压功能</strong>，靠二极管和输出电容解决了负载掉压问题，实现了稳定的升压/负压输出。它体积小、成本低、噪声低，适合小功率场景；而电感型开关电源带载能力更强，适合大功率场景，两者各有优势。</p></section></section><section><h3 id="电荷泵负压电路">电荷泵负压电路<a class="anchor" href="#电荷泵负压电路"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p><img  loading="lazy" decoding="async" fetchpriority="auto" width="598" height="338" src="/HexoNotes/_astro/7.Zwwn3861_G9qjV.webp" ></p><p>这个电路是<strong>负压电荷泵（Negative Charge Pump）</strong>，和你之前讲的升压电荷泵是“对称拓扑”，核心原理都是利用<strong>电容两端电压不能突变</strong>的特性，通过开关切换电容电位，实现无电感产生负压。</p><hr><section><h4 id="一核心前提为什么用电荷泵能产生负压">一、核心前提：为什么用电荷泵能产生负压？<a class="anchor" href="#一核心前提为什么用电荷泵能产生负压"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>电荷泵产生负压的底层逻辑，和升压完全同源：</p><ul>
+<li>电容的<strong>两端电压不能突变</strong>，只能通过充放电改变；</li>
+<li>给电容充好固定电压后，<strong>人为改变电容一端的电位</strong>，另一端的电位会被“强制拉低/抬高”，实现电压变换；</li>
+<li>产生负压的关键：把电容的高电位端拉到地，低电位端就会被拉到负电位。</li>
+</ul><hr></section><section><h4 id="二完整工作过程两个核心阶段">二、完整工作过程（两个核心阶段）<a class="anchor" href="#二完整工作过程两个核心阶段"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>我们以你仿真的“5V输入→-5V输出”为例，拆解每一步的电位变化：</p><section><h5 id="阶段1飞电容充电上下开关闭合中间开关断开-2">阶段1：飞电容充电（上、下开关闭合，中间开关断开）<a class="anchor" href="#阶段1飞电容充电上下开关闭合中间开关断开-2"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>电流路径</strong>：<code>5V电源 → 上开关 → 飞电容上极板 → 飞电容下极板 → 下开关 → GND</code></li>
+<li>充电完成后，飞电容两端形成稳定电压：
+<ul>
+<li>上极板电位：<code>V上 = 5V</code></li>
+<li>下极板电位：<code>V下 = 0V</code></li>
+<li>电容两端电压：<code>Vcap = V上 - V下 = 5V</code>（上正下负，上极板比下极板高5V）</li>
+</ul>
+</li>
+</ul></section><section><h5 id="阶段2电位切换产生负压上下开关断开中间开关闭合">阶段2：电位切换，产生负压（上、下开关断开，中间开关闭合）<a class="anchor" href="#阶段2电位切换产生负压上下开关断开中间开关闭合"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>中间开关闭合后，飞电容的<strong>上极板被强制接到GND</strong>，此时：
+<ul>
+<li>上极板电位瞬间变为：<code>V上 = 0V</code></li>
+<li>因为电容两端电压不能突变，<code>Vcap</code> 必须保持5V不变，因此：
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>c</mi><mi>a</mi><mi>p</mi><mo>=</mo><mi>V</mi><mtext>上</mtext><mo>−</mo><mi>V</mi><mtext>下</mtext><mo>=</mo><mn>5</mn><mi>V</mi></mrow><annotation encoding="application/x-tex">Vcap = V上 - V下 = 5V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord mathnormal">c</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord cjk_fallback">上</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord cjk_fallback">下</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">5</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mi>V</mi><mo>−</mo><mi>V</mi><mtext>下</mtext><mo>=</mo><mn>5</mn><mi>V</mi></mrow><annotation encoding="application/x-tex">0V - V下 = 5V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">0</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord cjk_fallback">下</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">5</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mtext>下</mtext><mo>=</mo><mo>−</mo><mn>5</mn><mi>V</mi></mrow><annotation encoding="application/x-tex">V下 = -5V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mord cjk_fallback">下</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">5</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span></li>
+</ul>
+</li>
+<li>飞电容的下极板直接产生了**-5V的负压**，这就是电荷泵产生负压的核心原理。</li>
+</ul><hr></section></section><section><h4 id="三关键改进二极管输出电容解决掉压问题">三、关键改进：二极管+输出电容解决“掉压问题”<a class="anchor" href="#三关键改进二极管输出电容解决掉压问题"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>和升压电荷泵一样，直接带负载会出现致命缺陷：开关切回充电阶段时，飞电容下极板会回到0V，负压瞬间消失，负载电压断崖式下跌，无法正常工作。</p><p>你的改进方案（加二极管+输出电容）完美解决了这个问题：</p><ol>
+<li><strong>负压产生阶段（开关切换后）</strong>
+<ul>
+<li>飞电容下极板为-5V，二极管正向导通，输出电容的负极电位被拉低，电荷通过二极管流向飞电容，输出电容充电，负极电压接近-5V（减去二极管压降）。</li>
+</ul>
+</li>
+<li><strong>飞电容充电阶段（开关切回后）</strong>
+<ul>
+<li>飞电容下极板回到0V，二极管反向截止，输出电容与飞电容隔离，不再受开关切换影响，保持-5V电压，持续给负载供电。</li>
+</ul>
+</li>
+</ol><section><h5 id="为什么你仿真里得到的是-4点多伏">为什么你仿真里得到的是-4点多伏？<a class="anchor" href="#为什么你仿真里得到的是-4点多伏"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>这是因为二极管存在<strong>正向压降</strong>（普通二极管约0.7V，肖特基二极管约0.3V），输出电压 = <code>-5V + 二极管压降</code>，比如肖特基二极管压降0.3V，输出就是-4.7V，和你看到的仿真结果完全一致。</p><hr></section></section><section><h4 id="四升压电荷泵-vs-负压电荷泵对称的逻辑">四、升压电荷泵 vs 负压电荷泵：对称的逻辑<a class="anchor" href="#四升压电荷泵-vs-负压电荷泵对称的逻辑"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>两种拓扑的原理完全对称，只是开关连接方式和二极管方向相反：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>对比项</th><th>升压电荷泵</th><th>负压电荷泵</th></tr></thead><tbody><tr><td>目标输出</td><td>2×<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{in}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>（如5V→10V）</td><td>-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{in}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>（如5V→-5V）</td></tr><tr><td>充电阶段电容极性</td><td>上正下负（V上=5V，V下=0V）</td><td>上正下负（V上=5V，V下=0V）</td></tr><tr><td>切换阶段连接方式</td><td>下极板接+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{in}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，上极板悬空</td><td>上极板接GND，下极板悬空</td></tr><tr><td>切换后电容电位</td><td>上极板=10V，下极板=5V</td><td>上极板=0V，下极板=-5V</td></tr><tr><td>二极管方向</td><td>阳极接飞电容，阴极接输出电容</td><td>阳极接输出电容，阴极接飞电容</td></tr></tbody></table><hr></section><section><h4 id="五负压电荷泵的特点与应用">五、负压电荷泵的特点与应用<a class="anchor" href="#五负压电荷泵的特点与应用"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="核心优势">核心优势<a class="anchor" href="#核心优势"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ol>
+<li><strong>无电感、低成本</strong>：不需要功率电感，体积小、成本低，无电感辐射噪声。</li>
+<li><strong>结构简单</strong>：仅靠电容、开关和二极管就能实现负压，调试难度低。</li>
+<li><strong>轻载效率高</strong>：无电感损耗，轻载时效率接近100%。</li>
+</ol></section><section><h5 id="局限性">局限性<a class="anchor" href="#局限性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>带载能力弱</strong>：仅适合小电流负载（mA级），重载时电压纹波大、效率低。</li>
+<li><strong>输出电压有限</strong>：通常只能产生固定倍数的负压（如-5V、-10V），无法灵活调压。</li>
+</ul></section><section><h5 id="典型应用场景">典型应用场景<a class="anchor" href="#典型应用场景"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>给运放、模拟电路提供负电源（如±5V双电源供电）；</li>
+<li>传感器、RS232接口等需要负压的小功率设备；</li>
+<li>电池供电设备中，从单节5V电源产生负电压。</li>
+</ul><hr></section></section><section><h4 id="六最终总结一句话吃透">六、最终总结（一句话吃透）<a class="anchor" href="#六最终总结一句话吃透"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>负压电荷泵的本质，是<strong>通过开关切换电容一端的电位，利用“电容电压不能突变”的特性，把另一端的电位强制拉到负电位，再通过二极管和输出电容隔离，实现稳定的负压输出</strong>。它和升压电荷泵是一对互补拓扑，都是无电感电压变换的经典方案，适合小功率场景的升压/负压需求。</p></section></section></section><section><h2 id="全篇终极大总结背诵级核心">全篇终极大总结（背诵级核心）<a class="anchor" href="#全篇终极大总结背诵级核心"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><ol>
+<li>开关电源分两大基础拓扑：
+<ul>
+<li>Buck：降压</li>
+<li>Boost：升压</li>
+</ul>
+</li>
+<li>二者全部放弃「电阻分压耗电」的老旧方案，<strong>全部用电感储能</strong>，实现高效率。</li>
+<li>电感两大特性是开关电源的根基：
+<ul>
+<li>电流不能突变</li>
+<li>电压可突变、可感应高压</li>
+</ul>
+</li>
+<li>Buck 逻辑：
+开关间断输送能量，用电感平缓电压，把高压切少一点，实现降压。</li>
+<li>Boost 逻辑：
+先开关闭合给电感存能量，断开瞬间电感出高压，叠加输入电压；
+加二极管防止高压倒流，一步步台阶式抬升电压，实现升压。</li>
+<li>二极管是两种拓扑的保命元件：
+<ul>
+<li>Buck：续流、防高压击穿开关</li>
+<li>Boost：单向隔离、防止高压电容放电</li>
+</ul>
+</li>
+<li>不管升压还是降压，本质都是：
+<strong>用开关控制电感储能/释能的时间，控制传递到后级的能量多少，从而控制输出电压大小。</strong></li>
+</ol><hr></section></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
+`?"":e).join(`
+`);navigator.clipboard.writeText(i);const o=t.getAttribute("data-timeout-id");o&&clearTimeout(parseInt(o)),t.classList.add("success");const n=setTimeout(()=>{t.classList.remove("success")},1e3);t.setAttribute("data-timeout-id",n.toString())}});</script> <div class="relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 mb-6 rounded-xl license-container onload-animation"> <div class="transition font-bold text-black/75 dark:text-white/75"> 1-7 开关电源工作原理 </div> <a href="https://520luxun.github.io/HexoNotes/posts/notes/embedded/pcb/docs/1-7_开关电源工作原理/" class="link text-[var(--primary)]"> https://520luxun.github.io/HexoNotes/posts/notes/embedded/pcb/docs/1-7_开关电源工作原理/ </a> <div class="flex gap-6 mt-2"> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">作者</div> <div class="transition text-black/75 dark:text-white/75 line-clamp-2">520luxun</div> </div> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">发布于</div> <div class="transition text-black/75 dark:text-white/75 line-clamp-2">2026-08-25</div> </div> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">许可协议</div> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="link text-[var(--primary)] line-clamp-2">CC BY-NC-SA 4.0</a> </div> </div> <svg width="0.97em" height="1em" class="transition text-[15rem] absolute pointer-events-none right-6 top-1/2 -translate-y-1/2 text-black/5 dark:text-white/5" data-icon="fa6-brands:creative-commons">   <symbol id="ai:fa6-brands:creative-commons" viewBox="0 0 496 512"><path fill="currentColor" d="m245.83 214.87l-33.22 17.28c-9.43-19.58-25.24-19.93-27.46-19.93c-22.13 0-33.22 14.61-33.22 43.84c0 23.57 9.21 43.84 33.22 43.84c14.47 0 24.65-7.09 30.57-21.26l30.55 15.5c-6.17 11.51-25.69 38.98-65.1 38.98c-22.6 0-73.96-10.32-73.96-77.05c0-58.69 43-77.06 72.63-77.06c30.72-.01 52.7 11.95 65.99 35.86m143.05 0l-32.78 17.28c-9.5-19.77-25.72-19.93-27.9-19.93c-22.14 0-33.22 14.61-33.22 43.84c0 23.55 9.23 43.84 33.22 43.84c14.45 0 24.65-7.09 30.54-21.26l31 15.5c-2.1 3.75-21.39 38.98-65.09 38.98c-22.69 0-73.96-9.87-73.96-77.05c0-58.67 42.97-77.06 72.63-77.06c30.71-.01 52.58 11.95 65.56 35.86M247.56 8.05C104.74 8.05 0 123.11 0 256.05c0 138.49 113.6 248 247.56 248c129.93 0 248.44-100.87 248.44-248c0-137.87-106.62-248-248.44-248m.87 450.81c-112.54 0-203.7-93.04-203.7-202.81c0-105.42 85.43-203.27 203.72-203.27c112.53 0 202.82 89.46 202.82 203.26c-.01 121.69-99.68 202.82-202.84 202.82"/></symbol><use href="#ai:fa6-brands:creative-commons"></use>  </svg> </div> </div> </div> <div class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"> <a href="/HexoNotes/posts/notes/embedded/pcb/docs/1-6_直流稳压电源/" class="w-full font-bold overflow-hidden active:scale-95"> <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4"> <svg width="1em" height="1em" class="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-left-rounded">   <symbol id="ai:material-symbols:chevron-left-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z"/></symbol><use href="#ai:material-symbols:chevron-left-rounded"></use>  </svg> <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"> 1-6 直流稳压电源 </div> </div> </a> <a href="/HexoNotes/posts/notes/embedded/pcb/readme/" class="w-full font-bold overflow-hidden active:scale-95"> <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-end gap-4"> <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"> README </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg> </div> </a> </div>  <div class="footer col-span-2 onload-animation hidden lg:block"> <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">--><div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div> <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">--> <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"> <div class="transition text-50 text-sm text-center">
+&copy; <span id="copyright-year">2026</span> 520luxun. All Rights Reserved. /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/rss.xml">RSS</a> /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/sitemap-index.xml">Sitemap</a><br>
+Powered by
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a> </div> </div> </div> </div> </main> <div class="footer col-span-2 onload-animation block lg:hidden"> <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">--><div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div> <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">--> <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"> <div class="transition text-50 text-sm text-center">
+&copy; <span id="copyright-year">2026</span> 520luxun. All Rights Reserved. /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/rss.xml">RSS</a> /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/sitemap-index.xml">Sitemap</a><br>
+Powered by
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a> </div> </div> </div> </div> <!-- There can't be a filter on parent element, or it will break `fixed` --><div class="back-to-top-wrapper hidden lg:block" data-astro-cid-eymb5ayk> <div id="back-to-top-btn" class="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition" onclick="backToTop()" data-astro-cid-eymb5ayk> <button aria-label="Back to Top" class="btn-card h-[3.75rem] w-[3.75rem]" data-astro-cid-eymb5ayk> <svg width="1em" height="1em" class="mx-auto" data-astro-cid-eymb5ayk="true" data-icon="material-symbols:keyboard-arrow-up-rounded">   <symbol id="ai:material-symbols:keyboard-arrow-up-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m12 10.8l-3.9 3.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.6-4.6q.3-.3.7-.3t.7.3l4.6 4.6q.275.275.275.7t-.275.7t-.7.275t-.7-.275z"/></symbol><use href="#ai:material-symbols:keyboard-arrow-up-rounded"></use>  </svg> </button> </div> </div>  <script>
+function backToTop() {
+    window.scroll({ top: 0, behavior: 'smooth' });
+}
+</script> </div> </div>  <div class="absolute w-full z-0 hidden 2xl:block"> <div class="relative max-w-[var(--page-width)] mx-auto"> <!-- TOC component --> <div id="toc-wrapper" class="hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center toc-hide"> <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar"> <div id="toc" class="w-full h-full transition-swup-fade "> <div class="h-8 w-full"></div> <table-of-contents class="group"><a href="#1-7-开关电源工作原理" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold bg-[var(--toc-badge-bg)] text-[var(--btn-content)]">1</div><div class="transition text-sm text-50">1-7 开关电源工作原理</div></a><a href="#最原始的开关电源电路" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">最原始的开关电源电路</div></a><a href="#降压型开关电源" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">降压型开关电源</div></a><a href="#升压型开关电源" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">升压型开关电源</div></a><a href="#全篇终极大总结背诵级核心" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">全篇终极大总结（背诵级核心）</div></a><div id="active-indicator" style="opacity: 0" class="-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"></div></table-of-contents><script type="module">class l extends HTMLElement{tocEl=null;visibleClass="visible";observer;anchorNavTarget=null;headingIdxMap=new Map;headings=[];sections=[];tocEntries=[];active=[];activeIndicator=null;constructor(){super(),this.observer=new IntersectionObserver(this.markVisibleSection,{threshold:0})}markVisibleSection=t=>{t.forEach(e=>{const i=e.target.children[0]?.getAttribute("id"),s=i?this.headingIdxMap.get(i):void 0;s!=null&&(this.active[s]=e.isIntersecting),e.isIntersecting&&this.anchorNavTarget==e.target.firstChild&&(this.anchorNavTarget=null)}),this.active.includes(!0)||this.fallback(),this.update()};toggleActiveHeading=()=>{let t=this.active.length-1,e=this.active.length-1,i=-1;for(;t>=0&&!this.active[t];)this.tocEntries[t].classList.remove(this.visibleClass),t--;for(;t>=0&&this.active[t];)this.tocEntries[t].classList.add(this.visibleClass),e=Math.min(e,t),i=Math.max(i,t),t--;for(;t>=0;)this.tocEntries[t].classList.remove(this.visibleClass),t--;if(e>i)this.activeIndicator?.setAttribute("style","opacity: 0");else{let s=this.tocEl?.getBoundingClientRect().top||0,n=this.tocEl?.scrollTop||0,o=this.tocEntries[e].getBoundingClientRect().top-s+n,c=this.tocEntries[i].getBoundingClientRect().bottom-s+n;this.activeIndicator?.setAttribute("style",`top: ${o}px; height: ${c-o}px`)}};scrollToActiveHeading=()=>{if(this.anchorNavTarget||!this.tocEl)return;const t=document.querySelectorAll(`#toc .${this.visibleClass}`);if(!t.length)return;const e=t[0],i=t[t.length-1],s=this.tocEl.clientHeight;let n;i.getBoundingClientRect().bottom-e.getBoundingClientRect().top<.9*s?n=e.offsetTop-32:n=i.offsetTop-s*.8,this.tocEl.scrollTo({top:n,left:0,behavior:"smooth"})};update=()=>{requestAnimationFrame(()=>{this.toggleActiveHeading(),this.scrollToActiveHeading()})};fallback=()=>{if(this.sections.length)for(let t=0;t<this.sections.length;t++){let e=this.sections[t].getBoundingClientRect().top,i=this.sections[t].getBoundingClientRect().bottom;if(this.isInRange(e,0,window.innerHeight)||this.isInRange(i,0,window.innerHeight)||e<0&&i>window.innerHeight)this.markActiveHeading(t);else if(e>window.innerHeight)break}};markActiveHeading=t=>{this.active[t]=!0};handleAnchorClick=t=>{const e=t.composedPath().find(i=>i instanceof HTMLAnchorElement);if(e){const i=decodeURIComponent(e.hash?.substring(1)),s=this.headingIdxMap.get(i);s!==void 0?this.anchorNavTarget=this.headings[s]:this.anchorNavTarget=null}};isInRange(t,e,i){return e<t&&t<i}connectedCallback(){const t=document.querySelector(".prose");t?t.addEventListener("animationend",()=>{this.init()},{once:!0}):console.debug("Animation element not found")}init(){if(this.tocEl=document.getElementById("toc-inner-wrapper"),!!this.tocEl&&(this.tocEl.addEventListener("click",this.handleAnchorClick,{capture:!0}),this.activeIndicator=document.getElementById("active-indicator"),this.tocEntries=Array.from(document.querySelectorAll("#toc a[href^='#']")),this.tocEntries.length!==0)){this.sections=new Array(this.tocEntries.length),this.headings=new Array(this.tocEntries.length);for(let t=0;t<this.tocEntries.length;t++){const e=decodeURIComponent(this.tocEntries[t].hash?.substring(1)),i=document.getElementById(e),s=i?.parentElement;i instanceof HTMLElement&&s instanceof HTMLElement&&(this.headings[t]=i,this.sections[t]=s,this.headingIdxMap.set(e,t))}this.active=new Array(this.tocEntries.length).fill(!1),this.sections.forEach(t=>this.observer.observe(t)),this.fallback(),this.update()}}disconnectedCallback(){this.sections.forEach(t=>this.observer.unobserve(t)),this.observer.disconnect(),this.tocEl?.removeEventListener("click",this.handleAnchorClick)}}customElements.get("table-of-contents")||customElements.define("table-of-contents",l);</script> <div class="h-8 w-full"></div> </div> </div> </div> <!-- #toc needs to exist for Swup to work normally -->  </div> </div>  <!-- increase the page height during page transition to prevent the scrolling animation from jumping --> <div id="page-height-extend" class="hidden h-[300vh]" data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--configHue: 250;--page-width: 75rem;"></div>  <script type="module" src="/HexoNotes/_astro/Layout.astro_astro_type_script_index_0_lang.BGJ2_THW.js"></script> <script type="module" src="/HexoNotes/_astro/Layout.astro_astro_type_script_index_1_lang.RhPgQ92B.js"></script></body></html>
