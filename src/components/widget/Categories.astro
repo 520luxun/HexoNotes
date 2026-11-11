@@ -20,62 +20,45 @@ interface Props {
 const className = Astro.props.class;
 const style = Astro.props.style;
 
-// Categories stay two levels: "计算机基础/计算机操作系统". Group them so the
-// widget shows a parent row plus indented children, keeping WidgetLayout's
-// collapse behaviour working.
-type Child = { label: string; count: number; url: string };
-type Node = { label: string; count: number; url: string; children: Child[] };
+// Categories may be deep paths ("嵌入式/硬件电路/扩展资料/进阶"). Flatten the
+// tree into rows with an indent level so any depth renders cleanly.
+type Row = { label: string; path: string; count: number; url: string; depth: number };
 
-const nodeMap = new Map<string, Node>();
+const tree = new Map<string, number>();
 for (const c of categories) {
-	const [head, ...rest] = c.name.split("/");
-	const childLabel = rest.join("/");
-	let node = nodeMap.get(head);
-	if (!node) {
-		node = { label: head, count: 0, url: getCategoryUrl(head), children: [] };
-		nodeMap.set(head, node);
+	const segments = c.name.split("/").filter(Boolean);
+	for (let i = 1; i <= segments.length; i++) {
+		const path = segments.slice(0, i).join("/");
+		tree.set(path, (tree.get(path) ?? 0) + c.count);
 	}
-	if (childLabel) {
-		node.children.push({ label: childLabel, count: c.count, url: c.url });
-	} else {
-		node.url = c.url;
-	}
-	node.count += c.count;
 }
 
-const tree = [...nodeMap.values()]
-	.map((node) => ({
-		...node,
-		children: node.children.sort(
-			(a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"),
-		),
-	}))
-	.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"));
+const rows: Row[] = [...tree.entries()]
+	.sort((a, b) => a[0].localeCompare(b[0], "zh"))
+	.map(([path, count]) => {
+		const segments = path.split("/");
+		return {
+			label: segments[segments.length - 1],
+			path,
+			count,
+			url: getCategoryUrl(path),
+			depth: segments.length - 1,
+		};
+	});
 ---
 
 <WidgetLayout name={i18n(I18nKey.categories)} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
                 class={className} style={style}
 >
-    {tree.map((node) => (
-        <>
+    {rows.map((row) => (
+        <div style={`padding-left:${row.depth * 1.25}rem`}>
             <ButtonLink
-                url={node.url}
-                badge={String(node.count)}
-                label={`View all posts in the ${node.label} category`}
+                url={row.url}
+                badge={String(row.count)}
+                label={`View all posts in the ${row.path} category`}
             >
-                {node.label}
+                {row.label}
             </ButtonLink>
-            {node.children.map((child) => (
-                <div class="pl-5">
-                    <ButtonLink
-                        url={child.url}
-                        badge={String(child.count)}
-                        label={`View all posts in the ${node.label} / ${child.label} category`}
-                    >
-                        {child.label}
-                    </ButtonLink>
-                </div>
-            ))}
-        </>
+        </div>
     ))}
 </WidgetLayout>
