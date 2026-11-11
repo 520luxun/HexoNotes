@@ -78,7 +78,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "Obsidian",
 			icon: "obsidian", // local icon file: src/icons/obsidian.svg
-			url: "obsidian://open?vault=ObsidianFirstNotes",
+			url: "obsidian://open?vault=Embedded",
 		},
 	],
 };
