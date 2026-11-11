@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  statuses: write
 
 concurrency:
   group: pages
@@ -34,7 +35,33 @@ jobs:
       # `pnpm build` also runs scripts/sync-notes.mjs; on CI the Obsidian
       # vault is absent, so the script keeps the notes committed in the repo.
       - name: Build site
-        run: pnpm build
+        id: build
+        run: |
+          set -o pipefail
+          pnpm build 2>&1 | tee build.log
+        continue-on-error: true
+        env:
+          # ~1k note images are optimised at build time; keep sharp's worker
+          # pool small so the runner does not get killed for memory.
+          NODE_OPTIONS: --max-old-space-size=4096
+          VIPS_CONCURRENCY: 2
+
+      # CI logs need a login to read; surface the tail of the error as a commit
+      # status so it can be inspected without one.
+      - name: Report build failure
+        if: steps.build.outcome == 'failure'
+        run: |
+          msg=$(tail -n 40 build.log | tr '\n' ' ' | cut -c1-130)
+          echo "::error::$msg"
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "$(jq -n --arg d "$msg" '{state:"error",description:$d,context:"build-log"}')" \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}"
+
+      - name: Fail if build failed
+        if: steps.build.outcome == 'failure'
+        run: exit 1
 
       # GitHub Pages would otherwise skip Astro's _astro/ assets via Jekyll.
       - name: Add .nojekyll
