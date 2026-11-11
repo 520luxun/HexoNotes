@@ -3,7 +3,7 @@ title: "1.1.2 操作系统的特征"
 published: 2026-09-10
 description: "知识总览 操作系统是一种系统软件，但与其他系统软件和应用软件有很大的不同，它有自己的特殊性，即基本特征。 操作系统的四个基本特征是：并发、共享、虚拟和异步。其中"
 tags: []
-category: "SchoolStudy"
+category: "SCHOOLSTUDY"
 draft: false
 order: 57
 ---
@@ -116,7 +116,7 @@ order: 57
 
 > **CPU 主要按时间轮流用——时分复用；存储器主要按空间划分用——空分复用。**
 
-[空分复用技术详解](../../../../../../Embedded/SchoolStudy/计算机操作系统/asserts/Expansion/空分复用技术详解/)
+[空分复用技术详解](../../../../../../EMBEDDED/SCHOOLSTUDY/计算机操作系统/ASSERTS/EXPANSION/空分复用技术详解/)
 ![](./assets/17.png)
 
 

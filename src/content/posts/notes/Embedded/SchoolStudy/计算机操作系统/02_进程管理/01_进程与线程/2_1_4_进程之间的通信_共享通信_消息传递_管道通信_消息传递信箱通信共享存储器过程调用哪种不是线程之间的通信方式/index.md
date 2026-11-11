@@ -3,7 +3,7 @@ title: "2.1.4 进程之间的通信（共享通信、消息传递、管道通信
 published: 2020-03-15
 description: "文章浏览阅读2.4w次，点赞89次，收藏43次。本文深入探讨了进程通信的概念，包括其低级和高级通信方式，解释了为什么需要进程通信及其重要性。文章还详细介绍了共享存储、管道通信和消息传递等主要通信机制的工作原理。"
 tags: []
-category: "SchoolStudy"
+category: "SCHOOLSTUDY"
 draft: false
 order: 65
 ---

@@ -22,7 +22,7 @@ order: 47
 ## 三极管基础
 
 > **前提**
-> - [三极管入门](../../../../Embedded/PCB/assets/Expand/Docs/进阶/三极管入门/)
+> - [三极管入门](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/三极管入门/)
 > - [三极管的工作原理详解，图文+案例_三极管工作原理-CSDN博客](https://blog.csdn.net/weixin_44161807/article/details/130286668?ops_request_misc=elastic_search_misc&request_id=2c173113287a5a38306eacc17e2ef7b2&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-130286668-null-null.142^v102^pc_search_result_base1&utm_term=三极管&spm=1018.2226.3001.4187)
 
 ### 基本结构

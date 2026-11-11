@@ -3,7 +3,7 @@ title: "03 FreeRTOS任务挂起和恢复系列API函数"
 published: 2026-10-23
 description: "FreeRTOS的任务挂起与恢复函数介绍 一、任务挂起和任务恢复介绍(熟悉) 1、任务的挂起与恢复的API函数 答： 挂起：挂起任务类似暂停，可恢复； 删除任务"
 tags: []
-category: "FreeRTOS"
+category: "FREERTOS"
 draft: false
 order: 6
 ---

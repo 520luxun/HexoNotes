@@ -3,7 +3,7 @@ title: "2.3.3  操作系统之实现临界区进程互斥的硬件实现方法_�
 published: 2020-03-18
 description: "文章浏览阅读1.5w次，点赞44次，收藏17次。本文深入探讨了并发编程中的中断隐藏方法、TestAndSet(TSL)指令及Swap指令，解析其内部运行逻辑与作用，确保临界资源的安全访问。"
 tags: []
-category: "SchoolStudy"
+category: "SCHOOLSTUDY"
 draft: false
 order: 74
 ---

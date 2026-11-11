@@ -3,7 +3,7 @@ title: "2.3.6 操作系统之进程同步与互斥经典问题（生产者-消�
 published: 2020-03-26
 description: "文章浏览阅读2.9w次，点赞153次，收藏204次。本文深入探讨了进程间同步的经典问题，包括生产者-消费者、多生产者-多消费者、读者-写者、吸烟者及哲学家进餐问题。通过详细分析与实现方法，帮助读者理解信号量、互斥与同步的原理。"
 tags: []
-category: "SchoolStudy"
+category: "SCHOOLSTUDY"
 draft: false
 order: 77
 ---

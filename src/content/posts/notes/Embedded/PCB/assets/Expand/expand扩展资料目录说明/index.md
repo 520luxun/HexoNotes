@@ -41,7 +41,7 @@ Expand
 
 ## 2. 正式文档入口
 
-总索引位于：[硬件基础知识索引](../../../../../Embedded/PCB/assets/Expand/Docs/硬件基础知识索引/)。
+总索引位于：[硬件基础知识索引](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/硬件基础知识索引/)。
 
 它负责说明推荐学习顺序、文档之间的关系、已经合并的内容以及归档规则。第一次进入这个目录时，建议先打开总索引，不要直接从文件名猜测学习顺序。
 
@@ -51,7 +51,7 @@ Expand
 
 ### 3.1 电感与 RL、LC 滤波
 
-文档：[零基础/电感与RL、LC滤波-零基础入门](../../../../../Embedded/PCB/assets/Expand/Docs/零基础/电感与rl_lc滤波-零基础入门/)
+文档：[零基础/电感与RL、LC滤波-零基础入门](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/电感与rl_lc滤波-零基础入门/)
 
 主要内容：
 
@@ -64,7 +64,7 @@ Expand
 
 ### 3.2 LC 谐振与 Q 值
 
-文档：[零基础/LC谐振与Q值-零基础入门](../../../../../Embedded/PCB/assets/Expand/Docs/零基础/lc谐振与q值-零基础入门/)
+文档：[零基础/LC谐振与Q值-零基础入门](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/lc谐振与q值-零基础入门/)
 
 主要内容：
 
@@ -77,7 +77,7 @@ Expand
 
 ### 3.3 偏置、截止频率与振荡
 
-文档：[零基础/偏置、截止频率与振荡-零基础概念](../../../../../Embedded/PCB/assets/Expand/Docs/零基础/偏置_截止频率与振荡-零基础概念/)
+文档：[零基础/偏置、截止频率与振荡-零基础概念](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/偏置_截止频率与振荡-零基础概念/)
 
 主要内容：
 
@@ -93,13 +93,13 @@ Expand
 
 | 文档 | 重点 |
 | --- | --- |
-| [进阶/电容容抗与RC滤波原理](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/电容容抗与rc滤波原理/) | `XC`、复阻抗、RC 低通/高通、时间常数、负载效应和实测方法 |
-| [进阶/电感、RL与LC滤波原理详解](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/电感_rl与lc滤波原理详解/) | `XL`、RL 滤波、LC 二阶滤波、谐振、阻尼和 Q 值曲线 |
-| [进阶/偏置、截止频率、谐振与振荡辨析](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/偏置_截止频率_谐振与振荡辨析/) | 概念边界、RLC 动态响应、频率响应和工程判断 |
-| [进阶/嵌入式去耦电容工作原理](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/嵌入式去耦电容工作原理/) | 芯片瞬态电流、寄生电感、去耦布局和示波器检查 |
-| [进阶/大电容上电浪涌与软启动](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/大电容上电浪涌与软启动/) | 大电容充电浪涌、NTC、电感、预充电阻和 MOSFET 软启动 |
-| [进阶/差模与共模干扰及滤波原理](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/差模与共模干扰及滤波原理/) | 差模/共模路径、X/Y 电容、共模电感和 EMI 排查 |
-| [进阶/三极管入门](../../../../../Embedded/PCB/assets/Expand/Docs/进阶/三极管入门/) | PN 结、NPN/PNP、工作区、负载线、放大和开关应用 |
+| [进阶/电容容抗与RC滤波原理](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/电容容抗与rc滤波原理/) | `XC`、复阻抗、RC 低通/高通、时间常数、负载效应和实测方法 |
+| [进阶/电感、RL与LC滤波原理详解](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/电感_rl与lc滤波原理详解/) | `XL`、RL 滤波、LC 二阶滤波、谐振、阻尼和 Q 值曲线 |
+| [进阶/偏置、截止频率、谐振与振荡辨析](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/偏置_截止频率_谐振与振荡辨析/) | 概念边界、RLC 动态响应、频率响应和工程判断 |
+| [进阶/嵌入式去耦电容工作原理](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/嵌入式去耦电容工作原理/) | 芯片瞬态电流、寄生电感、去耦布局和示波器检查 |
+| [进阶/大电容上电浪涌与软启动](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/大电容上电浪涌与软启动/) | 大电容充电浪涌、NTC、电感、预充电阻和 MOSFET 软启动 |
+| [进阶/差模与共模干扰及滤波原理](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/差模与共模干扰及滤波原理/) | 差模/共模路径、X/Y 电容、共模电感和 EMI 排查 |
+| [进阶/三极管入门](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/三极管入门/) | PN 结、NPN/PNP、工作区、负载线、放大和开关应用 |
 
 说明：`三极管入门.md` 虽然文件名带“入门”，但内容已经包含较完整的物理解释和工程分析，因此归入进阶目录。
 
@@ -161,7 +161,7 @@ D:\ObsidianFirstNotes\Embedded\PCB\assets\PCB\1-2 基础知识点2.assets\
 
 ## 8. 推荐使用流程
 
-1. 先打开 [硬件基础知识索引](../../../../../Embedded/PCB/assets/Expand/Docs/硬件基础知识索引/)。
+1. 先打开 [硬件基础知识索引](../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/硬件基础知识索引/)。
 2. 从 `Docs/零基础/` 开始，先理解元件和波形的直觉。
 3. 遇到公式推导、仿真曲线或工程参数，再进入 `Docs/进阶/`。
 4. 需要直观观察时，打开 `Animations/`、`diagrams/` 或 `Simulation/` 中的资源。

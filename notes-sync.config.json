@@ -20,7 +20,9 @@
     "**/Clippings/**",
     "**/Daily/**",
     "**/Excalidraw/**",
-    "**/.*/**"
+    "**/.*/**",
+    "Study/**",
+    "**/Study/**"
   ],
   "defaultCategory": "笔记",
   "categoryMap": {

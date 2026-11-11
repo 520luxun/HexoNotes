@@ -3,7 +3,7 @@ title: "1.3.2 中断和异常（内中断和外中断、中断处理过程）_�
 published: 2020-02-23
 description: "文章浏览阅读3.4w次，点赞88次，收藏69次。博客涉及后端开发和操作系统领域，但具体内容缺失。后端开发涵盖多种编程语言和框架，操作系统有不同类型。这些信息技术领域对软件系统的运行和开发至关重要。"
 tags: []
-category: "SchoolStudy"
+category: "SCHOOLSTUDY"
 draft: false
 order: 60
 ---

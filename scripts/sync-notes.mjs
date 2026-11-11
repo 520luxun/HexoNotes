@@ -282,12 +282,12 @@ function cleanDescription(desc, body) {
 	return d.replace(/["\\]/g, "");
 }
 
-// Category = 笔记所在的二级文件夹，原样使用（不翻译、不改名）。
-// 例：Embedded/PCB/... -> PCB，Embedded/FreeRTOS/... -> FreeRTOS，Study/Claude/... -> Claude。
+// Category = 笔记所在的二级文件夹，英文统一大写（中文文件夹不受影响）。
+// 例：Embedded/PCB/... -> PCB，Embedded/FreeRTOS/... -> FREERTOS。
 function makeCategory(rel, data) {
-	if (data.category) return data.category;
+	if (data.category) return String(data.category).toUpperCase();
 	const parts = rel.split("/").slice(0, -1);
-	return parts[1] || parts[0] || config.defaultCategory || "笔记";
+	return String(parts[1] || parts[0] || config.defaultCategory || "笔记").toUpperCase();
 }
 
 // URL path keeps the full folder tree so links stay readable.
@@ -299,9 +299,12 @@ const isAssetSegment = (p) =>
 // 拥有「扩展」容器的主题（源目录里存在 扩展资料 / 扩展 文件夹）。
 const extensionTopics = new Set();
 
-// URL path = 库里完整的文件夹树，原样照搬（层级、英文文件夹名都不改）。
+// URL path = 库里完整的文件夹树，层级照搬，英文文件夹名统一大写。
 function categoryDirs(rel) {
-	return rel.split("/").slice(0, -1);
+	return rel
+		.split("/")
+		.slice(0, -1)
+		.map((p) => p.toUpperCase());
 }
 
 function preferNearest(list, noteDir) {

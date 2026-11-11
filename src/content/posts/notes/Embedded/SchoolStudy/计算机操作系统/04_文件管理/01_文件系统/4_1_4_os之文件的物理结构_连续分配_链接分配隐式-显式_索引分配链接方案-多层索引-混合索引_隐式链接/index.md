@@ -3,7 +3,7 @@ title: "4.1.4 OS之文件的物理结构(连续分配、链接分配隐式-显�
 published: 2020-05-26
 description: "文章浏览阅读1.9w次，点赞61次，收藏72次。本文深入探讨了文件存储的多种方式，包括连续分配、链接分配和索引分配等，详细分析了每种分配方式的优点和缺点，并对文件物理结构的分配进行了全面总结。"
 tags: []
-category: "SchoolStudy"
+category: "SCHOOLSTUDY"
 draft: false
 order: 98
 ---

@@ -3,7 +3,7 @@ title: "02 FreeRTOS动态分配的API解释"
 published: 2026-07-18
 description: "mermaid flowchart TD A[计算机系统层级结构] B1[用户层 User Space] A B2[内核层 Kernel Space] A B3"
 tags: []
-category: "FreeRTOS"
+category: "FREERTOS"
 draft: false
 order: 4
 ---

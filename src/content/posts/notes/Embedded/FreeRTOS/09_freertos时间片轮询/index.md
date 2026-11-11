@@ -3,7 +3,7 @@ title: "09 FreeRTOS时间片轮询"
 published: 2026-07-18
 description: "FreeRTOS时间片轮询 1、时间片轮询简介 答：同等优先级任务轮流享有相同的CPU时间(可设置)，叫时间片，在FreeRTOS中，一个时间片就等于SysTi"
 tags: []
-category: "FreeRTOS"
+category: "FREERTOS"
 draft: false
 order: 13
 ---

@@ -3,7 +3,7 @@ title: "08 FreeRTOS任务调度"
 published: 2026-07-18
 description: "FreeRTOS任务调度 一、开启任务调度器(熟悉) 1、开启任务调度器函数vTaskStartScheduler() 答：作用：启动任务调度器，任务调度器启动"
 tags: []
-category: "FreeRTOS"
+category: "FREERTOS"
 draft: false
 order: 12
 ---
