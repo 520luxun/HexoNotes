@@ -66,6 +66,14 @@ onMount(async () => {
 		filteredPosts = filteredPosts.filter((post) => !post.data.category);
 	}
 
+	// The archive is a date view: newest first, regardless of the chapter
+	// order used on the home page.
+	filteredPosts = [...filteredPosts].sort((a, b) => {
+		const da = new Date(a.data.published).getTime();
+		const db = new Date(b.data.published).getTime();
+		return db - da;
+	});
+
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
 			const year = post.data.published.getFullYear();
