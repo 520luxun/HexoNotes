@@ -449,21 +449,21 @@ pnpm preview              # 本地预览构建结果
 &lt;h3&gt;什么上下文切换&lt;/h3&gt;
 &lt;ol&gt;
 &lt;li&gt;
-&lt;p&gt;当一个任务执行时，它会利用处理器/微控制器寄存器，并像其他程序一样访问 RAM 和 ROM。这些资源 ==（处理器寄存器，堆栈等）== 一起组成了任务执行 &lt;strong&gt;上下文&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当一个任务执行时，它会利用处理器/微控制器寄存器，并像其他程序一样访问 RAM 和 ROM。这些资源 &amp;lt;mark&amp;gt;（处理器寄存器，堆栈等）&amp;lt;/mark&amp;gt; 一起组成了任务执行 &lt;strong&gt;上下文&lt;/strong&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;一个任务是一段有顺序的代码——它不知道什么时候会被内核挂起（换出或换入）或恢复（换入或换入）， 甚至不知道什么时候自己被挂起或恢复&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;一个任务在即将执行将两个处理器寄存器内包含的数值相加之前被挂起。 当该任务被挂起时，其他任务会执行，还 ==可能会修改处理器寄存器的数值==。==恢复时， 该任务不会知道处理器寄存器已经被修改过了——如果它使用经修改过的数值， 那么求和会得到一个错误的数值==&lt;/p&gt;
+&lt;p&gt;一个任务在即将执行将两个处理器寄存器内包含的数值相加之前被挂起。 当该任务被挂起时，其他任务会执行，还 &amp;lt;mark&amp;gt;可能会修改处理器寄存器的数值&amp;lt;/mark&amp;gt;。&amp;lt;mark&amp;gt;恢复时， 该任务不会知道处理器寄存器已经被修改过了——如果它使用经修改过的数值， 那么求和会得到一个错误的数值&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;为了防止这种类型的错误，&lt;strong&gt;任务&lt;/strong&gt; 在 &lt;strong&gt;恢复时&lt;/strong&gt; 必须有一个与 &lt;strong&gt;挂起之前相同的上下文&lt;/strong&gt; 。==通过在任务挂起时保存任务的上下文==，操作系统内核负责确保上下文保持不变。任务恢复时，其保存的上下文在执行之前由操作系统内核恢复&lt;/p&gt;
+&lt;p&gt;为了防止这种类型的错误，&lt;strong&gt;任务&lt;/strong&gt; 在 &lt;strong&gt;恢复时&lt;/strong&gt; 必须有一个与 &lt;strong&gt;挂起之前相同的上下文&lt;/strong&gt; 。&amp;lt;mark&amp;gt;通过在任务挂起时保存任务的上下文&amp;lt;/mark&amp;gt;，操作系统内核负责确保上下文保持不变。任务恢复时，其保存的上下文在执行之前由操作系统内核恢复&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;保存被挂起的任务的上下文和恢复被恢复的任务的上下文的过程被称为 &lt;strong&gt;上下文切换&lt;/strong&gt;&lt;/p&gt;
 &lt;h3&gt;上下文切换切换的保存&lt;/h3&gt;
-&lt;p&gt;==&lt;strong&gt;堆栈的栈是数据结构，堆是用的堆空间&lt;/strong&gt;==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;&lt;strong&gt;堆栈的栈是数据结构，堆是用的堆空间&lt;/strong&gt;&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;将 TaskA 在相应的处理器寄存器中的上下文保存到其任务堆栈中&lt;/li&gt;
 &lt;/ol&gt;
@@ -497,7 +497,7 @@ pnpm preview              # 本地预览构建结果
 &lt;p&gt;​	所谓STM32是32位单片机，STC51是8位单片机，就是看通用寄存器的位数&lt;/p&gt;
 &lt;p&gt;​	所谓的任务的切换，就是对寄存器进行偷梁换柱&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;==下面就是任务分配的堆栈，也就是任务栈==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;下面就是任务分配的堆栈，也就是任务栈&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/981ff086-9f35-4cc3-90a4-291a9c59c7c3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;flowchart TD
     A[任务A正在运行&amp;lt;br&amp;gt;使用CPU寄存器R0-R12, LR, PC等] --&amp;gt; B[时间片用完&amp;lt;br&amp;gt;SysTick中断触发]
@@ -582,11 +582,11 @@ pnpm preview              # 本地预览构建结果
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h3&gt;为什么要使用PendSV进行上下文切换&lt;/h3&gt;
-&lt;p&gt;在需要切换任务的时候进行上下文切换，==真正执行上下文切换是在 PendSV 的 ISR（中断） 中处理的==。使用 PendSV 是因为其可以手动触发，并且可以在其他更高中断优先级的 ISR 中来进行设置，比较灵活。具体触发操作是将中断控制和状态寄存器 ICSR 的 bit28，也就是 PendSV 的挂起位置 1 来触发 PendSV 中断。FreeRTOS 会将 PendSV 设置为最低中断优先级，避免任务切换影响到其他正常的 ISR&lt;/p&gt;
+&lt;p&gt;在需要切换任务的时候进行上下文切换，&amp;lt;mark&amp;gt;真正执行上下文切换是在 PendSV 的 ISR（中断） 中处理的&amp;lt;/mark&amp;gt;。使用 PendSV 是因为其可以手动触发，并且可以在其他更高中断优先级的 ISR 中来进行设置，比较灵活。具体触发操作是将中断控制和状态寄存器 ICSR 的 bit28，也就是 PendSV 的挂起位置 1 来触发 PendSV 中断。FreeRTOS 会将 PendSV 设置为最低中断优先级，避免任务切换影响到其他正常的 ISR&lt;/p&gt;
 &lt;p&gt;在 FreeRTOS 中有以下几个情况会触发 PendSV 异常产生切换：&lt;/p&gt;
 &lt;p&gt;（1）&lt;strong&gt;RTOS 滴答中断&lt;/strong&gt;：会处理就绪列表，判断是否要切换任务（包括抢占式、时间片轮转）。&lt;/p&gt;
 &lt;p&gt;（2）&lt;strong&gt;任务执行完毕&lt;/strong&gt;：主动调用任务切换函数进行强制切换。&lt;/p&gt;
-&lt;p&gt;==在切换任务时，有比 PendSV更高级的中断出现，挂起 PendSV，在 SysTick 中断中把比 PendSV 更高级的中断执行完之后，再进行切换任务==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;在切换任务时，有比 PendSV更高级的中断出现，挂起 PendSV，在 SysTick 中断中把比 PendSV 更高级的中断执行完之后，再进行切换任务&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;任务执行结束了，但是没有到一个时间片，那就会执行挂起 PendSV 操作（特殊结束）&lt;/p&gt;
 &lt;h4&gt;1.什么是 PendSV？&lt;/h4&gt;
 &lt;p&gt;&lt;strong&gt;PendSV（Pendable Service Call，可挂起的服务请求）是 ARM Cortex-M 处理器的一个特殊异常，被操作系统用作在安全时机执行“任务切换”的专用工具。&lt;/strong&gt;&lt;/p&gt;
@@ -608,14 +608,14 @@ pnpm preview              # 本地预览构建结果
 &lt;blockquote&gt;
 &lt;p&gt;上图展示了 PendSV 的核心价值：&lt;strong&gt;延迟执行&lt;/strong&gt;。它确保耗时的上下文切换不会阻塞更紧急的中断。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;==这是中断：数字越小，优先级越高==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;这是中断：数字越小，优先级越高&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;问题&lt;/strong&gt;：SysTick 中断优先级假设为 5。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;场景&lt;/strong&gt;：SysTick 中断发生，开始执行其 ISR。在 ISR 中，内核发现需要切换任务，于是开始执行非常耗时的上下文切换（保存/恢复所有寄存器）。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;灾难&lt;/strong&gt;：此时，一个优先级为 4（更高）的 &lt;strong&gt;USB 中断&lt;/strong&gt; 或 &lt;strong&gt;按键中断&lt;/strong&gt; 到来，但它 &lt;strong&gt;无法立即抢占&lt;/strong&gt; 正在执行上下文切换的 SysTick 中断，因为 CPU 还在处理中断流程中。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;后果&lt;/strong&gt;：高优先级中断的响应被延迟，实时性被破坏！这是实时系统的大忌。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;“==&lt;strong&gt;使用 PendSV 是因为其可以手动触发，并且可以在其他更高中断优先级的 ISR 中来进行设置，比较灵活&lt;/strong&gt;==”。这背后是 ARM Cortex-M 内核一个精妙的设计&lt;/p&gt;
+&lt;p&gt;“&amp;lt;mark&amp;gt;&lt;strong&gt;使用 PendSV 是因为其可以手动触发，并且可以在其他更高中断优先级的 ISR 中来进行设置，比较灵活&lt;/strong&gt;&amp;lt;/mark&amp;gt;”。这背后是 ARM Cortex-M 内核一个精妙的设计&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;问题&lt;/strong&gt;：假设在 &lt;strong&gt;SysTick 中断（滴答中断）&lt;/strong&gt; 中直接进行上下文切换。如果此时有一个更高优先级的中断（比如一个重要的 USB 中断）到来，会发生什么？
 &lt;ul&gt;
@@ -769,7 +769,7 @@ pnpm preview              # 本地预览构建结果
 &lt;h2&gt;五、空闲任务&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;
-&lt;p&gt;RTOS 调度器启动时，==&lt;strong&gt;自动创建空闲任务&lt;/strong&gt;==，以确保始终存在一个能够运行的任务&lt;/p&gt;
+&lt;p&gt;RTOS 调度器启动时，&amp;lt;mark&amp;gt;&lt;strong&gt;自动创建空闲任务&lt;/strong&gt;&amp;lt;/mark&amp;gt;，以确保始终存在一个能够运行的任务&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;空闲以最低优先级创建，以确保如果有更高的优先级应用程序任务处于准备就绪状态，空闲任务则不使用任何 CPU 时间&lt;/p&gt;
@@ -992,7 +992,7 @@ pnpm preview              # 本地预览构建结果
 &lt;/ul&gt;
 &lt;h3&gt;StackType_t&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;意指架构用于 ==存储堆栈项目的 类型==。通常是 16 位架构上的 16 位类型和 32 位架构上的 32 位类型，但也有例外情况。供 FreeRTOS 内部使用&lt;/li&gt;
+&lt;li&gt;意指架构用于 &amp;lt;mark&amp;gt;存储堆栈项目的 类型&amp;lt;/mark&amp;gt;。通常是 16 位架构上的 16 位类型和 32 位架构上的 32 位类型，但也有例外情况。供 FreeRTOS 内部使用&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2&gt;FreeROS 的命名规范&lt;/h2&gt;
 &lt;p&gt;了解 FreeRTOS 的编码规范, 有助于我们理解和学习 FreeRTOS 的使用.&lt;/p&gt;
@@ -1839,7 +1839,7 @@ vTaskResume(xTaskBHandle);
 &lt;h2&gt;FreeRTOS中ISR调用API的中断优先级限制&lt;/h2&gt;
 &lt;p&gt;使用实时操作系统的相关性&lt;/p&gt;
 &lt;p&gt;建议将所有的优先级指定为抢占式优先级位，不留下任何优先级作为子优先级位，任何其他配置都会是configMAX_SYSCALL_INTERRUPT设置于分配给更外设中断优先级至极爱你的直接关系复杂化&lt;/p&gt;
-&lt;p&gt;==大多数系统默认为所需要的配置，但STM32驱动程序明显例外。如果将STM32于STM32驱动程序库一起使用，则在启动RTOS之前，通过调用NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);  来确保将所有优先级位分配为抢占式级位==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;大多数系统默认为所需要的配置，但STM32驱动程序明显例外。如果将STM32于STM32驱动程序库一起使用，则在启动RTOS之前，通过调用NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);  来确保将所有优先级位分配为抢占式级位&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;要理解FreeRTOS中&lt;strong&gt;ISR调用API的中断优先级限制&lt;/strong&gt;，需从&lt;strong&gt;FreeRTOS中断管理机制&lt;/strong&gt;、&lt;strong&gt;关键宏定义&lt;/strong&gt;和&lt;strong&gt;硬件平台适配&lt;/strong&gt;三个核心维度展开（逻辑学家(ISTJ)模式，严谨且贴合嵌入式开发实际）：&lt;/p&gt;
 &lt;h3&gt;一、核心结论&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;中断服务程序（ISR）中调用FreeRTOS API的前提条件&lt;/strong&gt;：
@@ -1925,7 +1925,7 @@ ISR的&lt;strong&gt;抢占优先级&lt;/strong&gt;必须**≤** &lt;code&gt;conf
 &lt;p&gt;结构体变量：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;==pxTopOfStack，任务栈栈顶，TCB 的第一个成员，跟任务切换时的任务上下文保存、任务恢复息息相关，十分重要==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;pxTopOfStack，任务栈栈顶，TCB 的第一个成员，跟任务切换时的任务上下文保存、任务恢复息息相关，十分重要&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;xStateListItem，任务状态列表项，存储当前任务的状态&lt;/p&gt;
@@ -1974,7 +1974,7 @@ ISR的&lt;strong&gt;抢占优先级&lt;/strong&gt;必须**≤** &lt;code&gt;conf
 &lt;p&gt;&lt;img src=&quot;../../assets/%E5%8A%A8%E6%80%81%E4%BB%BB%E5%8A%A1%E5%88%9B%E5%BB%BA%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%80%BC.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;==&lt;strong&gt;任务句柄是指向任务控制块（TCB）的指针，并不是任务控制块&lt;/strong&gt;==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;&lt;strong&gt;任务句柄是指向任务控制块（TCB）的指针，并不是任务控制块&lt;/strong&gt;&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;在这个函数就创建了TCB和堆栈空间&lt;/p&gt;
@@ -2041,15 +2041,15 @@ ISR的&lt;strong&gt;抢占优先级&lt;/strong&gt;必须**≤** &lt;code&gt;conf
 &lt;p&gt;&lt;img src=&quot;../../assets/%E4%BB%BB%E5%8A%A1%E5%88%A0%E9%99%A4%E5%87%BD%E6%95%B0.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
-&lt;p&gt;==&lt;strong&gt;任务删除函数用于删除已经被创建的任务&lt;/strong&gt;==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;&lt;strong&gt;任务删除函数用于删除已经被创建的任务&lt;/strong&gt;&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;==&lt;strong&gt;被删除的任务将从就绪任务列表、阻塞任务列表、挂起任务列表和事件列表中移除&lt;/strong&gt;==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;&lt;strong&gt;被删除的任务将从就绪任务列表、阻塞任务列表、挂起任务列表和事件列表中移除&lt;/strong&gt;&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;注意：&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;当传入的参数为 NULL，则代表 ==删除任务自身(当前正在运行的任务)==&lt;/li&gt;
+&lt;li&gt;当传入的参数为 NULL，则代表 &amp;lt;mark&amp;gt;删除任务自身(当前正在运行的任务)&amp;lt;/mark&amp;gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;解释：&lt;/p&gt;
 &lt;ul&gt;
@@ -2061,7 +2061,7 @@ ISR的&lt;strong&gt;抢占优先级&lt;/strong&gt;必须**≤** &lt;code&gt;conf
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;ol&gt;
-&lt;li&gt;空闲任务会负责释放 ==被删除任务中由系统分配的内存（动态）==；但是 ==由用户在任务删除前申请的内存空间==，==必须用户在任务被删除前提前释放==，否则将会导致内存泄漏（静态）&lt;/li&gt;
+&lt;li&gt;空闲任务会负责释放 &amp;lt;mark&amp;gt;被删除任务中由系统分配的内存（动态）&amp;lt;/mark&amp;gt;；但是 &amp;lt;mark&amp;gt;由用户在任务删除前申请的内存空间&amp;lt;/mark&amp;gt;，&amp;lt;mark&amp;gt;必须用户在任务被删除前提前释放&amp;lt;/mark&amp;gt;，否则将会导致内存泄漏（静态）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;解释：&lt;/p&gt;
 &lt;ul&gt;
@@ -2069,7 +2069,7 @@ ISR的&lt;strong&gt;抢占优先级&lt;/strong&gt;必须**≤** &lt;code&gt;conf
 &lt;li&gt;有 t1, t2 两个任务，如果 t1 调用任务删除函数
 &lt;ul&gt;
 &lt;li&gt;参数是 t2，那么 t2 任务中由系统分配的内存，有 t1 进行释放&lt;/li&gt;
-&lt;li&gt;参数是 t1，此时才是成立的；空闲任务会负责释放 ==被删除任务中由系统分配的内存==&lt;/li&gt;
+&lt;li&gt;参数是 t1，此时才是成立的；空闲任务会负责释放 &amp;lt;mark&amp;gt;被删除任务中由系统分配的内存&amp;lt;/mark&amp;gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -2436,7 +2436,7 @@ task1
 &lt;/ul&gt;
 &lt;h4&gt;如果“初始化后就立刻删除”，那些刚创建的任务会怎样？&lt;/h4&gt;
 &lt;p&gt;答案是：&lt;strong&gt;完全不受影响，并且会按照 FreeRTOS 的调度规则正常执行&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;当你==调用 &lt;code&gt;xTaskCreate()&lt;/code&gt; 时，新任务会被创建并立即置于 &lt;strong&gt;就绪态&lt;/strong&gt;==。此时，系统的任务调度情况如下：&lt;/p&gt;
+&lt;p&gt;当你&amp;lt;mark&amp;gt;调用 &lt;code&gt;xTaskCreate()&lt;/code&gt; 时，新任务会被创建并立即置于 &lt;strong&gt;就绪态&lt;/strong&gt;&amp;lt;/mark&amp;gt;。此时，系统的任务调度情况如下：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;优先级最高者运行&lt;/strong&gt;：如果新创建的任务优先级 &lt;strong&gt;高于&lt;/strong&gt; &lt;code&gt;start_task&lt;/code&gt;，那么新任务会 &lt;strong&gt;立即抢占&lt;/strong&gt; CPU，开始执行。&lt;code&gt;start_task&lt;/code&gt; 则会被挂起，直到高优先级任务阻塞或挂起&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;&lt;code&gt;start_task&lt;/code&gt; 继续运行&lt;/strong&gt;：如果新创建的任务优先级 &lt;strong&gt;低于或等于&lt;/strong&gt; &lt;code&gt;start_task&lt;/code&gt;，那么 &lt;code&gt;start_task&lt;/code&gt; 会继续执行，直到它调用 &lt;code&gt;vTaskDelete(NULL)&lt;/code&gt; 删除自己&lt;/li&gt;
@@ -2861,7 +2861,7 @@ void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer,
 &lt;/ol&gt;
 &lt;p&gt;运行结果：跟动态方法一样&lt;/p&gt;
 &lt;h3&gt;解释静态创建为什么需要任务句柄和TCB&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;静态创建任务时，你（开发者）需要==手动提供TCB和堆栈的内存==，而==任务句柄是FreeRTOS API用来操作你提供的这块TCB内存的“钥匙”或“指针”。==&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;静态创建任务时，你（开发者）需要&amp;lt;mark&amp;gt;手动提供TCB和堆栈的内存&amp;lt;/mark&amp;gt;，而&amp;lt;mark&amp;gt;任务句柄是FreeRTOS API用来操作你提供的这块TCB内存的“钥匙”或“指针”。&amp;lt;/mark&amp;gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;即使内存是你自己分配的，内核仍然需要通过一个统一的“句柄”来管理和操作它。下面我们来详细拆解一下。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;p&gt;📌 核心原因：两种创建方式的根本区别&lt;/p&gt;
@@ -3381,7 +3381,7 @@ void EXTI15_10_IRQHandler(void) {
 &lt;p&gt;建议将所有优先级位指定为抢占优先级位，方便FreeRTOS管理。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;==中断优先级数值越小越优先，任务优先级数值越大越优先==。&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;中断优先级数值越小越优先，任务优先级数值越大越优先&amp;lt;/mark&amp;gt;。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;宏configMAX_SYSCALL_INTERRUPT_PRIORITY的值是5，所以FreeRTOS中的中断优先级只能是5-15这个范围。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -3406,7 +3406,7 @@ void EXTI15_10_IRQHandler(void) {
 &lt;p&gt;注意：FreeRTOS主要是使用SHPR3寄存器对&lt;strong&gt;PendSV&lt;/strong&gt;和&lt;strong&gt;Systick&lt;/strong&gt;中断优先级进行设置(设置为最低优先级)。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;==SVC、PendSV、SysTick三个系统中断很重要==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;SVC、PendSV、SysTick三个系统中断很重要&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;2、FreeRTOS如何配置PendSV和Systick中断优先级&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
@@ -3432,7 +3432,7 @@ void EXTI15_10_IRQHandler(void) {
 &lt;p&gt;&lt;strong&gt;FreeRTOS使用的BASEPRI这个寄存器来进行中断管理，优先级比它的值大的中断都会被屏蔽&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;5、FreeRTOS的关中断程序&lt;/h3&gt;
-&lt;p&gt;==BASEPRI：屏蔽优先级低于某一个阈值的中断，当设置为0时，则不关闭任何中断==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;BASEPRI：屏蔽优先级低于某一个阈值的中断，当设置为0时，则不关闭任何中断&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;答：&lt;img src=&quot;../../assets/%E5%85%B3%E4%B8%AD%E6%96%AD%E7%A8%8B%E5%BA%8F.png&quot; alt=&quot;&quot; /&gt;&lt;strong&gt;中断优先级在5 ~ 15的全部被关闭，0~4的我们是操作不了（意思是我们无法关闭0-4的，可以关闭5-15)&lt;/strong&gt;&lt;/p&gt;
 &lt;h3&gt;6、BASEPRI中断屏蔽寄存器&lt;/h3&gt;
 &lt;p&gt;答：BASEPRI：屏蔽优先级低于某一个阈值的中断，当设置为0时，则不关闭任何中断。&lt;/p&gt;
@@ -3655,7 +3655,7 @@ void TIM4_IRQHandler(void){
 &lt;p&gt;&lt;strong&gt;在关中断后，只有TIM4中断函数还在继续运行，TIM3中断函数被RTOS关闭了，因为TIM4优先级是3，不在5~15范围内&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;这里设置的TIM3和TIM4定时中断是100ms触发一次，正点原子的这个延时函数最大只支持798ms的阻塞延时（不用OS[操作系统]的情况下），至于为啥不用OS，因为它修改后的版本是HAL库的，我用的标准库，懒得再改了，知道是这样就行&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;总结：&lt;/strong&gt;
-&lt;strong&gt;关中断和开中断实验中==不能使用FreeRTOS自带的vTaskDelay()函数进行非阻塞式延时==，==因为关闭所有中断后，SysTick中断也将被禁止==，==导致节拍计数器无法更新==，==因此vTaskDelay()所等待的节拍数将永远不会达到==，任务将无限期阻塞，无法继续运行。同时也不能进行任务切换&lt;/strong&gt;&lt;/p&gt;
+&lt;strong&gt;关中断和开中断实验中&amp;lt;mark&amp;gt;不能使用FreeRTOS自带的vTaskDelay()函数进行非阻塞式延时&amp;lt;/mark&amp;gt;，&amp;lt;mark&amp;gt;因为关闭所有中断后，SysTick中断也将被禁止&amp;lt;/mark&amp;gt;，&amp;lt;mark&amp;gt;导致节拍计数器无法更新&amp;lt;/mark&amp;gt;，&amp;lt;mark&amp;gt;因此vTaskDelay()所等待的节拍数将永远不会达到&amp;lt;/mark&amp;gt;，任务将无限期阻塞，无法继续运行。同时也不能进行任务切换&lt;/strong&gt;&lt;/p&gt;
 &lt;h2&gt;五、课堂总结&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/06-FreeRTOS%E4%B8%AD%E6%96%AD%E7%AE%A1%E7%90%86%E6%B5%8B%E8%AF%95%EF%BC%88%E8%AF%BE%E5%A0%82%E6%80%BB%E7%BB%93%EF%BC%89_01.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </content:encoded></item><item><title>05 FreeRTOS临界段代码保护</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/freertos/05_freertos%E4%B8%B4%E7%95%8C%E6%AE%B5%E4%BB%A3%E7%A0%81%E4%BF%9D%E6%8A%A4/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/freertos/05_freertos%E4%B8%B4%E7%95%8C%E6%AE%B5%E4%BB%A3%E7%A0%81%E4%BF%9D%E6%8A%A4/</guid><description>FreeRTOS临界段代码保护 一、临界段代码保护简介(熟悉) 1、什么是临界段 答：临界段代码也叫临界区，是指那些必须完整运行，不能被打断的代码片段。运行时临</description><pubDate>Sat, 18 Jul 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;FreeRTOS临界段代码保护&lt;/h1&gt;
@@ -3909,9 +3909,9 @@ taskEXIT_CRITICAL_FROM_ISR(save_status1); // BASEPRI = 5 -&amp;gt; 0 (完全恢�
 &lt;h3&gt;2、任务调度器挂起和恢复的特点&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;与临界区不一样的是，==挂起任务调度器，未关闭中断==。&lt;/li&gt;
-&lt;li&gt;它==仅仅是防止任务之间的资源争夺==，中断照样可以直接响应。&lt;/li&gt;
-&lt;li&gt;挂起任务调度器的方式，==适用于临界区位于任务与任务之间==；既==不用去延时中断响应，又可以做到临界区的安全==。&lt;/li&gt;
+&lt;li&gt;与临界区不一样的是，&amp;lt;mark&amp;gt;挂起任务调度器，未关闭中断&amp;lt;/mark&amp;gt;。&lt;/li&gt;
+&lt;li&gt;它&amp;lt;mark&amp;gt;仅仅是防止任务之间的资源争夺&amp;lt;/mark&amp;gt;，中断照样可以直接响应。&lt;/li&gt;
+&lt;li&gt;挂起任务调度器的方式，&amp;lt;mark&amp;gt;适用于临界区位于任务与任务之间&amp;lt;/mark&amp;gt;；既&amp;lt;mark&amp;gt;不用去延时中断响应，又可以做到临界区的安全&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h3&gt;3、挂起任务调度器：vTaskSuspendAll()&lt;/h3&gt;
 &lt;p&gt;答：调用一次挂起调度器，该变量uxSchedulerSuspended就加一 ，变量uxSchedulerSuspended的值，将会影响Systick触发PendSV中断（在xTaskIncrementTick函数中 uxSchedulerSuspended的值与pdFALSE进行比较，pdFALSE值为0，不相等，那么返回的值是pdFALSE；在xPortSysTickHandler函数中返回值与pdFALSE进行比较，相等，挂起不了pendSV寄存器，中断触发不了），即SpendSV中断执行不了，相当于被挂起，即影响任务调度。&lt;/p&gt;
@@ -3969,7 +3969,7 @@ taskEXIT_CRITICAL_FROM_ISR(save_status1); // BASEPRI = 5 -&amp;gt; 0 (完全恢�
 &lt;p&gt;列表项结构体示意图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/%E5%88%97%E8%A1%A8%E9%A1%B9%E7%BB%93%E6%9E%84%E4%BD%93%E7%A4%BA%E6%84%8F%E5%9B%BE.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;8、迷你列表项&lt;/h3&gt;
-&lt;p&gt;答：迷你列表项也是列表项，但&lt;strong&gt;迷你列表项==仅用于标记列表的末尾==和==挂载其他插入列表中的列表项==&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;答：迷你列表项也是列表项，但&lt;strong&gt;迷你列表项&amp;lt;mark&amp;gt;仅用于标记列表的末尾&amp;lt;/mark&amp;gt;和&amp;lt;mark&amp;gt;挂载其他插入列表中的列表项&amp;lt;/mark&amp;gt;&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/%E8%BF%B7%E4%BD%A0%E5%88%97%E8%A1%A8%E9%A1%B9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;成员变量xItemValue为列表项的值，这个值多用于按升序对列表中的列表项进行排序。&lt;/li&gt;
@@ -5532,7 +5532,7 @@ void xPortSysTickHandler(void) {
 &lt;li&gt;&lt;strong&gt;主堆栈指针(MSP)&lt;/strong&gt;：它是给OS内核、异常服务程序以及所有需要特权访问的应用程序代码来使用的。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;进程堆栈指针(PSP)&lt;/strong&gt;：用于常规的应用程序代码(不处于异常服务程序中时使用)。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;==在FreeRTOS中，中断使用MSP(主堆栈)，中断以为使用PSP(进程堆栈)==。&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;在FreeRTOS中，中断使用MSP(主堆栈)，中断以为使用PSP(进程堆栈)&amp;lt;/mark&amp;gt;。&lt;/p&gt;
 &lt;p&gt;注意：在RTOS中是使用双堆栈指针(即使用MSP和PSP)，但在裸机中是只使用MSP(主堆栈)。&lt;/p&gt;
 &lt;h3&gt;5、为什么汇编代码要PRESERVE8(八字节对齐)&lt;/h3&gt;
 &lt;p&gt;答：因为栈在任何时候都是需要4字节对齐的，而在调用入口得8字节对齐，在C编程的时候，编译器会自动帮我们完成对齐操作，而汇编则需要手动对齐。&lt;/p&gt;
@@ -5552,7 +5552,7 @@ void xPortSysTickHandler(void) {
 &lt;/ol&gt;
 &lt;p&gt;注意：&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;==SVC中断只在启动第一次任务时会调用一次，以后均不调用==。&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;SVC中断只在启动第一次任务时会调用一次，以后均不调用&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;li&gt;R14(LR链接寄存器)，在异常处理期间(就是中断函数中)，LR存的是特殊的EXC_RETURN(异常返回)数值，该数值会在异常处理结束时触发异常返回；在普通函数中，LR用于函数或者子程序调用时返回地址的保存。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h3&gt;8、出栈/压栈汇编指令详解&lt;/h3&gt;
@@ -5576,7 +5576,7 @@ void xPortSysTickHandler(void) {
 &lt;hr /&gt;
 &lt;h2&gt;三、任务切换(掌握)&lt;/h2&gt;
 &lt;h3&gt;1、任务切换的本质&lt;/h3&gt;
-&lt;p&gt;答：==任务切换的本质就是CPU寄存器内容的切换==。&lt;/p&gt;
+&lt;p&gt;答：&amp;lt;mark&amp;gt;任务切换的本质就是CPU寄存器内容的切换&amp;lt;/mark&amp;gt;。&lt;/p&gt;
 &lt;p&gt;假设当由任务A切换到任务B时，主要分为两步：&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;第一步&lt;/strong&gt;：需暂停任务A的执行，并且将此时任务A寄存器保存到任务堆栈中，这个过程叫做保存现场；&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;第二步&lt;/strong&gt;：将任务B的各个寄存器值(被存于任务堆栈中)恢复到CPU寄存器中，这个过程叫做恢复现场。&lt;/p&gt;
@@ -5669,7 +5669,7 @@ CPU优先处理&lt;strong&gt;所有优先级高于PendSV的中断&lt;/strong&gt;
 &lt;p&gt;PendSV在RTOS的任务切换中，起着至关重要的作用，FreeRTOS的任务切换就是在PendSV中完成的。&lt;/p&gt;
 &lt;h3&gt;2、任务切换过程&lt;/h3&gt;
 &lt;p&gt;答：&lt;img src=&quot;../../assets/%E4%BB%BB%E5%8A%A1%E5%88%87%E6%8D%A2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;注意：==任务切换的过程在PendSV中断服务函数里边完成==。&lt;/p&gt;
+&lt;p&gt;注意：&amp;lt;mark&amp;gt;任务切换的过程在PendSV中断服务函数里边完成&amp;lt;/mark&amp;gt;。&lt;/p&gt;
 &lt;h3&gt;3、PendSV中断是如何触发的&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
 &lt;ol&gt;
@@ -6026,7 +6026,7 @@ int main(void)
 &lt;/ul&gt;
 &lt;hr /&gt;
 &lt;h3&gt;11、代码&lt;/h3&gt;
-&lt;p&gt;==1-6vscode==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;1-6vscode&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;#include &quot;stm32f4xx.h&quot;                  // STM32F4系列微控制器头文件
 #include &quot;freertos.h&quot;                   // FreeRTOS实时操作系统头文件
 #include &quot;task.h&quot;                       // FreeRTOS任务管理头文件
@@ -6283,7 +6283,7 @@ int main(void)
 &lt;p&gt;答：&lt;/p&gt;
 &lt;p&gt;1.将宏 configGENERATE_RUN_TIME_STATS 置1 。&lt;/p&gt;
 &lt;p&gt;2.将宏 configUSE_STATS_FORMATTING_FUNCTIONS 置1 。&lt;/p&gt;
-&lt;p&gt;3.当将此宏 configGENERATE_RUN_TIME_STAT 置1之后，==还需要实现2个宏定义==：&lt;/p&gt;
+&lt;p&gt;3.当将此宏 configGENERATE_RUN_TIME_STAT 置1之后，&amp;lt;mark&amp;gt;还需要实现2个宏定义&amp;lt;/mark&amp;gt;：&lt;/p&gt;
 &lt;p&gt;1）portCONFIGURE_TIMER_FOR_RUNTIME_STATE() ：用于初始化用于配置任务运行时间统计的时基定时器；&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：这个时基定时器的计时精度需高于系统时钟节拍精度的10至100倍！&lt;/p&gt;
@@ -7121,7 +7121,7 @@ char big_date[128] = &quot;This is a big data queue used to store large data.&qu
     BaseType_t xStatus;
     while(1){
         KeyNum = Key_GetNum();
-        if(KeyNum == 1 || KeyNum == 2){
+        if(KeyNum &amp;lt;mark&amp;gt; 1 || KeyNum &amp;lt;/mark&amp;gt; 2){
             xStatus = xQueueSend(MyQueue, &amp;amp;KeyNum, portMAX_DELAY);
             if(xStatus != pdPASS){
                 printf(&quot;Task1: xQueueSend MyQueue failed\r\n&quot;);
@@ -7304,9 +7304,9 @@ int main(void)
 &lt;hr /&gt;
 &lt;h2&gt;二、二值信号量&lt;/h2&gt;
 &lt;h3&gt;1、二值信号量介绍&lt;/h3&gt;
-&lt;p&gt;答：二值信号量的==本质是一个队列长度为1的队列==，==该队列就只有空和满两种情况==。这就是二值信号量。&lt;/p&gt;
+&lt;p&gt;答：二值信号量的&amp;lt;mark&amp;gt;本质是一个队列长度为1的队列&amp;lt;/mark&amp;gt;，&amp;lt;mark&amp;gt;该队列就只有空和满两种情况&amp;lt;/mark&amp;gt;。这就是二值信号量。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注意：二值信号量通常用于==互斥访问或任务同步==，与互斥信号量比较类似，但是二值信号量有可能会==导致优先级翻转的问题==，所以二值信号量更适合用于同步！！！&lt;/p&gt;
+&lt;p&gt;注意：二值信号量通常用于&amp;lt;mark&amp;gt;互斥访问或任务同步&amp;lt;/mark&amp;gt;，与互斥信号量比较类似，但是二值信号量有可能会&amp;lt;mark&amp;gt;导致优先级翻转的问题&amp;lt;/mark&amp;gt;，所以二值信号量更适合用于同步！！！&lt;/p&gt;
 &lt;p&gt;互斥访问：原理：像一个&lt;strong&gt;钥匙&lt;/strong&gt;。一个任务拿到钥匙后，才能访问共享资源。其他任务想访问，必须等待钥匙被释放&lt;/p&gt;
 &lt;p&gt;任务同步：一个任务的执行需要&lt;strong&gt;等待另一个（或多个）任务达到某个状态或完成某个操作&lt;/strong&gt;后才能继续&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -7627,11 +7627,11 @@ int main(void)
 &lt;p&gt;&lt;img src=&quot;../../assets/QQ_1764337301621.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h2&gt;三、计数型信号量&lt;/h2&gt;
 &lt;h3&gt;1、计数型信号量介绍&lt;/h3&gt;
-&lt;p&gt;答：==计数型信号量相当于队列长度为1的队列==，因此计数型信号量能够容纳多个资源，这在计数型信号量被创建的时候确定的。&lt;/p&gt;
+&lt;p&gt;答：&amp;lt;mark&amp;gt;计数型信号量相当于队列长度为1的队列&amp;lt;/mark&amp;gt;，因此计数型信号量能够容纳多个资源，这在计数型信号量被创建的时候确定的。&lt;/p&gt;
 &lt;p&gt;计数型信号量适用场合：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;事件计数 ： 当每次事件发生后，在事件处理函数中释放计数型信号量(计数值+1)，其他任务会获取计数型信号量(计数值-1)，这种场合一般在==创建时将初始化计数值设置为0.（队列长度代表的是它的上限值）==&lt;/li&gt;
-&lt;li&gt;资源管理 ： 信号量表示有效资源数量。任务必须先获取信号量(信号计数值-1)才能获取资源控制权。当计数值减为0时表示没有资源。当任务使用完资源后，必须释放信号量(信号量计数值+1)。==信号量创建时计数值应等于最大资源数目。==&lt;/li&gt;
+&lt;li&gt;事件计数 ： 当每次事件发生后，在事件处理函数中释放计数型信号量(计数值+1)，其他任务会获取计数型信号量(计数值-1)，这种场合一般在&amp;lt;mark&amp;gt;创建时将初始化计数值设置为0.（队列长度代表的是它的上限值）&amp;lt;/mark&amp;gt;&lt;/li&gt;
+&lt;li&gt;资源管理 ： 信号量表示有效资源数量。任务必须先获取信号量(信号计数值-1)才能获取资源控制权。当计数值减为0时表示没有资源。当任务使用完资源后，必须释放信号量(信号量计数值+1)。&amp;lt;mark&amp;gt;信号量创建时计数值应等于最大资源数目。&amp;lt;/mark&amp;gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3&gt;2、计数型信号量相关API函数&lt;/h3&gt;
 &lt;p&gt;答：使用计数型信号量的过程：创建计数型信号量  -&amp;gt;  释放信号量  -&amp;gt;  获取信号量&lt;/p&gt;
@@ -8190,7 +8190,7 @@ int main(void)
 &lt;li&gt;互斥信号量更适合那些需要互斥访问的应用(资源紧缺，需要资源保护)。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3&gt;2、什么是优先级继承&lt;/h3&gt;
-&lt;p&gt;答：当一个互斥信号量正在被一个低优先级的任务持有时，如果此时有一个高优先级的任务也尝试获取这个互斥信号量，那么这个高优先级的任务就会被阻塞。==不过这个高优先级的任务会将低优先级任务的优先级提升到与自己相同的优先级。==&lt;/p&gt;
+&lt;p&gt;答：当一个互斥信号量正在被一个低优先级的任务持有时，如果此时有一个高优先级的任务也尝试获取这个互斥信号量，那么这个高优先级的任务就会被阻塞。&amp;lt;mark&amp;gt;不过这个高优先级的任务会将低优先级任务的优先级提升到与自己相同的优先级。&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;h3&gt;3、优先级继承示例&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/%E4%BC%98%E5%85%88%E7%BA%A7%E7%BB%A7%E6%89%BF%E7%A4%BA%E4%BE%8B.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
@@ -8479,8 +8479,8 @@ int main(void)
 &lt;h3&gt;1、队列集介绍&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;一个队列只允许任务间传递的消息为同一种数据类型，如果==需要再任务间传递不同数据类型的消息时==，那么就可以使用队列集！！！&lt;/li&gt;
-&lt;li&gt;作用：==用于对多个队列或信号量进行“监听”==，其中不管哪一个消息到来，都可让任务退出阻塞状态。&lt;/li&gt;
+&lt;li&gt;一个队列只允许任务间传递的消息为同一种数据类型，如果&amp;lt;mark&amp;gt;需要再任务间传递不同数据类型的消息时&amp;lt;/mark&amp;gt;，那么就可以使用队列集！！！&lt;/li&gt;
+&lt;li&gt;作用：&amp;lt;mark&amp;gt;用于对多个队列或信号量进行“监听”&amp;lt;/mark&amp;gt;，其中不管哪一个消息到来，都可让任务退出阻塞状态。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;假设：有一个任务，使用到队列接收和信号量的获取，如下：&lt;/p&gt;
 &lt;p&gt;不使用队列集：&lt;/p&gt;
@@ -8812,7 +8812,7 @@ int main(void)
 &lt;ul&gt;
 &lt;li&gt;它的每一个位表示一个事件(高8位不算)。&lt;/li&gt;
 &lt;li&gt;每一位事件的含义，由用户自己决定，如：bit0表示按键是否按下，bit1表示是否接收到信息......&lt;/li&gt;
-&lt;li&gt;==这些位的值为1表示事件发生了，值为0表示事件未发生。==&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;这些位的值为1表示事件发生了，值为0表示事件未发生。&amp;lt;/mark&amp;gt;&lt;/li&gt;
 &lt;li&gt;任意任务或中断都可以读写这些位。&lt;/li&gt;
 &lt;li&gt;可以等待某一位成立，或者等待多位同时成立。&lt;/li&gt;
 &lt;/ul&gt;
@@ -8828,7 +8828,7 @@ int main(void)
 #define  configUSE_16_BIT_TICKS    0 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;EventBits_t 实际上是一个 16 位或 32 位无符号的数据类型。&lt;/p&gt;
-&lt;p&gt;注意：虽然使用了32为/16位无符号的数据类型变量来存储事件标志，但==其中的高8为作用是存储事件标志组的控制信息==，==低24位/8位的作用才是存储事件标志==，所以说==一个事件标志组最多可以存储24个事件标志==！！！&lt;/p&gt;
+&lt;p&gt;注意：虽然使用了32为/16位无符号的数据类型变量来存储事件标志，但&amp;lt;mark&amp;gt;其中的高8为作用是存储事件标志组的控制信息&amp;lt;/mark&amp;gt;，&amp;lt;mark&amp;gt;低24位/8位的作用才是存储事件标志&amp;lt;/mark&amp;gt;，所以说&amp;lt;mark&amp;gt;一个事件标志组最多可以存储24个事件标志&amp;lt;/mark&amp;gt;！！！&lt;/p&gt;
 &lt;p&gt;24位事件标志组示例图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/24%E4%BD%8D%E4%BA%8B%E4%BB%B6%E6%A0%87%E5%BF%97%E7%BB%84%E7%A4%BA%E4%BE%8B%E5%9B%BE.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;4、事件标志组与队列、信号量的区别&lt;/h3&gt;
@@ -9179,7 +9179,7 @@ int main(void)
 &lt;li&gt;&lt;strong&gt;无法发送数据给ISR&lt;/strong&gt;：ISR（中断）没有任务结构体，所以无法给ISR发送数据。&lt;strong&gt;但是ISR可以使用任务通知的功能，发数据给任务。&lt;/strong&gt;&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;无法广播给多个任务&lt;/strong&gt;：任务通知只能是被指定的一个任务接收并处理 。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;无法缓存多个数据&lt;/strong&gt;：任务通知是通过更新任务通知值来发送数据的，任务结构体中&lt;strong&gt;只有一个任务通知值&lt;/strong&gt;，&lt;strong&gt;只能保持一个数据&lt;/strong&gt;。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;发送受阻不支持阻塞&lt;/strong&gt;：==发送方无法进入阻塞状态等待==。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;发送受阻不支持阻塞&lt;/strong&gt;：&amp;lt;mark&amp;gt;发送方无法进入阻塞状态等待&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
 &lt;h2&gt;二、任务通知值和通知状态&lt;/h2&gt;
@@ -9226,7 +9226,7 @@ int main(void)
 &lt;h3&gt;1、任务通知相关API函数介绍&lt;/h3&gt;
 &lt;p&gt;答：任务通知API函数主要有两类：1-发送通知，2-接收通知。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注意：发送通知API函数可以用于==任务和中断函数==中，但接受通知API函数==只能用在任务中==。（中断ISR没有任务结构体）&lt;/p&gt;
+&lt;p&gt;注意：发送通知API函数可以用于&amp;lt;mark&amp;gt;任务和中断函数&amp;lt;/mark&amp;gt;中，但接受通知API函数&amp;lt;mark&amp;gt;只能用在任务中&amp;lt;/mark&amp;gt;。（中断ISR没有任务结构体）&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;发送通知相关API函数：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../assets/%E5%8F%91%E9%80%81%E4%BB%BB%E5%8A%A1%E9%80%9A%E7%9F%A5%E5%87%BD%E6%95%B0.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
@@ -10065,9 +10065,9 @@ portMAX_DELAY); // 无限等待通知&lt;/li&gt;
 &lt;li&gt;单次和周期：软件定时器支持设置成  &lt;strong&gt;单次定时器&lt;/strong&gt;  或  &lt;strong&gt;周期定时器&lt;/strong&gt;  。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注意：l软件定时器的超时回调函数是由==软件定时器服务任务==调用的，软件定时器的超时回调函数==本身不是任务，因此不能在该回调函数中使用可能会导致任务阻塞的 API 函数==。（只是一个函数，并不是任务，概括为专门放在一个任务的定时功能函数）&lt;/p&gt;
+&lt;p&gt;注意：l软件定时器的超时回调函数是由&amp;lt;mark&amp;gt;软件定时器服务任务&amp;lt;/mark&amp;gt;调用的，软件定时器的超时回调函数&amp;lt;mark&amp;gt;本身不是任务，因此不能在该回调函数中使用可能会导致任务阻塞的 API 函数&amp;lt;/mark&amp;gt;。（只是一个函数，并不是任务，概括为专门放在一个任务的定时功能函数）&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;软件定时器服务任务&lt;/strong&gt;：==在调用函数 vTaskStartScheduler()开启任务调度器的时候，会创建一个用于管理软件定时器的任务，这个任务就叫做&lt;strong&gt;软件定时器服务任务（调用处理软件定时器）&lt;/strong&gt;。==&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;软件定时器服务任务&lt;/strong&gt;：&amp;lt;mark&amp;gt;在调用函数 vTaskStartScheduler()开启任务调度器的时候，会创建一个用于管理软件定时器的任务，这个任务就叫做&lt;strong&gt;软件定时器服务任务（调用处理软件定时器）&lt;/strong&gt;。&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;h3&gt;4、软件定时器服务任务作用&lt;/h3&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -10091,7 +10091,7 @@ portMAX_DELAY); // 无限等待通知&lt;/li&gt;
 &lt;h3&gt;6、软件定时器的相关配置&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;当FreeRTOS 的配置项 ==configUSE_TIMERS== 设置为1，在启动任务调度器时，会自动创建软件定时器的服务/守护任务prvTimerTask( )。&lt;/li&gt;
+&lt;li&gt;当FreeRTOS 的配置项 &amp;lt;mark&amp;gt;configUSE_TIMERS&amp;lt;/mark&amp;gt; 设置为1，在启动任务调度器时，会自动创建软件定时器的服务/守护任务prvTimerTask( )。&lt;/li&gt;
 &lt;li&gt;软件定时器服务任务的优先级为 ==configTIMER_TASK_PRIORITY = 31==。&lt;/li&gt;
 &lt;li&gt;定时器的命令队列长度为 ==configTIMER_QUEUE_LENGTH = 5==。&lt;/li&gt;
 &lt;/ul&gt;
@@ -10727,7 +10727,7 @@ static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 &lt;h3&gt;5、heap_5 内存管理算法&lt;/h3&gt;
 &lt;p&gt;答：&lt;/p&gt;
 &lt;h5&gt;heap_5 的特点：&lt;/h5&gt;
-&lt;p&gt;heap_5 内存管理算法是==在 heap_4 内存管理算法的基础上实现的==，但是 heap_5 内存管理算法在 heap_4 内存管理算法的基础上实现了==管理多个非连续内存区域的能力。==&lt;/p&gt;
+&lt;p&gt;heap_5 内存管理算法是&amp;lt;mark&amp;gt;在 heap_4 内存管理算法的基础上实现的&amp;lt;/mark&amp;gt;，但是 heap_5 内存管理算法在 heap_4 内存管理算法的基础上实现了&amp;lt;mark&amp;gt;管理多个非连续内存区域的能力。&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;heap_5 内存管理算法默认并没有定义内存堆 ， 需要用户手动指定内存区域的信息，对其进行初始化。&lt;/p&gt;
 &lt;h4&gt;怎么指定一块内存？&lt;/h4&gt;
 &lt;p&gt;使用如下结构体：&lt;/p&gt;
@@ -12651,7 +12651,7 @@ GPIOA-&amp;gt;ODR |= (1 &amp;lt;&amp;lt; 3);  // 将第3位置1，其他位保�
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;区分&lt;code&gt;&amp;amp;&lt;/code&gt;和&lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;&lt;/strong&gt;：&lt;code&gt;&amp;amp;&lt;/code&gt;是按位与，常用于操作寄存器；&lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;是逻辑与，用于条件判断。写错可能导致程序逻辑完全错误。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;优先级&lt;/strong&gt;：在混合运算时，如果不确定优先级，&lt;strong&gt;多加括号&lt;/strong&gt;总没错。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;不要混淆&lt;code&gt;=&lt;/code&gt;和&lt;code&gt;==&lt;/code&gt;&lt;/strong&gt;：在&lt;code&gt;if&lt;/code&gt;判断里，常写的&lt;code&gt;if(a == b)&lt;/code&gt;如果误写为&lt;code&gt;if(a = b)&lt;/code&gt;，程序逻辑就变了。很多现代编译器会对此给出警告。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不要混淆&lt;code&gt;=&lt;/code&gt;和&lt;code&gt;&amp;lt;mark&amp;gt;&lt;/code&gt;&lt;/strong&gt;：在&lt;code&gt;if&lt;/code&gt;判断里，常写的&lt;code&gt;if(a &amp;lt;/mark&amp;gt; b)&lt;/code&gt;如果误写为&lt;code&gt;if(a = b)&lt;/code&gt;，程序逻辑就变了。很多现代编译器会对此给出警告。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h1&gt;C语言运算符的优先级&lt;/h1&gt;
 &lt;p&gt;C语言运算符的优先级决定了在表达式中，哪个运算符先被计算。当多个运算符出现在同一个表达式中时，优先级高的运算会先执行。如果优先级相同，则由&lt;strong&gt;结合性&lt;/strong&gt;（左结合或右结合）决定顺序。&lt;/p&gt;
@@ -12777,7 +12777,7 @@ if (GPIO-&amp;gt;IDR &amp;amp; (1&amp;lt;&amp;lt;2) &amp;amp;&amp;amp; (1&amp;lt
 &lt;code&gt;if ( (GPIO-&amp;gt;IDR &amp;amp; (1&amp;lt;&amp;lt;2)) &amp;amp;&amp;amp; (1&amp;lt;&amp;lt;3) )&lt;/code&gt;，因为 &lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt; 的优先级最低。&lt;/li&gt;
 &lt;li&gt;更常见的错误是忘记加括号：&lt;pre&gt;&lt;code&gt;if (GPIO-&amp;gt;IDR &amp;amp; (1&amp;lt;&amp;lt;2) == 0)   // 错误！
 &lt;/code&gt;&lt;/pre&gt;
-这里 &lt;code&gt;==&lt;/code&gt; 优先级高于 &lt;code&gt;&amp;amp;&lt;/code&gt;，所以先比较 &lt;code&gt;(1&amp;lt;&amp;lt;2)==0&lt;/code&gt;，结果为0，再与 &lt;code&gt;GPIO-&amp;gt;IDR&lt;/code&gt; 按位与，永远为0。&lt;/li&gt;
+这里 &lt;code&gt;&amp;lt;mark&amp;gt;&lt;/code&gt; 优先级高于 &lt;code&gt;&amp;amp;&lt;/code&gt;，所以先比较 &lt;code&gt;(1&amp;lt;&amp;lt;2)&amp;lt;/mark&amp;gt;0&lt;/code&gt;，结果为0，再与 &lt;code&gt;GPIO-&amp;gt;IDR&lt;/code&gt; 按位与，永远为0。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;正确写法&lt;/strong&gt;：&lt;code&gt;if ((GPIO-&amp;gt;IDR &amp;amp; (1&amp;lt;&amp;lt;2)) == 0)&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4&gt;3. &lt;strong&gt;赋值运算符与比较运算符混淆&lt;/strong&gt;&lt;/h4&gt;
@@ -20966,7 +20966,7 @@ MSR PSP, R0        ; 写回新任务栈指针
 &lt;h2&gt;九、一句话总结&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;MSP 是 Cortex-M 的主栈指针寄存器&lt;/strong&gt;，复位时由硬件从向量表第 0 项（启动文件里的 &lt;code&gt;__initial_sp&lt;/code&gt;）装入，之后随函数调用和异常压栈动态变化；它服务于异常处理和默认的 Thread 执行，PSP 则是给 RTOS 任务用的另一套栈指针。裸机程序通常只用 MSP，RTOS 才把 MSP 和 PSP 分开用。&lt;/p&gt;
 &lt;h1&gt;FSMC/FMC&lt;/h1&gt;
-&lt;p&gt;FSMC（灵活静态存储器控制器）与FMC（灵活存储器控制器）是STM32中用于==扩展外部存储器和并行设备的核心外设==。它们让MCU能像访问内部内存一样，通过地址映射直接读写外部芯片，从而突破片内资源限制。&lt;/p&gt;
+&lt;p&gt;FSMC（灵活静态存储器控制器）与FMC（灵活存储器控制器）是STM32中用于&amp;lt;mark&amp;gt;扩展外部存储器和并行设备的核心外设&amp;lt;/mark&amp;gt;。它们让MCU能像访问内部内存一样，通过地址映射直接读写外部芯片，从而突破片内资源限制。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;FMC是FSMC的增强超集，最核心的升级是增加了对动态存储器SDRAM的支持&lt;/strong&gt;。&lt;/p&gt;
 &lt;h3&gt;📜 从FSMC到FMC：核心演进&lt;/h3&gt;
 &lt;p&gt;FSMC与FMC的关系可以概括为&lt;strong&gt;继承与发展&lt;/strong&gt;：&lt;/p&gt;
@@ -21101,8 +21101,7 @@ How it works: &lt;code&gt;/how-it-works&lt;/code&gt;&lt;/p&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!IMPORTANT]
-代入公式前必须把频率换算成 Hz，把电容量换算成 F。初学者最常见的错误，就是直接把“0.1uF”中的 0.1 代入公式，导致结果相差一百万倍。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 代入公式前必须把频率换算成 Hz，把电容量换算成 F。初学者最常见的错误，就是直接把“0.1uF”中的 0.1 代入公式，导致结果相差一百万倍。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;2. 公式揭示的三个核心规律&lt;/h2&gt;
 &lt;h3&gt;2.1 频率越高，容抗越小&lt;/h3&gt;
@@ -21238,8 +21237,7 @@ $$&lt;/p&gt;
 &lt;p&gt;交流电压上升时，电容从电源吸收能量；电压下降时，电容再把能量释放回电路。理想电容一个完整周期内吸收和释放的能量相互抵消，平均有功功率为 0。&lt;/p&gt;
 &lt;p&gt;因此，“容抗为 100Ω”不等于它像 100Ω 电阻那样持续发热。容抗描述的是正弦稳态下电压与电流幅值的比值，但电容中的电压和电流存在相位差。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!NOTE]
-真实电容并非完全不发热。它有等效串联电阻 ESR、漏电和介质损耗，因此在较大纹波电流或高频下仍会产生损耗。这里所说“不消耗有功功率”指理想电容模型。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 真实电容并非完全不发热。它有等效串联电阻 ESR、漏电和介质损耗，因此在较大纹波电流或高频下仍会产生损耗。这里所说“不消耗有功功率”指理想电容模型。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;6. 为什么电容电流超前电压 90°&lt;/h2&gt;
 &lt;p&gt;电容的电流关系式为：&lt;/p&gt;
@@ -21406,7 +21404,7 @@ $$&lt;/p&gt;
 &lt;p&gt;使用浏览器直接打开同目录下的 &lt;a href=&quot;%E5%AE%B9%E6%8A%97Xc%E4%BA%A4%E4%BA%92%E5%BC%8F%E4%BB%BF%E7%9C%9F.html&quot;&gt;容抗Xc交互式仿真.html&lt;/a&gt;，可以拖动频率和电容量滑杆，实时观察容抗、输出增益、电路电流方向与波形振幅的变化。&lt;/p&gt;
 </content:encoded></item><item><title>三极管入门-original</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%BD%92%E6%A1%A3%E8%B5%84%E6%96%99/docs-original/%E4%B8%89%E6%9E%81%E7%AE%A1%E5%85%A5%E9%97%A8-original/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%BD%92%E6%A1%A3%E8%B5%84%E6%96%99/docs-original/%E4%B8%89%E6%9E%81%E7%AE%A1%E5%85%A5%E9%97%A8-original/</guid><description>三极管入门 PN结 ==电子只能从$N$流向$P$，那么电流只能从$P$流向$N$== 引入 视频：极速入门三极管NPN与PNP放大原理【极速入门数模电路P05</description><pubDate>Tue, 25 Aug 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;三极管入门&lt;/h1&gt;
 &lt;h2&gt;PN结&lt;/h2&gt;
-&lt;p&gt;==电子只能从$N$流向$P$，那么电流只能从$P$流向$N$==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;电子只能从$N$流向$P$，那么电流只能从$P$流向$N$&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/QQ_1768442080356-1777388936127-1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h2&gt;引入&lt;/h2&gt;
 &lt;p&gt;视频：&lt;a href=&quot;https://www.bilibili.com/video/BV1UM4m1m7ZR?spm_id_from=333.788.videopod.sections&amp;amp;vd_source=cae5e5e53a7fcdf3a7ac534a5a5e2344&quot;&gt;极速入门三极管NPN与PNP放大原理【极速入门数模电路P05】bilibili&lt;/a&gt;&lt;/p&gt;
@@ -21930,8 +21928,7 @@ V_{DM,half}=\frac{V_1-V_2}{2}
 $$&lt;/p&gt;
 &lt;p&gt;两种定义只差一个 2 倍因子。阅读数据手册、滤波器规格或仿真结果时，必须先确认采用的是哪一种约定。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!TIP]
-记忆方法：&lt;strong&gt;共模看平均值，差模看差值。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 记忆方法：&lt;strong&gt;共模看平均值，差模看差值。&lt;/strong&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;2. 用电压图理解两种模式&lt;/h2&gt;
 &lt;h3&gt;2.1 纯共模&lt;/h3&gt;
@@ -22151,8 +22148,7 @@ I_{leak}\approx2\pi fCV
 $$&lt;/p&gt;
 &lt;p&gt;单个电容的容量越大、工作电压越高、频率越高，漏电流越大；多个 Y 电容的漏电流还需要按实际连接方式合计。Y 电容的选型必须同时满足耐压、爬电距离、漏电流、接地结构和安规等级要求。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!WARNING]
-不要用普通陶瓷电容随意替代跨接市电导线与保护地的 Y 电容，也不要把 Y 电容接到一个可能悬浮或不可承受高频电流的信号地上。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 不要用普通陶瓷电容随意替代跨接市电导线与保护地的 Y 电容，也不要把 Y 电容接到一个可能悬浮或不可承受高频电流的信号地上。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;8. 差模滤波&lt;/h2&gt;
 &lt;h3&gt;8.1 差模电感&lt;/h3&gt;
@@ -22508,8 +22504,7 @@ $$&lt;/p&gt;
 &lt;li&gt;高频下，理想电感趋向于高阻抗。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!WARNING]
-原文使用 $R_L=2\pi fL$ 表示感抗。更推荐写成 $X_L=2\pi fL$ 或 $Z_L=j\omega L$。符号 $R_L$ 通常表示电感的直流电阻、绕组电阻或等效串联电阻，不宜用来表示理想感抗。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 原文使用 $R_L=2\pi fL$ 表示感抗。更推荐写成 $X_L=2\pi fL$ 或 $Z_L=j\omega L$。符号 $R_L$ 通常表示电感的直流电阻、绕组电阻或等效串联电阻，不宜用来表示理想感抗。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;1.3 电感不是绝对无损器件&lt;/h3&gt;
 &lt;p&gt;理想电感只储存和释放磁场能，不消耗平均有功功率；真实电感还包含：&lt;/p&gt;
@@ -22587,8 +22582,7 @@ $$&lt;/p&gt;
 $$&lt;/p&gt;
 &lt;p&gt;因此，截止频率也常被称为 &lt;strong&gt;-3 dB 频率&lt;/strong&gt;。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!IMPORTANT]
-“截止”不表示信号在该频率处突然变为 0。滤波器的响应是连续变化的：在截止频率处，输出电压或电流的幅值仍约为通带值的 70.7%。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; “截止”不表示信号在该频率处突然变为 0。滤波器的响应是连续变化的：在截止频率处，输出电压或电流的幅值仍约为通带值的 70.7%。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;对于相同且近似纯电阻的负载，由于功率与电压幅值的平方成正比：&lt;/p&gt;
 &lt;p&gt;$$
@@ -22650,8 +22644,7 @@ $$&lt;/p&gt;
 f_c=\frac{1}{2\pi RC}
 $$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!TIP]
-截止频率必须针对具体传递函数和输出取样点定义。同一组元件在不同拓扑、不同负载或不同输出节点下，实际截止频率可能不同；二阶 LC 滤波器的 $-3\text{ dB}$ 截止频率也不一定等于理想固有频率 $1/(2\pi\sqrt{LC})$。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 截止频率必须针对具体传递函数和输出取样点定义。同一组元件在不同拓扑、不同负载或不同输出节点下，实际截止频率可能不同；二阶 LC 滤波器的 $-3\text{ dB}$ 截止频率也不一定等于理想固有频率 $1/(2\pi\sqrt{LC})$。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;3. RL 低通滤波器&lt;/h2&gt;
 &lt;h3&gt;3.1 电路结构&lt;/h3&gt;
@@ -22734,8 +22727,7 @@ $$&lt;/p&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!NOTE]
-原文中“输入频率越低变化越快”是方向写反了。频率越高，周期越短，波形变化越快；频率越低，变化越慢。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 原文中“输入频率越低变化越快”是方向写反了。频率越高，周期越短，波形变化越快；频率越低，变化越慢。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;4. RL 高通滤波器&lt;/h2&gt;
 &lt;h3&gt;4.1 电路结构&lt;/h3&gt;
@@ -22989,7 +22981,7 @@ $$&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;电感和电容的无功效应在某个频率附近相互抵消，能量在电场与磁场之间强烈交换，使阻抗、导纳、电压或电流出现极值。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!important] 谐振不会凭空产生能量
+&lt;p&gt;&lt;strong&gt;谐振不会凭空产生能量&lt;/strong&gt;
 谐振处出现的大电压或大电流来自能量的逐周期积累。外部信号源持续补充电阻、ESR、DCR 和负载消耗的能量；稳定后，平均输入功率等于平均损耗功率。若假设电路完全无损，数学模型会预测在精确谐振激励下振幅无限增长，但真实器件的损耗、非线性和额定值会限制振幅。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;7.4.2 为什么电感和电容能在某个频率“抵消”&lt;/h4&gt;
@@ -23218,7 +23210,7 @@ $$&lt;/p&gt;
 &lt;li&gt;常用于选频网络、振荡器谐振槽路和阻抗变换。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 串联与并联谐振的快速记忆
+&lt;p&gt;&lt;strong&gt;串联与并联谐振的快速记忆&lt;/strong&gt;
 &lt;strong&gt;串联谐振看“阻抗谷、电流峰”&lt;/strong&gt;；&lt;strong&gt;并联谐振看“阻抗峰、线电流谷”&lt;/strong&gt;。但两者内部都可能存在很大的 L、C 电压或支路电流。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;7.4.7 本章 LC 低通中的谐振怎样表现&lt;/h4&gt;
@@ -23322,7 +23314,7 @@ $$&lt;/p&gt;
 &lt;li&gt;&lt;strong&gt;理想 LC&lt;/strong&gt;：没有任何电阻损耗，每周期损失的能量为零，因此理想模型中 $Q\rightarrow\infty$；真实电路的 DCR、ESR、磁芯损耗、负载和源阻抗会把 Q 限制在有限值。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!important] Q 高不等于滤波器一定更好
+&lt;p&gt;&lt;strong&gt;Q 高不等于滤波器一定更好&lt;/strong&gt;
 高 Q 表示损耗小、选频性强，但也意味着截止附近可能放大某一段频率，并在上电或负载突变时产生明显过冲和振铃。低 Q 可以抑制峰值，却会使转折区域更加平缓。设计时需要在滤波衰减、通带平坦度和瞬态稳定性之间折中。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h5&gt;Q 的计算公式取决于电路拓扑&lt;/h5&gt;
@@ -23359,7 +23351,7 @@ $$&lt;/p&gt;
 &lt;li&gt;对并联负载电阻，$R$ 越大，负载越轻，损耗越小，Q 越高。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 一句话记忆 Q
+&lt;p&gt;&lt;strong&gt;一句话记忆 Q&lt;/strong&gt;
 **Q 衡量的是能量能在 LC 中“来回交换多少次”才明显衰减。**Q 越高，损耗越小、峰值越尖、振铃越久；Q 越低，损耗越大、响应越平滑、振铃越快消失。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;标准二阶系统也常用阻尼比 $\zeta$ 表示阻尼：&lt;/p&gt;
@@ -23396,7 +23388,7 @@ $$&lt;/p&gt;
 &lt;li&gt;&lt;strong&gt;$Q=2$&lt;/strong&gt;：截止附近有明显谐振峰；虽然最终仍以约 $-40\text{ dB/decade}$ 的二阶斜率下降，但峰值附近可能放大噪声或激励振铃。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!important] 高 Q 不会改变最终的二阶渐近斜率
+&lt;p&gt;&lt;strong&gt;高 Q 不会改变最终的二阶渐近斜率&lt;/strong&gt;
 对这些同阶低通而言，远高于 $f_0$ 后都趋近于 $-40\text{ dB/decade}$。高 Q 主要改变转折附近的形状：它会造成峰化，而不是简单地让整个阻带“衰减更强”。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;7.5.3 $f_0$、$f_r$ 和 $f_c$ 的区别&lt;/h4&gt;
@@ -23469,7 +23461,7 @@ $$&lt;/p&gt;
 &lt;li&gt;$Q&amp;gt;1/\sqrt{2}$ 时，$f_c&amp;gt;f_0$，而谐振峰频率 $f_r&amp;lt;f_0$。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 什么时候可以直接用 $f_c=1/(2\pi\sqrt{LC})$？
+&lt;p&gt;&lt;strong&gt;什么时候可以直接用 $f_c=1/(2\pi\sqrt{LC})$？&lt;/strong&gt;
 只有在电路确实能近似为标准二阶低通，并且阻尼被设计成 $Q\approx1/\sqrt{2}$（Butterworth）时，才可以把 $f_0$ 直接当作 $-3\text{ dB}$ 截止频率。否则，$1/(2\pi\sqrt{LC})$ 给出的是固有频率，真正的 $f_c$ 应由完整传递函数、仿真或实测曲线确定。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;7.5.4 实际元件为什么会改变 Q 和曲线&lt;/h4&gt;
@@ -23732,7 +23724,7 @@ $$&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;电容容抗随频率变化；&lt;/li&gt;
 &lt;li&gt;输出电压取在电阻还是电容两端；&lt;/li&gt;
-&lt;li&gt;电阻和电容构成的是==交流阻抗分压==，不是普通直流电阻分压。&lt;/li&gt;
+&lt;li&gt;电阻和电容构成的是&amp;lt;mark&amp;gt;交流阻抗分压&amp;lt;/mark&amp;gt;，不是普通直流电阻分压。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2&gt;1. 电容容抗与复阻抗&lt;/h2&gt;
 &lt;p&gt;理想电容的容抗大小为：&lt;/p&gt;
@@ -23796,12 +23788,10 @@ $$&lt;/p&gt;
 &lt;p&gt;$$Z_C=\frac{1}{j\omega C}=-jX_C$$&lt;/p&gt;
 &lt;p&gt;其中 $\omega=2\pi f$，$j$ 表示相位信息。这项中的 $-j$ 很重要：电容不只是改变幅值，还会让输出产生相位差。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!TIP]
-$f$ 是普通频率，表示每秒完成多少个周期，单位为 Hz；$\omega$ 是角频率，表示每秒变化多少弧度，单位为 rad/s。两者满足 $\omega=2\pi f$，因此代入 $Z_C=1/(j\omega C)$ 时，不能把 Hz 数值直接当作 $\omega$ 使用。例如 $1\text{kHz}$ 对应 $\omega\approx6283\text{rad/s}$。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; $f$ 是普通频率，表示每秒完成多少个周期，单位为 Hz；$\omega$ 是角频率，表示每秒变化多少弧度，单位为 rad/s。两者满足 $\omega=2\pi f$，因此代入 $Z_C=1/(j\omega C)$ 时，不能把 Hz 数值直接当作 $\omega$ 使用。例如 $1\text{kHz}$ 对应 $\omega\approx6283\text{rad/s}$。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!NOTE]
-容抗应写成 $X_C$，不要写成 $R_C$。$R$ 通常表示消耗有功功率的电阻，而电容的阻碍作用属于电抗。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 容抗应写成 $X_C$，不要写成 $R_C$。$R$ 通常表示消耗有功功率的电阻，而电容的阻碍作用属于电抗。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;1.1 什么是复阻抗&lt;/h3&gt;
 &lt;p&gt;直流电路使用普通电阻描述电压与电流的关系：&lt;/p&gt;
@@ -23822,8 +23812,7 @@ $f$ 是普通频率，表示每秒完成多少个周期，单位为 Hz；$\omega
 &lt;li&gt;$j$ 是虚数单位，满足 $j^2=-1$。电路中使用 $j$，是为了避免与电流符号 $i$ 混淆。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!TIP]
-“虚部”并不是说这部分不存在。它是一种数学记号，用来保存电压和电流的相位关系。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; “虚部”并不是说这部分不存在。它是一种数学记号，用来保存电压和电流的相位关系。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;1.2 复阻抗包含大小和相位&lt;/h3&gt;
 &lt;p&gt;对于：&lt;/p&gt;
@@ -23835,8 +23824,7 @@ $f$ 是普通频率，表示每秒完成多少个周期，单位为 Hz；$\omega
 &lt;p&gt;复阻抗的相位角为：&lt;/p&gt;
 &lt;p&gt;$$\angle Z=\operatorname{atan2}(X,R)$$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!TIP]
-$\operatorname{atan2}(y,x)$ 表示点 $(x,y)$ 相对于正 $x$ 轴的角度，参数顺序是“虚部、实部”。因此对 $Z=R+jX$，应使用 $\operatorname{atan2}(X,R)$；电容 $Z_C=-jX_C$ 的实际虚部为 $-X_C$，相位才能得到 $-90^\circ$。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; $\operatorname{atan2}(y,x)$ 表示点 $(x,y)$ 相对于正 $x$ 轴的角度，参数顺序是“虚部、实部”。因此对 $Z=R+jX$，应使用 $\operatorname{atan2}(X,R)$；电容 $Z_C=-jX_C$ 的实际虚部为 $-X_C$，相位才能得到 $-90^\circ$。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;复阻抗可以在复平面上看成一个向量：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;                 Im(Z)=X
                     ↑
@@ -24003,8 +23991,7 @@ $$&lt;/p&gt;
 &lt;p&gt;$$Z_C=1591.5\angle-90^\circ\ \Omega$$&lt;/p&gt;
 &lt;p&gt;这两个写法表达相同的信息：电容对 1kHz 信号的阻碍大小为 1591.5Ω，阻抗相位为 -90°。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!IMPORTANT]
-本文的复阻抗方法适用于正弦交流稳态。分析刚上电、方波边沿等瞬态过程时，可使用微分方程、时间常数或拉普拉斯域模型 $Z_C=1/(sC)$；当 $s=j\omega$ 时，就回到这里的正弦稳态复阻抗。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 本文的复阻抗方法适用于正弦交流稳态。分析刚上电、方波边沿等瞬态过程时，可使用微分方程、时间常数或拉普拉斯域模型 $Z_C=1/(sC)$；当 $s=j\omega$ 时，就回到这里的正弦稳态复阻抗。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;2. RC 低通滤波器&lt;/h2&gt;
 &lt;h3&gt;2.1 电路结构&lt;/h3&gt;
@@ -24031,8 +24018,7 @@ $$&lt;/p&gt;
 &lt;h3&gt;2.2 用阻抗分压理解&lt;/h3&gt;
 &lt;p&gt;低通输出取在电容两端，因此：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!TIP]
-低通和高通计算中使用 $Z_C=1/(j\omega C)$，是因为这里分析的是正弦交流稳态。由电容关系 $i=C,dv/dt$，在相量域中微分对应乘以 $j\omega$，因此 $V=I/(j\omega C)$，电容的复阻抗就是 $Z_C=V/I=1/(j\omega C)$。只使用 $X_C=1/(\omega C)$ 只能得到阻抗大小，无法保留电容电压滞后电流 $90^\circ$ 的相位信息；使用 $Z_C$ 才能通过复数分压同时算出幅值和相位。分析阶跃等瞬态时，应改用时间常数、微分方程或 $Z_C=1/(sC)$。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 低通和高通计算中使用 $Z_C=1/(j\omega C)$，是因为这里分析的是正弦交流稳态。由电容关系 $i=C,dv/dt$，在相量域中微分对应乘以 $j\omega$，因此 $V=I/(j\omega C)$，电容的复阻抗就是 $Z_C=V/I=1/(j\omega C)$。只使用 $X_C=1/(\omega C)$ 只能得到阻抗大小，无法保留电容电压滞后电流 $90^\circ$ 的相位信息；使用 $Z_C$ 才能通过复数分压同时算出幅值和相位。分析阶跃等瞬态时，应改用时间常数、微分方程或 $Z_C=1/(sC)$。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;$$
 \frac{V_{out}}{V_{in}}
@@ -24057,8 +24043,7 @@ $$&lt;/p&gt;
 &lt;p&gt;$$V_{out}\ll V_{in}$$&lt;/p&gt;
 &lt;p&gt;从节点角度看，高频电流通过低阻抗电容返回 GND，输出节点的高频电压被压低。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!IMPORTANT]
-“高频被电容短路到地”是一种近似说法。真实电容的阻抗不是绝对 0，高频信号也不是突然完全消失，而是随频率升高连续衰减。频率非常高时，还必须考虑电容的 ESR、ESL 和自谐振频率。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; “高频被电容短路到地”是一种近似说法。真实电容的阻抗不是绝对 0，高频信号也不是突然完全消失，而是随频率升高连续衰减。频率非常高时，还必须考虑电容的 ESR、ESL 和自谐振频率。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;2.3 不要把低通理解成“电流选择走电阻还是电容”&lt;/h3&gt;
 &lt;p&gt;在这个最简单的 RC 低通回路里，R 与 C 对交流回路而言是串联关系，流过 R 和 C 的回路电流相同。并不存在一股电流在 R 和 C 之间自由二选一。&lt;/p&gt;
@@ -24395,8 +24380,7 @@ $$&lt;/p&gt;
 &lt;li&gt;在不需要低频信息时抑制 50Hz/60Hz 工频成分。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!WARNING]
-高通只能按频率衰减低频成分。如果 50Hz/60Hz 工频落在有效信号频带内，高通会同时损伤有效信号。共模干扰也不能简单依靠单端高通解决，应结合差分测量、共模抑制比、接地、屏蔽、共模扼流圈或对称 RC 网络分析。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 高通只能按频率衰减低频成分。如果 50Hz/60Hz 工频落在有效信号频带内，高通会同时损伤有效信号。共模干扰也不能简单依靠单端高通解决，应结合差分测量、共模抑制比、接地、屏蔽、共模扼流圈或对称 RC 网络分析。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;10. 真实电路中的负载效应&lt;/h2&gt;
 &lt;p&gt;前面的标准公式默认：&lt;/p&gt;
@@ -24464,8 +24448,7 @@ $$&lt;/p&gt;
 &lt;p&gt;$$\varphi=360^\circ\frac{\Delta t}{T}$$&lt;/p&gt;
 &lt;p&gt;其中 $T$ 是信号周期，$\Delta t$ 是两个波形相同特征点之间的时间差。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!CAUTION]
-台式示波器探头地夹通常与保护地相连。不要把地夹接到非地节点，否则可能直接短路电路。测量浮地或高压电路时必须使用合适的差分探头和安全方案。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 台式示波器探头地夹通常与保护地相连。不要把地夹接到非地节点，否则可能直接短路电路。测量浮地或高压电路时必须使用合适的差分探头和安全方案。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;13. 原笔记中的关键修正&lt;/h2&gt;
 &lt;table&gt;
@@ -24815,8 +24798,7 @@ $$&lt;/p&gt;
 &lt;h3&gt;5.5 原笔记中的串联 RLC 波形图&lt;/h3&gt;
 &lt;p&gt;下面保留原笔记中的部分波形和电路图，用于对照欠阻尼、临界阻尼和过阻尼的概念。图中的具体参数应以图注或仿真设置为准，不能只根据颜色判断阻尼类型。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!NOTE]
-原文件还引用了 &lt;code&gt;QQ_1768204961650.png&lt;/code&gt;，但当前工作区中未找到该图片文件，因此这里没有继续嵌入，避免留下失效图片链接。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 原文件还引用了 &lt;code&gt;QQ_1768204961650.png&lt;/code&gt;，但当前工作区中未找到该图片文件，因此这里没有继续嵌入，避免留下失效图片链接。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/rlc-damping.svg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;原始仿真波形截图：&lt;/p&gt;
@@ -25234,8 +25216,7 @@ VCC ───────────\__／────────────�
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!IMPORTANT]
-“微型应急电池”是帮助理解的类比，但不能无限延伸。去耦电容只能支撑很短的瞬态，也不能调节输出电压。若整条电源轨刚从 0V 冷启动，电容一开始同样没有电荷，不能凭空给芯片供电；真正的冷启动过程还取决于稳压器启动能力、软启动、电源时序和输入/输出大电容。去耦电容作为“应急电池”的典型场景，是 VCC 已经建立后芯片负载电流突然变化。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; “微型应急电池”是帮助理解的类比，但不能无限延伸。去耦电容只能支撑很短的瞬态，也不能调节输出电压。若整条电源轨刚从 0V 冷启动，电容一开始同样没有电荷，不能凭空给芯片供电；真正的冷启动过程还取决于稳压器启动能力、软启动、电源时序和输入/输出大电容。去耦电容作为“应急电池”的典型场景，是 VCC 已经建立后芯片负载电流突然变化。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;5. 用水管和小水箱理解&lt;/h2&gt;
 &lt;p&gt;可以把供电系统想象成一套供水系统：&lt;/p&gt;
@@ -25387,7 +25368,7 @@ VCC ───────────\__／────────────�
 &lt;h3&gt;常用符号怎么看？&lt;/h3&gt;
 &lt;p&gt;电路符号通常由“物理量字母 + 下标”组成：$V$ 表示电压，$I$ 表示电流，$R$ 表示电阻；下标说明这个量与哪个端子或支路有关。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 怎样读 $V_{CE}$、$I_C$ 和 $R_C$？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;怎样读 $V_{CE}$、$I_C$ 和 $R_C$？&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;两个端子下标的电压&lt;/strong&gt;：$V_{XY}=V_X-V_Y$，读作“X 相对 Y 的电压”。因此 $V_{CE}=V_C-V_E$，表示集电极相对发射极的电压；下标的先后顺序不能颠倒，$V_{EC}=-V_{CE}$。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;一个端子下标的电流&lt;/strong&gt;：$I_C$、$I_B$、$I_E$ 分别表示集电极、基极、发射极电流。电流的正负还取决于采用的参考方向；只讨论大小时可写成 $|I_C|$。&lt;/li&gt;
@@ -25546,11 +25527,11 @@ VCC ───────────\__／────────────�
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] $V_{CC}$ 为什么有两个 C？
+&lt;p&gt;&lt;strong&gt;$V_{CC}$ 为什么有两个 C？&lt;/strong&gt;
 早期晶体管电路常用重复下标表示与某个端子相关的电源：$V_{CC}$ 是集电极侧电源，$V_{EE}$ 是发射极侧电源。它们是电源名称，不要套用 $V_{XY}=V_X-V_Y$ 的端子间电压规则。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 怎样读 $V_{CE}=V_{CC}-I_C R_C$？
+&lt;p&gt;&lt;strong&gt;怎样读 $V_{CE}=V_{CC}-I_C R_C$？&lt;/strong&gt;
 在常见的 NPN 共射极电路中，若发射极接 GND，集电极通过 $R_C$ 接 $V_{CC}$，则电源电压分配在 $R_C$ 和三极管 C-E 两端：
 $$
 V_{CC}=\underbrace{I_C R_C}&lt;em&gt;{R_C\text{ 上的压降}}+\underbrace{V&lt;/em&gt;{CE}}&lt;em&gt;{\text{三极管 C-E 两端电压}}
@@ -25563,9 +25544,9 @@ $$
 &lt;img src=&quot;../../../../../assets/bjt-diode-trim-00m10s-03m14s.gif&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h2&gt;一、PN 结&lt;/h2&gt;
 &lt;h3&gt;1. PN 结的结构&lt;/h3&gt;
-&lt;p&gt;P 型半导体中==空穴==是多数载流子，N 型半导体中==电子==是多数载流子。P 区与 N 区接触后，电子会从 N 区向 P 区扩散，空穴会从 P 区向 N 区扩散。&lt;/p&gt;
+&lt;p&gt;P 型半导体中&amp;lt;mark&amp;gt;空穴&amp;lt;/mark&amp;gt;是多数载流子，N 型半导体中&amp;lt;mark&amp;gt;电子&amp;lt;/mark&amp;gt;是多数载流子。P 区与 N 区接触后，电子会从 N 区向 P 区扩散，空穴会从 P 区向 N 区扩散。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 空穴和电子分别是什么？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;空穴和电子分别是什么？&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;电子&lt;/strong&gt;：真实存在的基本粒子，带一个单位的负电荷。在半导体中，获得足够能量并脱离原子共价键束缚的电子可以在晶体中移动，因而成为导电的载流子。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;空穴&lt;/strong&gt;：共价键中缺少一个电子后留下的“空位”，并不是真实存在的独立粒子。邻近电子不断填补这个空位时，空位的位置会沿相反方向移动，因此可以把它等效看成一个带正电、能够移动的载流子。&lt;/li&gt;
@@ -25573,7 +25554,7 @@ $$
 &lt;p&gt;可以把空穴理解成“一排座位中的空座”：人依次坐到前面的空座上，空座看起来就在向相反方向移动。电子遇到空穴并填入空位称为&lt;strong&gt;复合&lt;/strong&gt;；电子脱离共价键时，则会同时产生一个自由电子和一个空穴。因为电子带负电，所以电子运动方向与传统电流方向相反；空穴等效带正电，其运动方向与传统电流方向相同。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 什么是正偏和反偏？
+&lt;p&gt;&lt;strong&gt;什么是正偏和反偏？&lt;/strong&gt;
 判断 PN 结的偏置，关键看 &lt;strong&gt;P 区和 N 区谁的电位更高&lt;/strong&gt;，而不是只看电源正负极的名称：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;正偏（forward bias）&lt;/strong&gt;：P 区电位高于 N 区（$V_P&amp;gt;V_N$）。外加电场抵消部分内建电场，耗尽层变窄、势垒降低，多数载流子更容易越过 PN 结，电流会明显增大。&lt;/li&gt;
@@ -27629,7 +27610,7 @@ $$&lt;/p&gt;
 &lt;p&gt;这套结构的核心目标是：零基础文档负责“看懂”，进阶文档负责“算清楚、测出来、设计好”，资源目录负责“直观展示”，归档目录负责“保留历史”。&lt;/p&gt;
 </content:encoded></item><item><title>电阻、电容、电感、二极管（1-1 基础知识点）</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-1_%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B91/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-1_%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B91/</guid><description>电阻、电容、电感、二极管 [!info] 说明 本文档整理自课堂笔记《11 基础知识点》，仅调整结构与格式，知识点内容保持不变。 元件 笔记中的核心知识点 电阻</description><pubDate>Sat, 29 Aug 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;电阻、电容、电感、二极管&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 说明
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;
 本文档整理自课堂笔记《1-1 基础知识点》，仅调整结构与格式，知识点内容保持不变。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
@@ -27663,10 +27644,10 @@ $$&lt;/p&gt;
 &lt;h3&gt;欧姆定律&lt;/h3&gt;
 &lt;p&gt;$R = \frac{U}{I}$   $I = \frac{U}{R}$    $U = I * R$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 测量注意事项&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;测量注意事项&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;万用表本身就有几 $\Omega$；&lt;/li&gt;
-&lt;li&gt;万用表接入时要==串联==。&lt;/li&gt;
+&lt;li&gt;万用表接入时要&amp;lt;mark&amp;gt;串联&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;电阻的阻值识别&lt;/h3&gt;
@@ -27675,7 +27656,7 @@ $$&lt;/p&gt;
 &lt;h4&gt;贴片电阻&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260109100047666.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/Pasted_image_20260807221617.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 读数规则
+&lt;p&gt;&lt;strong&gt;读数规则&lt;/strong&gt;
 1）3 位读数：前 2 位为有效数字，第 3 位表示 $10^n$（也可以理解为 0 的个数），精度为 ±5%；
 2）4 位读数：前 3 位为有效数字，第 4 位表示 $10^n$（也可以理解为 0 的个数），读法和 3 位的原理一样，精度为 ±1%；
 3）阻值小于 10 的读数：通常在两个数之间插入一个字母 R，用字母 R 来代替小数点。&lt;/p&gt;
@@ -27689,21 +27670,21 @@ $$&lt;/p&gt;
 &lt;h3&gt;电阻的限流作用&lt;/h3&gt;
 &lt;p&gt;当供电电压大于负载的工作电压时，可以利用电阻限流。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;==电路中不能超过电阻的功率==，同时尽可能只工作在供电电压与负载电压相差不大或者工作电流很小的场景；&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;电路中不能超过电阻的功率&amp;lt;/mark&amp;gt;，同时尽可能只工作在供电电压与负载电压相差不大或者工作电流很小的场景；&lt;/li&gt;
 &lt;li&gt;电子元件有一定的耐压值（超载能力）。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;这样会导致负载的损伤（有电流，击穿了），因此要加电阻进行限流：$V_{CC} = V_R + V_{led}$，$R = \frac{U}{I}$ 可以求出电阻的阻值。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1767925215400-1767925513227-5.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 计算示例
+&lt;p&gt;&lt;strong&gt;计算示例&lt;/strong&gt;
 串联：$I_{总}=5mA，V_{led}=2V$　　$R$ 的值为：
 $R=\frac{V_{总}-V_{led}}{I_{总}}=\frac{3.3V-2V}{5mA}=260\Omega$&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 小 tips
+&lt;p&gt;&lt;strong&gt;小 tips&lt;/strong&gt;
 $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;电阻的分流功能&lt;/h3&gt;
@@ -27714,7 +27695,7 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1767926409007.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 电机限流为什么要分流&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;电机限流为什么要分流&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;如果直接加电压到电机，点击会很容易烧掉，加电阻限流 $R = \frac{V_1 - V_M}{I_M} = \frac{10V - 5V}{0.5A} = 10\Omega$；&lt;/li&gt;
 &lt;li&gt;电机的电流是很大的，如果电阻限流，电阻的功率也是很大的，小的电阻很容易会烧；&lt;/li&gt;
@@ -27725,7 +27706,7 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;h3&gt;电阻的分压功能&lt;/h3&gt;
 &lt;p&gt;电阻分压公式：$V_R=\frac{(V_1-V_2) * R_2}{R1+R2}+V_2$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 注
+&lt;p&gt;&lt;strong&gt;注&lt;/strong&gt;
 很多时候 $V_2$ 是 $GND$。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;分压的功能：&lt;/p&gt;
@@ -27741,11 +27722,11 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;p&gt;电容简单来说就是两块不连通的导体加上中间的绝缘材料。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 基本概念&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;基本概念&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;电容：又叫电容器，是指容纳电荷本领的物理量；&lt;/li&gt;
 &lt;li&gt;电容一般用 $C$ 表示（Capacitance），电容的单位是法拉，简称法，符号是 F，常用的电容单位有毫法（$mF$）、微法（$μF$）、纳法（$nF$）和皮法（$pF$）等，单位为千进行换算，如 $1uF=1000nF$；$1nF=1000pF$；&lt;/li&gt;
-&lt;li&gt;==实际的电子产品应用中，根据电容“通交流，隔直流”的特性，在电路中所起的作用主要是储能与滤波==。&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;实际的电子产品应用中，根据电容“通交流，隔直流”的特性，在电路中所起的作用主要是储能与滤波&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;无极性电容&lt;/h4&gt;
@@ -27758,7 +27739,7 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260109114101009.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/image-20260109114242585.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260109114255849.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/image-20260109114319761.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;电容不能反接（如果反接电压达到一定值之后，电流会慢慢的变高，温度会慢慢的升高，达到一定的温度之后，会炸）；&lt;/li&gt;
 &lt;li&gt;并不是达到固定的电压和电流就会炸，会有一定的余量。&lt;/li&gt;
@@ -27768,7 +27749,7 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260109114757155.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260109114813269.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] ESL / ESR / 电解电容寿命&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ESL / ESR / 电解电容寿命&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;ESL：ESL 低代表着它的高频特性是很好的；&lt;/li&gt;
 &lt;li&gt;ESR：ESR 很低代表着它的瞬态电流相对来说会很大；&lt;/li&gt;
@@ -27779,19 +27760,19 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;p&gt;电容两端的相对电压不能突变，只要电容不充电或放电，电容两端的电压就不变。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/ac701202ee66db6415912b07a9a40ba3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 关键区分
-==电容两端的相对电压不能突变==（充放电发生变化，A 相对于 B 不能进行突变），但是==两端相对于 GND 的电压可以同时突变==（两端可以同时突变，相对电压差不会发生突变，A 与 B 可以一起突变，但是电压差不会突变）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关键区分&lt;/strong&gt;
+&amp;lt;mark&amp;gt;电容两端的相对电压不能突变&amp;lt;/mark&amp;gt;（充放电发生变化，A 相对于 B 不能进行突变），但是&amp;lt;mark&amp;gt;两端相对于 GND 的电压可以同时突变&amp;lt;/mark&amp;gt;（两端可以同时突变，相对电压差不会发生突变，A 与 B 可以一起突变，但是电压差不会突变）。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1767931405681.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 开关切换示例
+&lt;p&gt;&lt;strong&gt;开关切换示例&lt;/strong&gt;
 电容两端电压不会突变，所以在 S2 电路接通的那一刻，5V 电压加在电容正极 A 点时，电容负极 B 点也会处于 5V 的电压，此时电容开始充电，随着时间 t 的变化，电容中的电荷变多，电容两端出现电压降，B 点电压逐渐减小，就有了 5V 的电压差（充满电了）。断开 S2，打开 S3，因为 B 点的电压突变为 5V，因为电容电压可以同时突变，即 A 点的电压为 10V，电压差还是 5V。
 补充：之后断开 S3，A 会立刻掉回 5V，B 会立刻掉回 0V（还是电容两端电压不能突变）。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1767944417121.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;课堂疑问解答&lt;/h4&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 当两端的电压等于 0V 的时候（没有电压差），可以把电容当作导线。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/6.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
@@ -27810,14 +27791,14 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;p&gt;解决办法就是在开关和电容之间串一个 &lt;strong&gt;NTC 热敏电阻&lt;/strong&gt;（冷态阻值大、发热后阻值变小）或者&lt;strong&gt;电感&lt;/strong&gt;，用它来抑制上电瞬间的浪涌电流，避免把电源“短路”挂掉。这也是很多电源板、电机驱动器输入端都要做“软启动”的原因。&lt;/p&gt;
 &lt;h3&gt;电容的储能特性&lt;/h3&gt;
 &lt;p&gt;电容可以简单理解成一个小电池。&lt;/p&gt;
-&lt;p&gt;电容的充电速度与==电容大小==以及==充电电流==有关。&lt;/p&gt;
+&lt;p&gt;电容的充电速度与&amp;lt;mark&amp;gt;电容大小&amp;lt;/mark&amp;gt;以及&amp;lt;mark&amp;gt;充电电流&amp;lt;/mark&amp;gt;有关。&lt;/p&gt;
 &lt;p&gt;电容的充电时间常数：$\tau=R*C$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260109173755924.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/ac701202ee66db6415912b07a9a40ba3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;利用电容的储能特性可以实现关断延时&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1767952759861.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 电路现象
+&lt;p&gt;&lt;strong&gt;电路现象&lt;/strong&gt;
 第一个电路：很快会亮，很快熄灭；
 第二个电路：很快会亮，慢慢的熄灭。&lt;/p&gt;
 &lt;p&gt;小 tips：在开关闭合的一瞬间，电容导通，此时对于二极管来说已经是短路了，然后对电容进行了一个充电，充电时间很快，相当于断路，二极管是慢慢亮的，时间很短，肉眼看不出来。&lt;/p&gt;
@@ -27829,26 +27810,26 @@ $\frac{U}{A} = R$，$\frac{U}{mA} = KR$，$\frac{U}{uA} = MA$&lt;/p&gt;
 &lt;h4&gt;演示&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1767953097288.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 图 1
+&lt;p&gt;&lt;strong&gt;图 1&lt;/strong&gt;
 $R_8=1K$，$R_{9}=1K$，$V_1=3.3V$。
 $R_9$ 分到电压 $1.65V$，一开始的电容是没有能量的，如果开关闭合，$C3$ 电容接电瞬间相当于短路，$V_{out}$ 会跌到 0（速度很快），之后会缓慢上升。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 图 2
+&lt;p&gt;&lt;strong&gt;图 2&lt;/strong&gt;
 $R_{10}=1K$，$R_{11}=1K$，$V_1=3.3V$。
 $R_9$ 分到电压 $1.65V$，一开始的电容是没有能量的，如果开关闭合，$C4$ 电容接电瞬间相当于短路，$C5$ 给 $C4$ 供电，$V_{out}$ 电压跌落会很小。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 如果想要进行一个仿真，那么把开关放到电容前面。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;电容的容抗计算公式&lt;/h3&gt;
 &lt;p&gt;电容在频率越高时，阻抗越小，频率越低，阻抗越大。&lt;/p&gt;
 &lt;p&gt;$R_C=\frac{1}{2 \pi fc}$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 理解&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;理解&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;频率越高，$R_C$ 越小，$R_{总}$ 越小，电流越大；&lt;/li&gt;
 &lt;li&gt;“隔直通交，通高频阻低频”：交流电充电方向来回变，导致电容循环充放电。频率高充放电更快，则通过的更快，显得阻力小。&lt;/li&gt;
@@ -27856,17 +27837,17 @@ $R_9$ 分到电压 $1.65V$，一开始的电容是没有能量的，如果开关
 &lt;/blockquote&gt;
 &lt;p&gt;文件：&lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E8%BF%9B%E9%98%B6/%E7%94%B5%E5%AE%B9%E5%AE%B9%E6%8A%97%E4%B8%8Erc%E6%BB%A4%E6%B3%A2%E5%8E%9F%E7%90%86/&quot;&gt;电容容抗与RC滤波原理&lt;/a&gt;&lt;/p&gt;
 &lt;h3&gt;低通滤波电路原理及作用&lt;/h3&gt;
-&lt;p&gt;==低通滤波电路可以让“低频”的信号通过，衰减“高频”的信号==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;低通滤波电路可以让“低频”的信号通过，衰减“高频”的信号&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;低通滤波电路有以上作用是利用了电容充放电特性实现的。&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 输出位置
+&lt;p&gt;&lt;strong&gt;输出位置&lt;/strong&gt;
 低通滤波电路输出的电压是电容两端的电压。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;截止频率 $f_t=\frac{1}{2 \pi RC}$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260110102418615.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 截止频率处的表现
-$V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减自己的 0.707 倍）==有一定的相位差==。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;截止频率处的表现&lt;/strong&gt;
+$V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减自己的 0.707 倍）&amp;lt;mark&amp;gt;有一定的相位差&amp;lt;/mark&amp;gt;。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;假如峰值为 +1/-1，$V_{in}$ 输出信号的频率等于截止频率 $f_t$，那么它的峰值变为 +0.707/-0.707（$有效值 = \frac{峰值}{ \sqrt{2} }$）&lt;/li&gt;
 &lt;li&gt;意思是频率增高，然后根据容抗的计算公式，容抗会减小，那么电容的分压就减小了，所以测的示波器的电压就会小&lt;/li&gt;
@@ -27877,7 +27858,7 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/12.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/14.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 高频/低频信号的行为
+&lt;p&gt;&lt;strong&gt;高频/低频信号的行为&lt;/strong&gt;
 高频信号：电容容抗小，高频信号被电容直接短路到地，无法到输出端；
 低频信号：电容容抗大，无法将低频信号短路到地，信号顺利从输出端输出；
 高频信号的频率高，那么容抗就小，电容几乎像短路一样，允许高频信号通过电容流向地，绕过电阻，这也就是高频信号被衰减的原因（频率不同，能流入地的信号也不同，衰减就不同）；相反低频信号容抗大，大部分信号就不会从电容流走，而选择阻值更低电阻，更容易通过。&lt;/p&gt;
@@ -27890,38 +27871,38 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;h5&gt;直流信号&lt;/h5&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/ac701202ee66db6415912b07a9a40ba3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 直流&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;直流&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;电容充电，电压慢慢往上升，到最后电容电压一定等于电源电压；
-==如果是交流电，那就不一定了==。&lt;/li&gt;
+&amp;lt;mark&amp;gt;如果是交流电，那就不一定了&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h5&gt;交流信号&lt;/h5&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768116032813.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 高频交流
+&lt;p&gt;&lt;strong&gt;高频交流&lt;/strong&gt;
 交流电频率远远快于电容的充电速度（电容充电速度跟不上交流电的变化的速度），会衰减。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768117419622.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 低频交流
+&lt;p&gt;&lt;strong&gt;低频交流&lt;/strong&gt;
 交流电频率很低（电容充电速度跟得上交流电的变化的速度），就基本一致。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;高通滤波电路原理及作用&lt;/h3&gt;
-&lt;p&gt;==高通滤波电路可以让“高频”的信号通过，衰减“低频”的信号==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;高通滤波电路可以让“高频”的信号通过，衰减“低频”的信号&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;截止频率 $f_t=\frac{1}{2 \pi RC}$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 输出位置
+&lt;p&gt;&lt;strong&gt;输出位置&lt;/strong&gt;
 高通滤波电路输出的是电阻两端的电压（$V_R=V_{vin}-V_C$）。
 电阻分压原理的理解：意思是频率增高，然后根据容抗的计算公式，容抗会减小，那么电容的分压就减小了，电阻的分压就增大了。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768117966869.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 高/低频是相对概念
+&lt;p&gt;&lt;strong&gt;高/低频是相对概念&lt;/strong&gt;
 高频和低频是相对的概念，RC 电路构成的高通截止频率是 1K，当你的输出信号大于 1K 就是相对于这个 RC 电路就是比较高的频率，那就可以通过。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 截止频率处的表现
+&lt;p&gt;&lt;strong&gt;截止频率处的表现&lt;/strong&gt;
 $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减自己的 0.707 倍）。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;低于 $f_t$ 的频率衰减；&lt;/li&gt;
@@ -27942,17 +27923,17 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;h3&gt;什么是电感&lt;/h3&gt;
 &lt;p&gt;电感定义：是能够把电能转化为磁能而存储起来的元件。&lt;/p&gt;
 &lt;p&gt;电感（Inductor）：通常用字母“$L$”表示，电感的单位是亨利，简称亨，符号是 $H$，常用的电感单位有亨（$H$）、毫亨（$mH$）、微法（$\mu H$），换算关系是：$1H=1000mH；1mH=1000 \mu H$。&lt;/p&gt;
-&lt;p&gt;==实际的电子产品应用中，根据电感“通直流，隔交流”的特性，在电路中所起的作用主要是滤波，扼流，谐振，储能。==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;实际的电子产品应用中，根据电感“通直流，隔交流”的特性，在电路中所起的作用主要是滤波，扼流，谐振，储能。&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;$u=L\frac{di}{dt}$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260111163932283.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 直观理解
+&lt;p&gt;&lt;strong&gt;直观理解&lt;/strong&gt;
 电感就是一根导线加一个磁性材料；
 生活中，所有由线圈组成的器件，都是电感。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768121110242.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 补充
+&lt;p&gt;&lt;strong&gt;补充&lt;/strong&gt;
 一个线圈就是一个电感（任何导线都有一个电感特性）；
 磁性材料：增加电感/控制电感。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -27961,11 +27942,11 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260111164135047.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260111164200395.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;电感的基本特性&lt;/h3&gt;
-&lt;p&gt;==流过电感的电流不能突变==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;流过电感的电流不能突变&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;h4&gt;直上直下&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768122036317.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 直上直下
+&lt;p&gt;&lt;strong&gt;直上直下&lt;/strong&gt;
 开关闭合，电流会立刻从 $0A$ 到 $0.25A$；
 开关断开，电流会立刻从 $0.25A$ 到 $0A$。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -27973,22 +27954,22 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260111165156891.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/QQ_1768122413222.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/21.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 缓冲
+&lt;p&gt;&lt;strong&gt;缓冲&lt;/strong&gt;
 电感会把电流的上升速度抑制住，下降的电流同样也如此；
 电感上电瞬间相当于一个断路，因此从 0 开始。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;电感只能限制电流的变化速度&lt;/h3&gt;
-&lt;p&gt;==常见电路中，电感只能改变电路中的电流变化速度，但是不能改变电路的电流最大值==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;常见电路中，电感只能改变电路中的电流变化速度，但是不能改变电路的电流最大值&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 直流电流
+&lt;p&gt;&lt;strong&gt;直流电流&lt;/strong&gt;
 电感抑制电流的原理是线圈的构造产生磁场，磁场在抑制电流的变化，其本质还是一段导线。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/21.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;电感回路的电阻突然变很大会怎样&lt;/h3&gt;
-&lt;p&gt;==电感流过电流时，如果电感回路的电阻突变变得很大，电感会感生出一个很高的电压，此时容易击穿器件，所以应用电感时，必须要考虑电感的续流回路==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;电感流过电流时，如果电感回路的电阻突变变得很大，电感会感生出一个很高的电压，此时容易击穿器件，所以应用电感时，必须要考虑电感的续流回路&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/22.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/24.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 断开开关时的高压&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;断开开关时的高压&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;把开关 $S8$ 进行闭合，电流从 $0$ 慢慢到 $I_A$，但是如果突然断开的话，因为电感不能突变（上升/下降过程不能突变），电感的回路没有了，电感的电流还在 $I_A$，虽然回路断开了，但是电感会强制性的让回路流过电流，使电感电流降到 $0$，存储到断开的开关两边（开关可以视为是一个很小的电容），开关的两端有高压（很容易达到几百伏-击穿空气）；&lt;/li&gt;
 &lt;li&gt;我觉得可以这么理解，存储的载流子很多，开关断开之后 L 左侧载流子全部排放到 S 右侧，L 右侧（开关左侧）载流子流入大地，便会形成一个巨大的电势差，就形成了一个很大的电压；&lt;/li&gt;
@@ -27999,28 +27980,28 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768125311405.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/23.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;电感的感抗计算公式&lt;/h3&gt;
 &lt;p&gt;文件：&lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E9%9B%B6%E5%9F%BA%E7%A1%80/%E7%94%B5%E6%84%9F%E4%B8%8Erl_lc%E6%BB%A4%E6%B3%A2-%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&quot;&gt;电感与RL、LC滤波-零基础入门&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;==电感在频率越高时，阻抗越大，频率越低时，阻抗越小。==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;电感在频率越高时，阻抗越大，频率越低时，阻抗越小。&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;==$R_L=2 \pi fL$==&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 补充
+&lt;p&gt;&lt;strong&gt;补充&lt;/strong&gt;
 电感：不损耗的器件；
 交流电有频率，直流电频率为 0。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;电感的低通滤波原理&lt;/h3&gt;
 &lt;p&gt;文件：&lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E9%9B%B6%E5%9F%BA%E7%A1%80/%E7%94%B5%E6%84%9F%E4%B8%8Erl_lc%E6%BB%A4%E6%B3%A2-%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&quot;&gt;电感与RL、LC滤波-零基础入门&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;==低通滤波电路可以让低频的信号流过，衰减高频信号==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;低通滤波电路可以让低频的信号流过，衰减高频信号&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;==截止频率计算：$f_t=\frac{R}{2 \pi L}$==&lt;/p&gt;
 &lt;p&gt;利用了电感电流不能突变的特性。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 频率与电感电流
+&lt;p&gt;&lt;strong&gt;频率与电感电流&lt;/strong&gt;
 高频率：电感电流的上升速度和下降速度跟不上频率的变化；
 低频率：电感电流的上升速度和下降速度跟得上频率的变化。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260112091153974.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 截止频率处与阻抗分压&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;截止频率处与阻抗分压&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;$V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减自己的 0.707 倍），但是有一定的==相位差==。&lt;/li&gt;
+&lt;li&gt;$V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减自己的 0.707 倍），但是有一定的&amp;lt;mark&amp;gt;相位差&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;li&gt;阻抗分压来解释：
 &lt;ul&gt;
 &lt;li&gt;$V_{out}$ 在这个电路中就是电阻 $R_{19}$ 上面的电压；&lt;/li&gt;
@@ -28033,7 +28014,7 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/27.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 应用场景：RC 低通 vs LR 低通&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;应用场景：RC 低通 vs LR 低通&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;电容低通滤波（RC）：因为电阻是耗能器件（只要有电流流过电阻，电阻就会发热，电阻是会耗能的），因此一般适用于电流很小的电路，主要就是滤除一些信号传输的场景；&lt;/li&gt;
 &lt;li&gt;电感低频滤波（LR）：适用于电流比较大的电路，电感是不损耗能量的，主要是电源线上的滤波；&lt;/li&gt;
@@ -28044,15 +28025,15 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/25.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/26.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;电感的高通滤波原理&lt;/h3&gt;
 &lt;p&gt;文件：&lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E8%BF%9B%E9%98%B6/%E7%94%B5%E6%84%9F_rl%E4%B8%8Elc%E6%BB%A4%E6%B3%A2%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3/&quot;&gt;电感、RL与LC滤波原理详解&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;==高通滤波电路可以让高频的信号流过，衰减低频信号==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;高通滤波电路可以让高频的信号流过，衰减低频信号&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;==截止频率计算：$f_t=\frac{R}{2 \pi L}$==&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 电阻分压原理的理解
+&lt;p&gt;&lt;strong&gt;电阻分压原理的理解&lt;/strong&gt;
 意思是频率增高，然后根据感抗的计算公式，感抗会增大，那么电感的分压就增大了。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260112093507973.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 高频/低频信号的行为
+&lt;p&gt;&lt;strong&gt;高频/低频信号的行为&lt;/strong&gt;
 &lt;strong&gt;高频信号&lt;/strong&gt;：电感感抗 $R_L$ 远大于电阻阻抗 $R$，电感分压占比极大，电阻两端可获得大部分信号电压，高频信号能顺利传输至输出端。
 &lt;strong&gt;低频信号&lt;/strong&gt;：电感感抗 $R_L$ 远小于电阻阻抗 $R$，电感相当于“低阻通路”，大部分低频信号会被电感分流到地，电阻两端的信号电压被大幅衰减。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -28060,13 +28041,13 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/28.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/29.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/30.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/31.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意：直流偏置与滤波的选择&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：直流偏置与滤波的选择&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;这一个输出，是以电感作为输出的，在里面会发生电感是接地的，意味着电感滤除信号的时候，电路中不存在一些直流偏置的；&lt;/li&gt;
 &lt;li&gt;标准的正弦波（+1/-1），基准电压是 $0V$，这一种信号是可以正常工作的；有一些信号的基准电压是 $2V$（+3/+1），有 $2V$ 的偏置，叠加了 $2V$ 的直流信号上面，$2V$ 的直流信号是不能过滤掉的（因为是一个偏置信号，不是噪声，是固有存在的），但是 $LR$ 会过滤掉偏置的 $2V$（这个 $2V$ 是我们想要的）；&lt;/li&gt;
-&lt;li&gt;==就是有直流偏置的，用电容的高频滤波==；&lt;/li&gt;
-&lt;li&gt;==滤除直流偏置：$RC$、$RL$ 高通滤波电路==；&lt;/li&gt;
-&lt;li&gt;==保留直流偏置：$RC$、$RL$ 低通滤波电路==。&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;就是有直流偏置的，用电容的高频滤波&amp;lt;/mark&amp;gt;；&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;滤除直流偏置：$RC$、$RL$ 高通滤波电路&amp;lt;/mark&amp;gt;；&lt;/li&gt;
+&lt;li&gt;&amp;lt;mark&amp;gt;保留直流偏置：$RC$、$RL$ 低通滤波电路&amp;lt;/mark&amp;gt;。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;文件：&lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E9%9B%B6%E5%9F%BA%E7%A1%80/%E5%81%8F%E7%BD%AE_%E6%88%AA%E6%AD%A2%E9%A2%91%E7%8E%87%E4%B8%8E%E6%8C%AF%E8%8D%A1-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/&quot;&gt;偏置、截止频率与振荡-零基础概念&lt;/a&gt;&lt;/p&gt;
@@ -28075,9 +28056,9 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;文件：
 &lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E9%9B%B6%E5%9F%BA%E7%A1%80/%E7%94%B5%E6%84%9F%E4%B8%8Erl_lc%E6%BB%A4%E6%B3%A2-%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&quot;&gt;零基础/电感与RL、LC滤波-零基础入门&lt;/a&gt;
 &lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E9%9B%B6%E5%9F%BA%E7%A1%80/lc%E8%B0%90%E6%8C%AF%E4%B8%8Eq%E5%80%BC-%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&quot;&gt;LC谐振与Q值-零基础入门&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;==LC低通滤波电路比RC低通滤波、LR低通滤波电路的滤波效果更好==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;LC低通滤波电路比RC低通滤波、LR低通滤波电路的滤波效果更好&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 阻抗分压解释&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阻抗分压解释&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;$LC$：$V_{out}=\frac{R_C}{R_C+R_L}V_{in}$；&lt;/li&gt;
 &lt;li&gt;$RC$：$V_{out}=\frac{R_C}{R_C+R_{21}}V_{in}$。&lt;/li&gt;
@@ -28097,8 +28078,8 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;hr /&gt;
 &lt;h2&gt;二极管&lt;/h2&gt;
 &lt;h3&gt;基本结构&lt;/h3&gt;
-&lt;p&gt;==二极管的结构就是一个 PN 结，导通后肯定会存在压降（硅管≈0.7V；锗管≈0.3V），其结构就像一个漏斗结构，普通二极管只能单向导通==&lt;/p&gt;
-&lt;p&gt;==注意：二极管两端不能直接接大于二极管导通压降的电压，否则电流会很大，烧毁二极管==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;二极管的结构就是一个 PN 结，导通后肯定会存在压降（硅管≈0.7V；锗管≈0.3V），其结构就像一个漏斗结构，普通二极管只能单向导通&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;注意：二极管两端不能直接接大于二极管导通压降的电压，否则电流会很大，烧毁二极管&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260114103706306.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/image-20260114103919542.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;二极管的导通压降（如硅管 0.7V）是 &lt;strong&gt;PN 结内建电场的势垒电压&lt;/strong&gt;，是载流子（电子/空穴）克服内建电场、形成显著导通电流的&lt;strong&gt;最低电压阈值&lt;/strong&gt;。当外加正向电压&lt;strong&gt;超过&lt;/strong&gt;这一阈值后，二极管进入&lt;strong&gt;导通状态&lt;/strong&gt;，此时：&lt;/p&gt;
 &lt;ul&gt;
@@ -28108,19 +28089,19 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;二极管的&lt;strong&gt;导通压降&lt;/strong&gt;（正向压降）是指二极管正向偏置时，阳极与阴极之间需要施加的&lt;strong&gt;最低电压&lt;/strong&gt;，以使其开始显著导通电流。当施加 5V/10V 正向电压时，二极管的导通压降仍为&lt;strong&gt;0.7V 左右&lt;/strong&gt;（以硅二极管为例）。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768359457390.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/QQ_1768359514162.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;单向导通&lt;/h3&gt;
-&lt;p&gt;==二极管具有单向导电性能，导通时电流方向是由阳极通过管子流向阴极==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;二极管具有单向导电性能，导通时电流方向是由阳极通过管子流向阴极&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;h3&gt;漏电特性&lt;/h3&gt;
-&lt;p&gt;==二极管反向截止并不代表完全关断，其实会有微弱的漏电流，其中肖特基二极管（开关速度比普通二极管快）的漏电流会比较大==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;二极管反向截止并不代表完全关断，其实会有微弱的漏电流，其中肖特基二极管（开关速度比普通二极管快）的漏电流会比较大&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;h3&gt;半波整流电路工作原理&lt;/h3&gt;
-&lt;p&gt;==二极管的整流功能（峰值检波功能）==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;二极管的整流功能（峰值检波功能）&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 半波整流
+&lt;p&gt;&lt;strong&gt;半波整流&lt;/strong&gt;
 可以把交流电变为一个直流电；
 峰值检波功能 ≈ $V_{max} - 0.7$。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260114110021699.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/QQ_1768361706879.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 电阻的作用
+&lt;p&gt;&lt;strong&gt;电阻的作用&lt;/strong&gt;
 电阻：限制电容充电速度。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;全波整流工作原理&lt;/h3&gt;
@@ -28128,13 +28109,13 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768375784881.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768376372307.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;二极管的钳位功能&lt;/h3&gt;
-&lt;p&gt;==二极管的钳位功能（串联没有钳位）==&lt;/p&gt;
-&lt;p&gt;==利用二极管的导通电压特性，可以实现对信号线进行钳位==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;二极管的钳位功能（串联没有钳位）&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;利用二极管的导通电压特性，可以实现对信号线进行钳位&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;二极管的压降会&lt;strong&gt;稳定在 0.7V 左右&lt;/strong&gt;，仅随电流、温度有微小变化（如电流增大时压降可能升至 0.8V，但不会随外加电压成比例增加）。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768376563588.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768378757601.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 钳位的前提与作用
+&lt;p&gt;&lt;strong&gt;钳位的前提与作用&lt;/strong&gt;
 前提：两个电阻的分压要大于二极管的导通压降；
 作用：做电路的防护。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -28142,22 +28123,21 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;h3&gt;二极管控制电路的电流方向&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768380871166.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;二极管的最大反向耐压&lt;/h3&gt;
-&lt;p&gt;==二极管承受反向电压时会自动截止，但是每一个二极管都有最大反向耐压值==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;二极管承受反向电压时会自动截止，但是每一个二极管都有最大反向耐压值&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip]
-店家标记的最大反向耐压是有一定的余量&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;gt; 店家标记的最大反向耐压是有一定的余量&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/image-20260114103919542.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;稳压二极管的基本功能&lt;/h3&gt;
-&lt;p&gt;==稳压二极管是工作在反向击穿状态，当其发生反向击穿时，稳压二极管两端的电压会保持在某个电压值==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;稳压二极管是工作在反向击穿状态，当其发生反向击穿时，稳压二极管两端的电压会保持在某个电压值&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768381458072.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/QQ_1768381648625.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/fd75f937-8f41-4d19-9833-3fbadfb74ca0.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 重点理解
+&lt;p&gt;&lt;strong&gt;重点理解&lt;/strong&gt;
 反向击穿之后，相当于钳位作用。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;稳压管击穿之后，电流是有限的，反向击穿之后，有一个 $5.6V$ 的压降（不同稳压管，它的稳压值不一样），流过电流 $i$，是有功耗的 $P=I*V$，就会发热，当超过额定功率的时候，这时候的稳压管就坏掉了；&lt;/li&gt;
 &lt;li&gt;用稳压管做稳压的时候，一定要注意稳压电流，一定不能够太大，也不要太小（没那么稳定），建议在 $5mA$ 左右（大部分）；&lt;/li&gt;
@@ -28191,7 +28171,7 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;hr /&gt;
 &lt;h2&gt;三极管基础&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 前提&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;前提&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/%E8%BF%9B%E9%98%B6/%E4%B8%89%E6%9E%81%E7%AE%A1%E5%85%A5%E9%97%A8/&quot;&gt;三极管入门&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/weixin_44161807/article/details/130286668?ops_request_misc=elastic_search_misc&amp;amp;request_id=2c173113287a5a38306eacc17e2ef7b2&amp;amp;biz_id=0&amp;amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-130286668-null-null.142%5Ev102%5Epc_search_result_base1&amp;amp;utm_term=%E4%B8%89%E6%9E%81%E7%AE%A1&amp;amp;spm=1018.2226.3001.4187&quot;&gt;三极管的工作原理详解，图文+案例_三极管工作原理-CSDN博客&lt;/a&gt;&lt;/li&gt;
@@ -28199,16 +28179,16 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;/blockquote&gt;
 &lt;h3&gt;基本结构&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 三极管也是有压降的。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/1ae4767b-d234-4c0a-8e36-2c36f69cd182.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;开关功能&lt;/h3&gt;
-&lt;p&gt;==三极管可以当成电子开关来使用==&lt;/p&gt;
-&lt;p&gt;==也可以做放大信号==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;三极管可以当成电子开关来使用&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;也可以做放大信号&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/e9db41f1-6c0e-43e1-922a-32143dbcdf9a.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;开关电路设计注意事项&lt;/h3&gt;
-&lt;p&gt;==理想的开关只有“开”和“关”两种状态，但是三极管不是一个理想的开关，它有“似开不开、似关不关”的第三种状态（放大）==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;理想的开关只有“开”和“关”两种状态，但是三极管不是一个理想的开关，它有“似开不开、似关不关”的第三种状态（放大）&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;三极管的 3 种工作状态：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;截止状态&lt;/strong&gt;&lt;/li&gt;
@@ -28238,7 +28218,7 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;li&gt;$I_B=\frac{V_{cc}-V_{be}}{R_4} \rightarrow R_4=\frac{V_{cc}-V_{be}}{I_B} = \frac{5V-0.7V}{5mA} = 0.86K\Omega$（最大值）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h3&gt;P 型三极管开关电路设计注意事项&lt;/h3&gt;
-&lt;p&gt;==当三极管用作开关时，通常 N 型三极管控制负载的 gnd 端，P 型三极管控制负载的 $V_{cc}$ 端==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;当三极管用作开关时，通常 N 型三极管控制负载的 gnd 端，P 型三极管控制负载的 $V_{cc}$ 端&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768530010013.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;原 NPN 电路的发热根源：无法进入“低耗饱和区”&lt;/h4&gt;
 &lt;p&gt;从图中电路看，这是 &lt;strong&gt;NPN 三极管的“发射极带负载”结构&lt;/strong&gt;，但偏置条件错了，导致三极管始终处于&lt;strong&gt;高耗的放大区&lt;/strong&gt;：&lt;/p&gt;
@@ -28296,7 +28276,7 @@ $V_{in}$ 输出信号的频率等于截止频率 $f_t$，会衰减 -3dB（衰减
 &lt;p&gt;简单说：PNP 的“发射极电位最高”的偏置特性，能让三极管轻松进入&lt;strong&gt;低压降、低管耗的饱和区&lt;/strong&gt;，完美解决原 NPN 因偏置限制导致的高耗发热问题。&lt;/p&gt;
 &lt;h3&gt;P 型三极管开关的计算方式&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 计算步骤&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;计算步骤&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;确定 $I_C$ 的最大值 $I_C = 500mA$
 $I_C = \beta I_B \rightarrow I_B &amp;gt; \frac{500mA}{100} = 5mA$&lt;/li&gt;
@@ -28306,18 +28286,18 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768530889327.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;N 型三极管和 P 型三极管的特性对比&lt;/h3&gt;
-&lt;p&gt;==N 型三极管和 P 型三极管的工作逻辑相反==&lt;/p&gt;
-&lt;p&gt;==N 型三极管控制输出，P 型三极管控制输入==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;N 型三极管和 P 型三极管的工作逻辑相反&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;N 型三极管控制输出，P 型三极管控制输入&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768531553795.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;三极管的输出反相功能&lt;/h3&gt;
-&lt;p&gt;==三极管集电极信号与输入信号的逻辑相反，所以可以利用三极管对信号进行反相==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;三极管集电极信号与输入信号的逻辑相反，所以可以利用三极管对信号进行反相&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768534019346.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/QQ_1768534572428.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;三极管的基极下拉电阻的重要性&lt;/h3&gt;
-&lt;p&gt;==给 N 型三极管的基极加下拉电阻可以改善噪声的干扰==&lt;/p&gt;
-&lt;p&gt;==N 型三极管加下拉电阻，P 型三极管加上拉电阻==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;给 N 型三极管的基极加下拉电阻可以改善噪声的干扰&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;N 型三极管加下拉电阻，P 型三极管加上拉电阻&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768535406045.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;三极管的最大耐压&lt;/h3&gt;
-&lt;p&gt;==三极管并不是一个理想开关，每个三极管都有其最大耐压值==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;三极管并不是一个理想开关，每个三极管都有其最大耐压值&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768547292552.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;“耐压值”在三极管（双极型晶体管，BJT）上下文中通常指它能承受的最大电压而不发生击穿。常见术语和要点：&lt;/p&gt;
 &lt;p&gt;$V_{cb} &amp;gt; V_{ce} &amp;gt; V_{eb}$&lt;/p&gt;
@@ -28552,7 +28532,7 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;h2&gt;MOS 管&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/Image_1768814884962_300.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 学习资料
+&lt;p&gt;&lt;strong&gt;学习资料&lt;/strong&gt;
 &lt;strong&gt;必看：&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/BV1fB4y147Gn/?spm_id_from=333.1387.homepage.video_card.click&amp;amp;vd_source=cae5e5e53a7fcdf3a7ac534a5a5e2344&quot;&gt;理解NP结：终于有人讲了，凭什么三极管能放大?哔哩哔哩_bilibili&lt;/a&gt;&lt;/li&gt;
@@ -28574,14 +28554,14 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;看完上面的这些，对于 MOS 管有一定的了解了。&lt;/p&gt;
 &lt;h3&gt;MOS 管的基本结构&lt;/h3&gt;
-&lt;p&gt;==由电压来控制，MOS 管的三个极都是绝缘的，电阻无限大==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;由电压来控制，MOS 管的三个极都是绝缘的，电阻无限大&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768876735720.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;==寄生电容，寄生二极管==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;寄生电容，寄生二极管&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768878289431.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/5fd34492e55b5fbced09a96ef3244a16.png&quot; alt=&quot;&quot; /&gt;　&lt;img src=&quot;../../../assets/QQ_1768881385493.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;MOS 管的导通条件&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 导通条件&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;导通条件&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Nmos：$V_g-V_s&amp;gt;V_{th}$，DS 之间导通&lt;/li&gt;
 &lt;li&gt;Pmos：$V_g-V_s&amp;lt;V_{th}$，DS 之间导通&lt;/li&gt;
@@ -28631,22 +28611,22 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;和普通电阻负载不同，电阻可以通过电流消耗能量，但 MOS 管栅极几乎不消耗能量，电荷会一直“存”在 $C_{GS}$ 里。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 实际漏电
-==实际上，MOS 管不可能做到 100% 的绝缘，因此还是会有漏电，电容电压会缓慢降低（其时间会比较长），最终还是会关掉==&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实际漏电&lt;/strong&gt;
+&amp;lt;mark&amp;gt;实际上，MOS 管不可能做到 100% 的绝缘，因此还是会有漏电，电容电压会缓慢降低（其时间会比较长），最终还是会关掉&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;解决&lt;/h4&gt;
 &lt;h5&gt;第一种解决办法&lt;/h5&gt;
-&lt;p&gt;==加下拉电阻==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;加下拉电阻&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768881017953.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 下拉电阻&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;下拉电阻&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;释放寄生电容，利用电阻快速把电容释放掉；&lt;/li&gt;
 &lt;li&gt;电阻值比较大（$K\Omega$ 级别），因为电阻小了，开关一闭合，电阻会一直耗能，电阻损耗比较大（$P=I*V$，电阻小，电流大，因为是并联，电压是不变的）。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 另一种解释&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;另一种解释&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;在 G 级串联一个电阻，与 C 形成一个 RC 充放电电路，可以减小瞬间电流值，不至于损毁 MOS 管的驱动芯片。&lt;/li&gt;
 &lt;li&gt;网上还有一种说法是：抑制振荡。&lt;/li&gt;
@@ -28655,30 +28635,30 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;h5&gt;第二种解决办法&lt;/h5&gt;
-&lt;p&gt;==推挽==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;推挽&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768883567496.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;MOS 的寄生二极管不能够忽略&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768897139960.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 应用场景
+&lt;p&gt;&lt;strong&gt;应用场景&lt;/strong&gt;
 当有外部电源，就把电池供电给断开，外部电源供电。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;解决&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768897228935.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 但是这样不能关断电源电压给他供电。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768897797033.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 电路说明&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;电路说明&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;$1K\Omega$ 电阻的电阻只管着左侧的 PMOS 管，没有这个电阻左侧的 PMOS 管因为 $C_{gs}$ 电容的原因是关不紧的（ds 之间有电流流出）；&lt;/li&gt;
 &lt;li&gt;右侧的 PMOS 管，只充当二极管的作用（电源供电，直接通过（会有压降），外部电源供电，截止）。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;NMOS 管做电源开关时的注意事项&lt;/h3&gt;
-&lt;p&gt;==Nmos 控制负载的工作电源时，需要使用自举电容或者一个比电源更高的控制信号来控制 mos 栅极==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;Nmos 控制负载的工作电源时，需要使用自举电容或者一个比电源更高的控制信号来控制 mos 栅极&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768901003437.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;问题&lt;/h4&gt;
 &lt;p&gt;当 &lt;strong&gt;N-MOS 管的源极 (S) 未直接接地&lt;/strong&gt;，而是接在负载与电源之间时，随着负载端电压（即 S 极电压 $V_S$）上升，栅源电压 $V_{GS}=V_G−V_S$ 会持续减小。当 $V_{GS}$ 降至&lt;strong&gt;临界导通电压 $V_{GS(th)}$&lt;/strong&gt; 附近时，MOS 管会从&lt;strong&gt;饱和导通&lt;/strong&gt;进入&lt;strong&gt;线性放大区&lt;/strong&gt;，无法实现理想开关的“完全导通”，最终负载电压被钳位在 $V_G−V_{GS(th)}$ 附近，无法达到电源电压。&lt;/p&gt;
@@ -28974,7 +28954,7 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768966024009.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!important] 关键原理总结&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关键原理总结&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;正常上电&lt;/strong&gt;：体二极管“应急供电”→ MCU 启动 → 三极管导通 → 分压拉低栅极 → PMOS 完全导通 → 短路体二极管 → 高效供电；&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;反接保护&lt;/strong&gt;：体二极管反向截止 → 阻断电流 → 后级无损坏；&lt;/li&gt;
@@ -28983,7 +28963,7 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;MOS 管 DS 之间的电流可以双向导通&lt;/h3&gt;
 &lt;p&gt;三极管的 ce 之间有电流方向，但是 mos 没有。&lt;/p&gt;
-&lt;p&gt;==只要 mos 的 gs 之间满足导通条件，mos 管 DS 之间的电流可以双向导通（N 型三极管只能从集电极流向它的发射极）==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;只要 mos 的 gs 之间满足导通条件，mos 管 DS 之间的电流可以双向导通（N 型三极管只能从集电极流向它的发射极）&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768967890699.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;1. MOS 管的核心：沟道的双向导电性&lt;/h4&gt;
 &lt;p&gt;以图中的 &lt;strong&gt;N 沟道增强型 MOS 管（2N6762）&lt;/strong&gt; 为例，其内部结构是：&lt;/p&gt;
@@ -29013,17 +28993,17 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;导通状态&lt;/strong&gt;（$V_{GS}=5V$）：沟道形成，S 与 D 低阻连通（导通电阻远小于二极管），寄生二极管被“短路”。电流路径：GND→S→沟道→D→1kΩ 负载→12V−→12V+→GND。电流方向：&lt;strong&gt;S→D&lt;/strong&gt;（正电荷移动方向），与左图的电流方向完全相反，验证了 MOS 管导通时电流可双向流动。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;**缺点：**没法控制 $1K\Omega$ 电阻的供电情况（不闭合还是有电流流过）。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;解决：&lt;/strong&gt;==加一个镜像 MOS 管，抵消原先 MOS 管的寄生二极管==&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决：&lt;/strong&gt;&amp;lt;mark&amp;gt;加一个镜像 MOS 管，抵消原先 MOS 管的寄生二极管&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768968484909.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 核心结论：为什么 MOS 管电流可以双向？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;核心结论：为什么 MOS 管电流可以双向？&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;沟道本质&lt;/strong&gt;：导通时的沟道是低阻通路，仅起“导电导线”作用，电流方向由外部电路的电压极性决定，与管子“源 / 漏”的命名无关（源漏结构对称，仅应用时人为定义）；&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;寄生二极管的角色&lt;/strong&gt;：截止时可能引入反向漏电流，但导通时沟道电阻远小于二极管，电流会优先走沟道，从而实现“可控的双向电流”。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;MOS 管的导通电流与 $V_{gs}$ 的关系&lt;/h3&gt;
-&lt;p&gt;==MOS 管的导通电流与 $V_{gs}$ 的大小成正比，大部分 mos 当 $V_{gs}$ 大于 4.5V 时，进入饱和状态==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;MOS 管的导通电流与 $V_{gs}$ 的大小成正比，大部分 mos 当 $V_{gs}$ 大于 4.5V 时，进入饱和状态&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/QQ_1768969556873.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;MOS 管输出特性曲线&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/d12be42bf55972a614d369b970ea2c2b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
@@ -29039,8 +29019,8 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;h4&gt;击穿区&lt;/h4&gt;
 &lt;p&gt;随着 $V_{DS}$ 增大，PN 结（寄生二极管）承受太大的反向电压而被击穿。&lt;/p&gt;
 &lt;h3&gt;MOS 管的最大耐压&lt;/h3&gt;
-&lt;p&gt;==所有的 mos 管都有最大耐压值==&lt;/p&gt;
-&lt;p&gt;==栅源击穿电压，源漏击穿电压，漏栅击穿电压，是不一致的==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;所有的 mos 管都有最大耐压值&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;栅源击穿电压，源漏击穿电压，漏栅击穿电压，是不一致的&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;h4&gt;耐压的核心参数&lt;/h4&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -29072,7 +29052,7 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;p&gt;&lt;strong&gt;举例&lt;/strong&gt;：若电源电压为 12 V，按 K=1.2 计算，所需 $BV_{DS}≥12×1.2=14.4 V$；若按 K=2 计算，则 $BV_{DS}≥24 V$，2N7000（60 V）完全满足要求。&lt;/p&gt;
 </content:encoded></item><item><title>1-3 基础知识点3</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-3_%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B93/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-3_%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B93/</guid><description>比较器与运算放大器基础 [!info] 说明 本文档整理自课堂笔记《13 基础知识点3》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 比较</description><pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;比较器与运算放大器基础&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 说明
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;
 本文档整理自课堂笔记《1-3 基础知识点3》，仅调整结构与格式，知识点内容保持不变。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
@@ -29103,7 +29083,7 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/table&gt;
 &lt;hr /&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!abstract] 本章脉络
+&lt;p&gt;&lt;strong&gt;本章脉络&lt;/strong&gt;
 先区分比较器与运放，再分别学习输出结构、输入范围、虚短虚断、典型运放电路和器件选型。最后统一理解两者共有的输入失调电压 $V_{OS}$。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;1. 比较器与运放速查&lt;/h2&gt;
@@ -29144,7 +29124,7 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 阅读顺序&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阅读顺序&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;比较器：先看输出结构，再看输入范围和颤振。&lt;/li&gt;
 &lt;li&gt;运放：先理解虚短、虚断，再分析四类典型电路。&lt;/li&gt;
@@ -29163,16 +29143,16 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 上述关系描述的是常见的非反相比较逻辑。实际输出电平还要结合器件输出结构、供电电压和数据手册确认。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;2.2 输出结构与上拉电阻&lt;/h3&gt;
-&lt;p&gt;==比较器的输出结构主要分为OC（集电极开路）、OD（漏极开路）、推挽输出三种结构==&lt;/p&gt;
-&lt;p&gt;==其中OC和OD要加上拉电阻，推挽输出不需要加上拉电阻==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;比较器的输出结构主要分为OC（集电极开路）、OD（漏极开路）、推挽输出三种结构&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;其中OC和OD要加上拉电阻，推挽输出不需要加上拉电阻&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 不加上拉电阻，输出会悬空并容易受外界干扰，因此需要加上上拉电阻&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;2.2.1 OC 与 OD 输出结构的区别&lt;/h4&gt;
@@ -29292,10 +29272,10 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;/table&gt;
 &lt;p&gt;选型顺序：先满足器件灌流能力，再满足上升时间要求，最后在前两项允许的范围内尽量增大电阻以降低功耗。&lt;/p&gt;
 &lt;h3&gt;2.3 输入电压范围&lt;/h3&gt;
-&lt;p&gt;==比较器的输入范围不能够超出芯片的供电范围，超过芯片供电范围可能会工作异常==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;比较器的输入范围不能够超出芯片的供电范围，超过芯片供电范围可能会工作异常&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 输入范围限制
+&lt;p&gt;&lt;strong&gt;输入范围限制&lt;/strong&gt;
 尽量不要低于 $0.0V$，不要高于 $5.0V$。
 高一点低一点没有问题，不要超过二极管压降 $0.7V$&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -29304,13 +29284,13 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;p&gt;实际上：
 &lt;img src=&quot;../../../assets/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 输入超限的表现与对策
+&lt;p&gt;&lt;strong&gt;输入超限的表现与对策&lt;/strong&gt;
 在低于 $-0.7V$ 时，变回高电平
 接地改为 $-5V$ 就可以解决&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;2.4 阈值颤振与滞回&lt;/h3&gt;
-&lt;p&gt;==比较器有偏置电压，简单来说就是比较器的两输入端本身就存在一定的压差==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;比较器有偏置电压，简单来说就是比较器的两输入端本身就存在一定的压差&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;比较器在输入在阈值附近来回穿过时出现的“颤振”（chatter、抖动、抖抖几下）现象。&lt;/p&gt;
 &lt;h4&gt;2.4.1 现象&lt;/h4&gt;
 &lt;ul&gt;
@@ -29332,8 +29312,8 @@ $860\Omega$ 是最大值&lt;/li&gt;
 &lt;h5&gt;首选方法：引入正反馈，构建双阈值&lt;/h5&gt;
 &lt;p&gt;滞回能解决颤振问题，核心是通过&lt;strong&gt;引入正反馈构建双阈值（回差电压）&lt;/strong&gt; ，打破 &quot;$V_+$ 与 $V_-$ 在单阈值附近反复交叉&quot; 的恶性循环，给比较器的输出跳变设置 &quot;单向门槛&quot;，从根源上抵御微小干扰。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 实操要点
-补充实操关键点：==回差电压可通过电阻配比调整（如加大 1k 电阻可增大回差），能适配不同噪声、偏置漂移场景 —— 噪声越大，可适当加大回差，既不影响正常信号跳变，又能彻底抑制颤振，这也是该方案在硬件实操中通用性强的原因。==&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实操要点&lt;/strong&gt;
+补充实操关键点：&amp;lt;mark&amp;gt;回差电压可通过电阻配比调整（如加大 1k 电阻可增大回差），能适配不同噪声、偏置漂移场景 —— 噪声越大，可适当加大回差，既不影响正常信号跳变，又能彻底抑制颤振，这也是该方案在硬件实操中通用性强的原因。&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;那么就引出了一个问题：为什么正反馈会导致有一个回差电压呢？&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;答：&lt;strong&gt;正反馈正是实现迟滞的手段&lt;/strong&gt;。&lt;/p&gt;
@@ -29349,7 +29329,7 @@ $$
 &lt;p&gt;此时比较器只有&lt;strong&gt;一个阈值点&lt;/strong&gt;：$1,\text{V}$。只要 $V_1 &amp;gt; 1,\text{V}$，输出低；$V_1 &amp;lt; 1,\text{V}$，输出高。&lt;/p&gt;
 &lt;p&gt;问题在于：当 $V_1$ 刚好在 $1,\text{V}$ 附近时，哪怕只有 $10,\text{mV}$ 的噪声，也会让 $V_1$ 在 $1,\text{V}$ 上下反复穿越，导致输出频繁翻转——这就是&lt;strong&gt;震颤&lt;/strong&gt;。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 健忘的比较器
+&lt;p&gt;&lt;strong&gt;健忘的比较器&lt;/strong&gt;
 没有正反馈时，比较器是“健忘”的：它只看当前输入，不记得上一刻的输出状态，所以对噪声极度敏感。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h6&gt;2）加上正反馈后：输出“拽”着阈值走，创造出两个门限&lt;/h6&gt;
@@ -29407,7 +29387,7 @@ $$&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 死区的本质
+&lt;p&gt;&lt;strong&gt;死区的本质&lt;/strong&gt;
 正反馈的核心作用，就是让比较器“记住”自己上一刻的输出状态：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;输出高时，阈值被抬高，让输入信号“更难”触发翻转。&lt;/li&gt;
@@ -29434,7 +29414,7 @@ $$&lt;/p&gt;
 &lt;h2&gt;3. 运算放大器&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/%E6%A8%A1%E7%94%B5_2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info]- 延伸视频&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;延伸视频&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/BV1VeQdYUELe/&quot;&gt;一看就会：运算放大器&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://www.bilibili.com/video/BV1ZyjdzmE6G/&quot;&gt;极速入门数模电路：重新认识运算放大器&lt;/a&gt;&lt;/li&gt;
@@ -29442,12 +29422,12 @@ $$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;3.1 作用与基本概念&lt;/h3&gt;
-&lt;p&gt;==运放：运算放大器，常用于做信号处理。如：信号放大、滤波、积分、微分、整流、甚至可以用来做电路主控等等。其功能非常强大==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;运放：运算放大器，常用于做信号处理。如：信号放大、滤波、积分、微分、整流、甚至可以用来做电路主控等等。其功能非常强大&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/17.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;3.2 理想运放的两个分析基础&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/20.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;3.2.1 虚短&lt;/h4&gt;
-&lt;p&gt;虚短的概念是指==运放在正常工作过程中，其$V_+ \approx V_-$==；&lt;/p&gt;
+&lt;p&gt;虚短的概念是指&amp;lt;mark&amp;gt;运放在正常工作过程中，其$V_+ \approx V_-$&amp;lt;/mark&amp;gt;；&lt;/p&gt;
 &lt;p&gt;原因：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -29513,7 +29493,7 @@ $$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;h4&gt;3.2.2 虚断&lt;/h4&gt;
 &lt;p&gt;&lt;a href=&quot;https://www.bilibili.com/video/BV1gHSyY3E6q?spm_id_from=333.788.videopod.episodes&amp;amp;vd_source=cae5e5e53a7fcdf3a7ac534a5a5e2344&amp;amp;p=74&quot;&gt;72.运放虚断的根本原因哔哩哔哩_bilibili&lt;/a&gt; (他讲的这种理解我觉得是很好理解的)&lt;/p&gt;
-&lt;p&gt;虚断的概念是指==运放的输入端口相对于外部电路来说，可以认为是断路==。&lt;/p&gt;
+&lt;p&gt;虚断的概念是指&amp;lt;mark&amp;gt;运放的输入端口相对于外部电路来说，可以认为是断路&amp;lt;/mark&amp;gt;。&lt;/p&gt;
 &lt;h5&gt;先看一个简单的电路&lt;/h5&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/21.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h5&gt;从电阻分压理解“虚断”&lt;/h5&gt;
@@ -29967,13 +29947,13 @@ $dU_{out} = -\frac{1}{R_1 C_1} U_{in} dt$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;h3&gt;3.5 输入/输出范围：轨对轨与非轨对轨&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 数据手册优先
+&lt;p&gt;&lt;strong&gt;数据手册优先&lt;/strong&gt;
 “轨对轨”通常表示接近电源轨，并不保证在所有负载和温度条件下都能真正达到电源轨。输入共模范围和输出摆幅必须结合供电电压、负载及温度条件查看数据手册。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4&gt;3.5.1 轨对轨运放&lt;/h4&gt;
 &lt;h5&gt;一、什么是轨对轨运放？&lt;/h5&gt;
 &lt;p&gt;在运算放大器中，“轨”（Rail）指电源电压。对于单电源供电，正轨是 $V_{CC}$（如 +5V），负轨是 GND（0V）；对于双电源供电，正轨是 $+V_{CC}$，负轨是 $-V_{EE}$。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;轨对轨（Rail-to-Rail）运放&lt;/strong&gt;是指其==输入或输出电压能力可以非常接近==（甚至达到）电源轨的运放。根据能力范围，分为：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;轨对轨（Rail-to-Rail）运放&lt;/strong&gt;是指其&amp;lt;mark&amp;gt;输入或输出电压能力可以非常接近&amp;lt;/mark&amp;gt;（甚至达到）电源轨的运放。根据能力范围，分为：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;输入轨对轨&lt;/strong&gt;：输入信号可以从负轨到正轨。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;输出轨对轨&lt;/strong&gt;：输出电压可以从负轨到正轨。&lt;/li&gt;
@@ -30226,7 +30206,7 @@ $dU_{out} = -\frac{1}{R_1 C_1} U_{in} dt$&lt;/p&gt;
 &lt;/ol&gt;
 </content:encoded></item><item><title>电流检测电路（1-4 电流检测电路）</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-4_%E7%94%B5%E6%B5%81%E6%A3%80%E6%B5%8B%E7%94%B5%E8%B7%AF/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-4_%E7%94%B5%E6%B5%81%E6%A3%80%E6%B5%8B%E7%94%B5%E8%B7%AF/</guid><description>电流检测电路 [!info] 说明 本文档整理自课堂笔记《14 电流检测电路》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 单端检测（低端</description><pubDate>Sat, 29 Aug 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;电流检测电路&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 说明
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;
 本文档整理自课堂笔记《1-4 电流检测电路》，仅调整结构与格式，知识点内容保持不变。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
@@ -30301,7 +30281,7 @@ $V_{\text{out}} \approx 10,\text{mV} \times 10 = 100,\text{mV}$&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h3&gt;一、第一个坑：运放的输入共模范围&lt;/h3&gt;
 &lt;p&gt;低端检测时，采样电阻上的电压非常小，只有十几毫伏，而且非常靠近地。&lt;/p&gt;
-&lt;p&gt;很多普通运放不是==轨对轨==（[2-5 轨对轨运放 and $V_{os}$.md](D:\Typora\PCB\2-5 轨对轨运放 and $V_{os}$.md)）的，它的输入并不能真正到 0V。当输入信号太靠近地时，已经超出了它的正常工作范围，测出来必然不准。&lt;/p&gt;
+&lt;p&gt;很多普通运放不是&amp;lt;mark&amp;gt;轨对轨&amp;lt;/mark&amp;gt;（[2-5 轨对轨运放 and $V_{os}$.md](D:\Typora\PCB\2-5 轨对轨运放 and $V_{os}$.md)）的，它的输入并不能真正到 0V。当输入信号太靠近地时，已经超出了它的正常工作范围，测出来必然不准。&lt;/p&gt;
 &lt;h4&gt;怎么办？解决办法有两个：&lt;/h4&gt;
 &lt;ol&gt;
 &lt;li&gt;方法1：给运放加负电源
@@ -30367,7 +30347,7 @@ $V_{\text{out}} \approx 10,\text{mV} \times 10 = 100,\text{mV}$&lt;/p&gt;
 &lt;p&gt;两条路配合着用，就能做出既成本合理、又精度够用的产品。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;高端检测&lt;/h2&gt;
-&lt;p&gt;==采样电阻在负载和地之间就是低端 在负载和电源之间就是高端==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;采样电阻在负载和地之间就是低端 在负载和电源之间就是高端&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;$$V_1 - V_2 = I_1 * 10mR\V_+ = \frac{V_1 * 10k}{10k + 1k}\ \frac{(V_{out} - V_-)}{10k} = \frac{(V_- - V_2)}{1k} \rightarrow V_- = \frac{(V_{out} - V_2)*1k}{10k + 1k} + V_2\V_{out} = \frac{10k}{1k}(V_1-V_2)$$&lt;/p&gt;
 &lt;h3&gt;电路分析&lt;/h3&gt;
@@ -30433,7 +30413,7 @@ $V_{\text{out}} \approx 10,\text{mV} \times 10 = 100,\text{mV}$&lt;/p&gt;
 &lt;h4&gt;三、本质问题总结&lt;/h4&gt;
 &lt;p&gt;该电路的核心缺陷是&lt;strong&gt;用低阻电阻网络搭建差分放大，牺牲输入阻抗换取电路简单&lt;/strong&gt;，最终导致：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 本质问题
+&lt;p&gt;&lt;strong&gt;本质问题&lt;/strong&gt;
 小电流场景分流严重、采样精度差、抗干扰能力弱、适用场景极窄&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;解决&lt;/h3&gt;
@@ -30586,8 +30566,8 @@ $$V_{\text{out}} = \left( \frac{2R}{R_W} + 1 \right) (V_1 - V_2) + V_{\text{ref}
 结合采样电压与负载电流的关系 $V_1 - V_2 = I_{\text{load}} \cdot R_W$，最终可表示为：
 $$\boxed{V_{\text{out}} = \left( \frac{2R}{R_W} + 1 \right) \cdot I_{\text{load}} \cdot R_W + V_{\text{ref}}}$$&lt;/p&gt;
 &lt;h3&gt;注意事项&lt;/h3&gt;
-&lt;p&gt;==&lt;strong&gt;1、运放的输入、输出范围；&lt;/strong&gt;==&lt;/p&gt;
-&lt;p&gt;==&lt;strong&gt;2、运放的$V_{os}$对电路的影响；&lt;/strong&gt;==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;&lt;strong&gt;1、运放的输入、输出范围；&lt;/strong&gt;&amp;lt;/mark&amp;gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;&lt;strong&gt;2、运放的$V_{os}$对电路的影响；&lt;/strong&gt;&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../assets/12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;综合分析：高端电流检测 + 电阻分压 + 仪表放大电路&lt;/p&gt;
 &lt;h4&gt;1. 为什么高端检测要加电阻分压？（对应讲课内容+电路图）&lt;/h4&gt;
@@ -30638,12 +30618,12 @@ $$\boxed{V_{\text{out}} = \left( \frac{2R}{R_W} + 1 \right) \cdot I_{\text{load}
 &lt;/ul&gt;
 &lt;hr /&gt;
 &lt;h4&gt;3. 电路图结构与讲课内容的完全对应&lt;/h4&gt;
-&lt;p&gt;==讲课核心思路==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;讲课核心思路&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 核心思路
+&lt;p&gt;&lt;strong&gt;核心思路&lt;/strong&gt;
 高压高端采样 → 分压降共模 → 保证分压电阻足够大、不分流 → 后级放大补增益 → 注意 $V_{os}$&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;==电路图实现逻辑==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;电路图实现逻辑&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;两路 100:1 电阻分压&lt;/strong&gt;
 把高共模电压降到运放安全输入范围内。&lt;/li&gt;
@@ -30658,12 +30638,12 @@ $$\boxed{V_{\text{out}} = \left( \frac{2R}{R_W} + 1 \right) \cdot I_{\text{load}
 &lt;/ol&gt;
 &lt;hr /&gt;
 &lt;h4&gt;4. $V_{os}$（失调电压）的综合影响&lt;/h4&gt;
-&lt;p&gt;==讲课要点==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;讲课要点&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;仪表放大器本身 $V_{os}$ 通常较小，影响可控；&lt;/li&gt;
 &lt;li&gt;如果精度要求高，也可以通过校准消除 $V_{os}$ 误差。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;==对应电路图的注意事项==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;对应电路图的注意事项&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;前端跟随器的 $V_{os}$ 会直接变成差分误差；&lt;/li&gt;
 &lt;li&gt;后端运放 $V_{os}$ 会叠加到输出；&lt;/li&gt;
@@ -30815,7 +30795,7 @@ $$\Delta V = I_{OS} \times R_{\text{eq}}$$
 &lt;hr /&gt;
 </content:encoded></item><item><title>1-5 恒流源电路</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-5_%E6%81%92%E6%B5%81%E6%BA%90%E7%94%B5%E8%B7%AF/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-5_%E6%81%92%E6%B5%81%E6%BA%90%E7%94%B5%E8%B7%AF/</guid><description>恒流源电路 [!info] 说明 本文档整理自课堂笔记《15 恒流源电路》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 低端反馈电路 恒压</description><pubDate>Sun, 19 Jul 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;恒流源电路&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 说明
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;
 本文档整理自课堂笔记《1-5 恒流源电路》，仅调整结构与格式，知识点内容保持不变。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
@@ -30888,7 +30868,7 @@ $$\Delta V = I_{OS} \times R_{\text{eq}}$$
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;虚断&lt;/strong&gt;
-运放输入端电流近似为 0，流过 $R_2$、$R_3$ 的电流相等 $I_2 == I_3 == 0$。&lt;/p&gt;
+运放输入端电流近似为 0，流过 $R_2$、$R_3$ 的电流相等 $I_2 &amp;lt;mark&amp;gt; I_3 &amp;lt;/mark&amp;gt; 0$。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;虚短&lt;/strong&gt;
@@ -31457,7 +31437,7 @@ $$I_{out} = \frac{V_{CC} - V_{ref}}{R_{SENSE}}$$&lt;/li&gt;
 &lt;/ol&gt;
 </content:encoded></item><item><title>直流稳压电源（1-6 直流稳压电源）</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-6_%E7%9B%B4%E6%B5%81%E7%A8%B3%E5%8E%8B%E7%94%B5%E6%BA%90/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-6_%E7%9B%B4%E6%B5%81%E7%A8%B3%E5%8E%8B%E7%94%B5%E6%BA%90/</guid><description>直流稳压电源 [!info] 说明 本文档整理自课堂笔记《16 直流稳压电源》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 直流稳压电源（</description><pubDate>Sun, 19 Jul 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;直流稳压电源&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 说明
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;
 本文档整理自课堂笔记《1-6 直流稳压电源》，仅调整结构与格式，知识点内容保持不变。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
@@ -31597,7 +31577,7 @@ $$
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 三极管工作状态详解
+&lt;p&gt;&lt;strong&gt;三极管工作状态详解&lt;/strong&gt;
 ① 始终工作在放大区&lt;/p&gt;
 &lt;p&gt;稳压正常工作时，三极管&lt;strong&gt;既不完全导通饱和、也不完全截止关断&lt;/strong&gt;，一直处于线性放大区：&lt;/p&gt;
 &lt;ul&gt;
@@ -31975,7 +31955,7 @@ $$V_{out}=V_{稳压值}-V_{BE}$$&lt;/p&gt;
 单片机供电、传感器、精密模拟电路、工业电子产品，需要电压精准、稳定、抗干扰、带负载能力强，是现在主流稳压方案。&lt;/p&gt;
 </content:encoded></item><item><title>1-7 开关电源工作原理</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-7_%E5%BC%80%E5%85%B3%E7%94%B5%E6%BA%90%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E7%A1%AC%E4%BB%B6%E7%94%B5%E8%B7%AF/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9/1-7_%E5%BC%80%E5%85%B3%E7%94%B5%E6%BA%90%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</guid><description>17 开关电源工作原理 [!info] 说明 本文档整理自课堂笔记《17 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 </description><pubDate>Tue, 25 Aug 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;1-7 开关电源工作原理&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!info] 说明
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;
 本文档整理自课堂笔记《1-7 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
@@ -32139,7 +32119,7 @@ $$\tau = R \times C$$&lt;/p&gt;
 既避免了电感产生高压尖峰、保护开关器件，又保证了输出电压不会断崖式下跌。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 命名由来
+&lt;p&gt;&lt;strong&gt;命名由来&lt;/strong&gt;
 这个二极管唯一的核心作用，就是给断电后的电感提供「电流继续流动的通路」，因此被叫做&lt;strong&gt;续流二极管&lt;/strong&gt;，是Buck拓扑必不可少的核心元件。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;hr /&gt;
@@ -32346,7 +32326,7 @@ $$V_{OUT} = V_{FB} \times \frac{R34+R35}{R35}$$
 &lt;/ol&gt;
 &lt;p&gt;✅ 到此：&lt;strong&gt;标准Boost升压拓扑正式成型&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 标准 Boost 拓扑结构
+&lt;p&gt;&lt;strong&gt;标准 Boost 拓扑结构&lt;/strong&gt;
 输入电压 → 电感 → 开关下地 + 二极管单向阀 → 输出电容+负载&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;hr /&gt;
@@ -32380,7 +32360,7 @@ $$V_{OUT} = V_{FB} \times \frac{R34+R35}{R35}$$
 &lt;li&gt;循环往复，最终&lt;strong&gt;稳定在设定高压（如10V、12V）&lt;/strong&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 仿真中提到的关键问题解释&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;仿真中提到的关键问题解释&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;为什么要加负载？&lt;/strong&gt;
 如果没有负载，后级电容会被电感一直充电，电压会持续上升，直到电感能量耗尽或元件击穿，实际电路中必须带负载，或者增加过压保护。&lt;/li&gt;
@@ -32503,7 +32483,7 @@ $$V_{OUT} = \frac{V_{IN}}{1-D}$$&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 反面错误选型
+&lt;p&gt;&lt;strong&gt;反面错误选型&lt;/strong&gt;
 实际峰值10A，你选饱和电流只有1A的电感；
 👉 电感&lt;strong&gt;百分百饱和&lt;/strong&gt;，电路直接工作异常、烧毁器件。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -32571,7 +32551,7 @@ MOS管/开关承受超大过流、过热、击穿炸裂；&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 全文终极总结（可直接背诵/讲课用）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;全文终极总结（可直接背诵/讲课用）&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;开关电源选电感，&lt;strong&gt;饱和电流是第一参数&lt;/strong&gt;，比电感值更重要；&lt;/li&gt;
 &lt;li&gt;电感饱和电流必须大于电路最大峰值电流，预留 &lt;strong&gt;1.2~1.5倍余量&lt;/strong&gt;；&lt;/li&gt;
@@ -34237,7 +34217,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;/ul&gt;
 </content:encoded></item><item><title>1.1.1 操作系统的概念、功能和目标</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/01_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/1_1_1_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%A6%82%E5%BF%B5_%E5%8A%9F%E8%83%BD%E5%92%8C%E7%9B%AE%E6%A0%87/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/01_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/1_1_1_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%A6%82%E5%BF%B5_%E5%8A%9F%E8%83%BD%E5%92%8C%E7%9B%AE%E6%A0%87/</guid><description>1.1.1 操作系统的概念、功能和目标 [!abstract] 核心结论 操作系统（Operating System，OS）是控制和管理整个计算机系统的硬件与软</description><pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;1.1.1 操作系统的概念、功能和目标&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!abstract] 核心结论
+&lt;p&gt;&lt;strong&gt;核心结论&lt;/strong&gt;
 操作系统（Operating System，OS）是控制和管理整个计算机系统的硬件与软件资源、合理组织计算机工作流程，并为用户和应用程序提供接口的系统软件。&lt;/p&gt;
 &lt;p&gt;从不同角度看，操作系统有三种核心角色：&lt;strong&gt;系统资源的管理者、用户与硬件之间的接口、对硬件机器的扩充&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -34246,7 +34226,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;h2&gt;操作系统的层次结构&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tips] tips&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;tips&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;操作系统位于计算机硬件与应用程序、用户之间，是最接近硬件的一层系统软件。&lt;/li&gt;
 &lt;li&gt;操作系统通过管理底层资源并封装复杂的硬件操作，为上层软件提供统一、易用的运行环境。&lt;/li&gt;
@@ -34264,7 +34244,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;h2&gt;操作系统的功能&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/a.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 引例&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;引例&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;我们假设：用户是雇主，操作系统是工人（用来操作机器），计算机是机器（由处理机(CPU)、存储器、设备、文件几个部件构成）&lt;/li&gt;
 &lt;li&gt;工人有熟练的技能去控制和协调各个部件的工作，这就是&lt;code&gt;操作系统对资源的管理&lt;/code&gt;&lt;/li&gt;
@@ -34303,7 +34283,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h4&gt;处理器（CPU）管理&lt;/h4&gt;
-&lt;p&gt;在多道程序环境下，CPU的分配和运行都以==进程（或线程）==为基本单位，因此对CPU的管理可理解为对进程的管理。进程管理的主要功能包括&lt;code&gt;进程控制、进程同步、进程通信、死锁处理、处理机调度&lt;/code&gt;等&lt;/p&gt;
+&lt;p&gt;在多道程序环境下，CPU的分配和运行都以&amp;lt;mark&amp;gt;进程（或线程）&amp;lt;/mark&amp;gt;为基本单位，因此对CPU的管理可理解为对进程的管理。进程管理的主要功能包括&lt;code&gt;进程控制、进程同步、进程通信、死锁处理、处理机调度&lt;/code&gt;等&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/b.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;存储器管理&lt;/h4&gt;
 &lt;p&gt;为多道程序的运行提供良好的环境，方便用户使用及提高内存的利用率，主要包括&lt;code&gt;内存分配与回收、地址映射、内存保护与共享和内存扩充&lt;/code&gt;等功能&lt;/p&gt;
@@ -34312,7 +34292,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;p&gt;计算机中所有的信息都是以文件的形式存在的，操作系统中负责文件的管理的部分称为文件系统，文件管理包括&lt;code&gt;文件存储空间的管理、目录管理及文件读写管理和保护&lt;/code&gt;等&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/e.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h4&gt;设备管理&lt;/h4&gt;
-&lt;p&gt;设备管理的主要任务是完成==用户的I/O请求==，方便用户使用各种设备，并提高设备的利用率，主要&lt;code&gt;包括缓存管理、设备分配、设备处理和虚拟设备&lt;/code&gt;等功能&lt;/p&gt;
+&lt;p&gt;设备管理的主要任务是完成&amp;lt;mark&amp;gt;用户的I/O请求&amp;lt;/mark&amp;gt;，方便用户使用各种设备，并提高设备的利用率，主要&lt;code&gt;包括缓存管理、设备分配、设备处理和虚拟设备&lt;/code&gt;等功能&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/d.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h3&gt;2. 作为用户与计算机硬件之间的接口&lt;/h3&gt;
 &lt;p&gt;操作系统封装了复杂的硬件功能，使用户和应用程序无须直接操作底层硬件。&lt;/p&gt;
@@ -34376,7 +34356,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;p&gt;图形用户界面（GUI）通过窗口、图标、菜单等元素让用户操作计算机，是面向用户的交互方式。GUI 的底层实现仍会调用操作系统提供的服务，但 &lt;strong&gt;GUI 本身不等同于由系统调用组成的程序接口&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 区分“直接”和“间接”&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;区分“直接”和“间接”&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;用户通过命令接口或 GUI 直接与操作系统交互。&lt;/li&gt;
 &lt;li&gt;应用程序通过系统调用间接请求操作系统服务。&lt;/li&gt;
@@ -34393,7 +34373,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;p&gt;&lt;img src=&quot;../../../../../assets/12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 &lt;h2&gt;易错点&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 常见混淆&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;常见混淆&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;操作系统是&lt;strong&gt;系统软件&lt;/strong&gt;，不是硬件，也不是普通应用软件。&lt;/li&gt;
 &lt;li&gt;命令接口供用户直接使用；程序接口供应用程序通过系统调用间接使用。&lt;/li&gt;
@@ -34425,19 +34405,19 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;li&gt;操作系统伴随着“多道程序技术”而出现，因此，操作系统和程序并发是一起诞生的。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 注意（重要考点）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意（重要考点）&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;单核CPU&lt;/strong&gt;同一时刻只能执行==一个程序==，各个程序只能==并发==地执行&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;多核CPU&lt;/strong&gt;同一时刻可以同时执行==多个程序==，多个程序可以==并行==地执行&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;单核CPU&lt;/strong&gt;同一时刻只能执行&amp;lt;mark&amp;gt;一个程序&amp;lt;/mark&amp;gt;，各个程序只能&amp;lt;mark&amp;gt;并发&amp;lt;/mark&amp;gt;地执行&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;多核CPU&lt;/strong&gt;同一时刻可以同时执行&amp;lt;mark&amp;gt;多个程序&amp;lt;/mark&amp;gt;，多个程序可以&amp;lt;mark&amp;gt;并行&amp;lt;/mark&amp;gt;地执行&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;现代计算机通常采用多核 CPU，能够在同一时刻并行处理多个执行流。但是，系统中需要运行的任务数量通常多于可用的 CPU 核心数，因此仍然需要通过并发技术对任务进行调度，并发性必不可少&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;==并发性是操作系统一个最基本的性质==&lt;/p&gt;
+&lt;p&gt;&amp;lt;mark&amp;gt;并发性是操作系统一个最基本的性质&amp;lt;/mark&amp;gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;1.2 相关概念：多道程序设计&lt;/h3&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 多道程序设计
+&lt;p&gt;&lt;strong&gt;多道程序设计&lt;/strong&gt;
 多道程序设计是指在计算机内存中同时存放几道相互独立的程序，使它们在管理程序的控制下相互穿插地运行。两个或两个以上的程序在计算机系统中同时处于从开始到结束之间的状态，就称为多道程序设计。&lt;/p&gt;
 &lt;p&gt;多道程序技术的运行特征是：&lt;strong&gt;多道、宏观上并行、微观上串行&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -34451,7 +34431,7 @@ sgtitle(&apos;无人机高度 PID 控制仿真&apos;);
 &lt;li&gt;&lt;strong&gt;临界资源（独占资源）&lt;/strong&gt;：在一段时间内只允许一个进程访问的资源。计算机中的大多数物理设备，以及某些软件中的栈、变量和表格，都属于临界资源，需要被互斥共享。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 示例
+&lt;p&gt;&lt;strong&gt;示例&lt;/strong&gt;
 QQ 和微信同时进行视频通话时，同一段时间内，摄像头只能分配给其中一个进程&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;2.2 同时共享&lt;/h3&gt;
@@ -34461,11 +34441,11 @@ QQ 和微信同时进行视频通话时，同一段时间内，摄像头只能�
 &lt;li&gt;这里的“同时”通常是指宏观上同时、微观上交替访问。由于 CPU 处理速度很快，用户一般感觉不到这种交替过程。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 示例：两个进程访问磁盘
+&lt;p&gt;&lt;strong&gt;示例：两个进程访问磁盘&lt;/strong&gt;
 QQ 进程正在发送文件 A，微信进程正在发送文件 B。宏观上看，两个进程都在访问磁盘，仿佛同时进行；微观上看，两个进程交替访问磁盘。由于交替的时间间隔很短，用户通常感觉不到。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!note] 补充说明
+&lt;p&gt;&lt;strong&gt;补充说明&lt;/strong&gt;
 有时，多个进程可能确实在同时访问资源。例如，玩游戏时可以同时播放音乐，用户既能听见游戏声音，也能听见音乐。实际实现中，这些声音通常会先由操作系统或音频服务进行混音，再交给音频设备播放。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;2.3 并发性和共享性互为存在条件&lt;/h3&gt;
@@ -34510,7 +34490,7 @@ QQ 进程正在发送文件 A，微信进程正在发送文件 B。宏观上看�
 &lt;li&gt;&lt;strong&gt;异步&lt;/strong&gt;：多道程序环境允许多个程序并发执行，但由于资源有限，例如只有一个 CPU，进程的执行并不是一贯到底的，而是走走停停，以不可预知的速度向前推进。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!example] 示例
+&lt;p&gt;&lt;strong&gt;示例&lt;/strong&gt;
 A 进程正在占用 CPU 进行计算，此时 B 进程也想使用 CPU，B 进程只能等待。当 A 进程完成计算并访问磁盘时，B 进程开始占用 CPU 进行计算。&lt;/p&gt;
 &lt;p&gt;如果 B 进程尚未计算完，A 进程已经从磁盘取得所需资源，那么 A 进程发现 CPU 正被 B 进程占用，也需要等待。等 B 进程释放 CPU 后，A 进程才能继续计算。&lt;/p&gt;
 &lt;p&gt;由于每个进程占用资源的时间并不固定，因此，进程会以不可预知的速度向前推进。&lt;/p&gt;
@@ -35610,7 +35590,7 @@ PCB的作用是使一个在多道程序环境下不能独立运行的程序（�
 参考：《王道操作系统》&lt;/p&gt;
 </content:encoded></item><item><title>空分复用技术详解</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/asserts/expansion/%E7%A9%BA%E5%88%86%E5%A4%8D%E7%94%A8%E6%8A%80%E6%9C%AF%E8%AF%A6%E8%A7%A3/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%B5%8C%E5%85%A5%E5%BC%8F/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/asserts/expansion/%E7%A9%BA%E5%88%86%E5%A4%8D%E7%94%A8%E6%8A%80%E6%9C%AF%E8%AF%A6%E8%A7%A3/</guid><description>空分复用技术详解 [!abstract] 一句话理解 空分复用技术是从空间上划分、分配或映射一个物理资源，使其不同空间区域能够分别供多个程序或用户使用，从而把一</description><pubDate>Thu, 10 Sep 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;空分复用技术详解&lt;/h1&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!abstract] 一句话理解
+&lt;p&gt;&lt;strong&gt;一句话理解&lt;/strong&gt;
 &lt;strong&gt;空分复用技术&lt;/strong&gt;是从空间上划分、分配或映射一个物理资源，使其不同空间区域能够分别供多个程序或用户使用，从而把一个物理实体表现为多个逻辑上的对应物。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;相关知识：&lt;a href=&quot;../../../../../../%E5%B5%8C%E5%85%A5%E5%BC%8F/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/01_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/1_1_2_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%89%B9%E5%BE%81/&quot;&gt;1.1.2 操作系统的特征&lt;/a&gt;&lt;/p&gt;
@@ -35678,7 +35658,7 @@ PCB的作用是使一个在多道程序环境下不能独立运行的程序（�
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!tip] 记忆口诀
+&lt;p&gt;&lt;strong&gt;记忆口诀&lt;/strong&gt;
 &lt;strong&gt;CPU 主要按时间轮流使用——时分复用；存储器主要按空间划分使用——空分复用。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3&gt;2.1 时分复用示意&lt;/h3&gt;
@@ -35805,7 +35785,7 @@ CPU   │ A │ B │ C │ A │ B │ C │ A │ ……
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;因此，虚拟存储器扩大的是程序看到的&lt;strong&gt;逻辑地址空间&lt;/strong&gt;，而不是凭空增加真实的物理内存。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!warning] 注意
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;
 虚拟内存不能真正代替物理内存。磁盘的访问速度远低于内存，如果缺页过于频繁，系统性能会显著下降，严重时可能发生“抖动”。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;5. 虚拟磁盘中的空分复用&lt;/h2&gt;
@@ -35914,7 +35894,7 @@ CPU   │ A │ B │ C │ A │ B │ C │ A │ ……
 &lt;li&gt;&lt;strong&gt;考试中的规范术语是“空分复用技术”，不是“空间复用技术”。&lt;/strong&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;blockquote&gt;
-&lt;p&gt;[!success] 最终记忆
+&lt;p&gt;&lt;strong&gt;最终记忆&lt;/strong&gt;
 &lt;strong&gt;时分复用 CPU，空分复用存储器；时分按时间轮流，空分按空间划分。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 </content:encoded></item><item><title>CLAUDE</title><link>https://520luxun.github.io/HexoNotes/posts/notes/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/claude/</link><guid isPermaLink="true">https://520luxun.github.io/HexoNotes/posts/notes/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/claude/</guid><description>CLAUDE.md This file provides guidance to Claude Code (claude.ai/code) when worki</description><pubDate>Thu, 16 Jul 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;CLAUDE.md&lt;/h1&gt;
