@@ -64,15 +64,7 @@ const formatDate = (d: Date) => {
 
 const render = (node: Node, depth: number): string => {
 	let html = "";
-	// 直接挂在当前分类下的文章先显示（如「硬件电路」下的 1-1 ~ 1-7），
-	// 子分组（如「扩展」）排在其后。
-	for (const post of node.posts) {
-		html +=
-			`<div class="flex items-baseline gap-3 py-1.5 px-2 rounded-lg transition hover:bg-[var(--btn-plain-bg-hover)]" style="padding-left:${depth * 1.25 + 1.25}rem">` +
-			`<span class="text-50 text-xs font-mono w-12 shrink-0">${formatDate(post.data.published)}</span>` +
-			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
-			`</div>`;
-	}
+	// 先列文件夹（子分组），再列当前文件夹下直接存放的文章（如 README）。
 	const children = [...node.children.values()].sort((a, b) =>
 		a.label.localeCompare(b.label, "zh"),
 	);
@@ -86,6 +78,14 @@ const render = (node: Node, depth: number): string => {
 			`</summary>` +
 			`<div class="ml-3 border-l border-[var(--line-color)] pl-2">${render(child, depth + 1)}</div>` +
 			`</details>`;
+	}
+	// 文件夹列完后再列直接放在当前文件夹里的文章（README、索引等）。
+	for (const post of node.posts) {
+		html +=
+			`<div class="flex items-baseline gap-3 py-1.5 px-2 rounded-lg transition hover:bg-[var(--btn-plain-bg-hover)]" style="padding-left:${depth * 1.25 + 1.25}rem">` +
+			`<span class="text-50 text-xs font-mono w-12 shrink-0">${formatDate(post.data.published)}</span>` +
+			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
+			`</div>`;
 	}
 	return html;
 };
