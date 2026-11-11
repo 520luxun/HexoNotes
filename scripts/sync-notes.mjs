@@ -379,6 +379,8 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 	// Lower-case extensions and de-duplicate case-insensitively: on Windows
 	// "22.PNG" and "22.png" are the same file, but Linux (and the CI runner)
 	// treat them as different paths and fail with ImageNotFound.
+	// Images are stored per note (notes/<dirs>/<slug>/assets/) so equal file
+	// names in different notes can never overwrite each other.
 	const usedNames = new Map();
 	const registerImage = (candidate) => {
 		const base = path.basename(candidate);
@@ -390,7 +392,7 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 			name = `${sha(candidate)}-${stem}${ext}`;
 		}
 		usedNames.set(name.toLowerCase(), candidate);
-		assets.set(name, candidate);
+		assets.set(`${ctx.assetDir}/${name}`, candidate);
 		return `./assets/${name}`;
 	};
 
@@ -410,7 +412,7 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 			// instead of leaving an <img> that 403s on the deployed site.
 			if (!item) return null;
 			const name = `img-${sha(r)}.${item.ext}`;
-			assets.set(name, item.path);
+			assets.set(`${ctx.assetDir}/${name}`, item.path);
 			return `./assets/${name}`;
 		}
 		if (/^(data:|#)/i.test(r)) return r;
@@ -626,11 +628,14 @@ async function main() {
 		const dirs = categoryDirs(file.rel);
 		const baseSlug = slugOf(basename) || "note";
 		let slug = baseSlug;
-		let rel = [...dirs, `${slug}.md`].join("/");
+		// One folder per note: notes/<dirs>/<slug>/index.md + <slug>/assets/*.
+		// "index" is stripped from the collection slug, so URLs stay the same
+		// as the previous flat <slug>.md layout.
+		let rel = [...dirs, slug, "index.md"].join("/");
 		let n = 2;
 		while (usedPaths.has(rel)) {
 			slug = `${baseSlug}-${n++}`;
-			rel = [...dirs, `${slug}.md`].join("/");
+			rel = [...dirs, slug, "index.md"].join("/");
 		}
 		usedPaths.add(rel);
 		const entry = { file, title, category, dirs, slug, rel };
@@ -647,7 +652,7 @@ async function main() {
 			dirs: p.dirs,
 			byRel,
 			byBase,
-			assetPrefix: `${"../".repeat(p.dirs.length)}assets/`,
+			assetDir: [...p.dirs, p.slug, "assets"].join("/"),
 		};
 		const note = convertNote(p.file, attachments, downloaded, assets, index + 1, multiSub, ctx);
 		if (!note) {
@@ -656,7 +661,7 @@ async function main() {
 		}
 		outputs.push({
 			name: p.rel,
-			content: `${note.frontmatter}${note.output.replace(/\.\/assets\//g, ctx.assetPrefix)}`,
+			content: `${note.frontmatter}${note.output}`,
 			rel: p.file.rel,
 		});
 	}
@@ -670,12 +675,11 @@ async function main() {
 			fs.writeFileSync(dest, o.content, "utf8");
 		}
 		if (assets.size) {
-			const assetDir = path.join(targetDir, "assets");
-			fs.mkdirSync(assetDir, { recursive: true });
 			const sharp = (await import("sharp")).default;
 			let resized = 0;
 			for (const [name, src] of assets) {
-				const dest = path.join(assetDir, name);
+				const dest = path.join(targetDir, name);
+				fs.mkdirSync(path.dirname(dest), { recursive: true });
 				try {
 					const meta = await sharp(src).metadata();
 					const w = meta.width ?? 0;
