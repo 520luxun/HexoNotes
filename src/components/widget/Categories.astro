@@ -2,6 +2,7 @@
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import { getCategoryList } from "../../utils/content-utils";
+import { getCategoryUrl } from "../../utils/url-utils";
 import ButtonLink from "../control/ButtonLink.astro";
 import WidgetLayout from "./WidgetLayout.astro";
 
@@ -18,18 +19,62 @@ interface Props {
 }
 const className = Astro.props.class;
 const style = Astro.props.style;
+
+// Categories may be hierarchical ("计算机基础/计算机操作系统"). Group them so
+// the widget renders a small tree instead of a flat list.
+type Child = { label: string; count: number; url: string };
+type Node = { label: string; count: number; url: string; children: Child[] };
+
+const nodeMap = new Map<string, Node>();
+for (const c of categories) {
+	const [head, ...rest] = c.name.split("/");
+	const childLabel = rest.join("/");
+	let node = nodeMap.get(head);
+	if (!node) {
+		node = { label: head, count: 0, url: getCategoryUrl(head), children: [] };
+		nodeMap.set(head, node);
+	}
+	if (childLabel) {
+		node.children.push({ label: childLabel, count: c.count, url: c.url });
+	} else {
+		node.url = c.url;
+	}
+	node.count += c.count;
+}
+
+const tree = [...nodeMap.values()]
+	.map((node) => ({
+		...node,
+		children: node.children.sort(
+			(a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"),
+		),
+	}))
+	.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"));
 ---
 
 <WidgetLayout name={i18n(I18nKey.categories)} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
                 class={className} style={style}
 >
-    {categories.map((c) =>
-        <ButtonLink
-            url={c.url}
-            badge={String(c.count)}
-            label={`View all posts in the ${c.name.trim()} category`}
-        >
-            {c.name.trim()}
-        </ButtonLink>
-    )}
+    {tree.map((node) => (
+        <>
+            <ButtonLink
+                url={node.url}
+                badge={String(node.count)}
+                label={`View all posts in the ${node.label} category`}
+            >
+                {node.label}
+            </ButtonLink>
+            {node.children.map((child) => (
+                <div class="pl-5">
+                    <ButtonLink
+                        url={child.url}
+                        badge={String(child.count)}
+                        label={`View all posts in the ${node.label} / ${child.label} category`}
+                    >
+                        {child.label}
+                    </ButtonLink>
+                </div>
+            ))}
+        </>
+    ))}
 </WidgetLayout>

@@ -3,7 +3,7 @@ title: "调度算法精讲"
 published: 2020-04-05
 description: "文章浏览阅读2.9w次，点赞96次，收藏142次。本文深入讲解了三种核心的作业调度算法：先来先服务（FCFS）、短作业优先（SJF）和高响应比优先（HRRN）。通过对比分析，帮助读者理解每种算法的特点与适用场景。"
 tags: ["clippings"]
-category: "计算机基础"
+category: "计算机基础/计算机操作系统"
 draft: false
 order: 70
 ---

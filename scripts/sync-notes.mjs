@@ -205,19 +205,34 @@ function cleanDescription(desc, body) {
 	return d.replace(/["\\]/g, "");
 }
 
-function makeCategory(rel, data) {
+// Splits a note path into the first and second category levels.
+function categoryParts(rel) {
 	const parts = rel.split("/");
-	return (
-		data.category ||
+	const parent =
 		config.categoryMap?.[parts[1]] ||
 		parts[1] ||
 		config.categoryMap?.[parts[0]] ||
 		config.defaultCategory ||
-		""
+		"";
+	const raw = parts.length > 3 ? config.categoryMap?.[parts[2]] || parts[2] : "";
+	// Attachment folders must not turn into visible sub-categories.
+	const isAssetFolder = /^(assets?|images?|imgs?|pics?|attachments?|files?|docs?|附件|图片|素材)$/i.test(
+		raw.trim(),
 	);
+	const sub = isAssetFolder ? "" : raw;
+	return { parent, sub: sub === parent ? "" : sub };
 }
 
-function convertNote(file, attachmentIndex, downloaded, assets, order) {
+function makeCategory(rel, data, multiSub) {
+	if (data.category) return data.category;
+	const { parent, sub } = categoryParts(rel);
+	if (!sub) return parent;
+	// Only folders that hold several notes become a sub-category, so a lone
+	// attachment folder does not create noise like 硬件电路/Docs.
+	return multiSub.has(`${parent}\u0000${sub}`) ? `${parent}/${sub}` : parent;
+}
+
+function convertNote(file, attachmentIndex, downloaded, assets, order, multiSub) {
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
@@ -286,7 +301,7 @@ function convertNote(file, attachmentIndex, downloaded, assets, order) {
 		`published: ${published}`,
 		`description: ${yamlQuote(cleanDescription(data.description || data.summary, body))}`,
 		`tags: ${yamlArray(Array.isArray(data.tags) ? data.tags.map(String) : [])}`,
-		`category: ${yamlQuote(makeCategory(file.rel, data))}`,
+		`category: ${yamlQuote(makeCategory(file.rel, data, multiSub))}`,
 		`draft: ${data.draft === true || data.publish === false}`,
 		`order: ${order}`,
 		"---",
@@ -355,8 +370,19 @@ async function main() {
 	const usedNames = new Set();
 	const outputs = [];
 	const ordered = [...selected].sort((a, b) => comparePath(a.rel, b.rel));
+
+	// A folder only becomes a visible sub-category when it holds 2+ notes.
+	const subCounts = new Map();
+	for (const file of ordered) {
+		const { parent, sub } = categoryParts(file.rel);
+		if (!sub) continue;
+		const key = `${parent}\u0000${sub}`;
+		subCounts.set(key, (subCounts.get(key) ?? 0) + 1);
+	}
+	const multiSub = new Set([...subCounts].filter(([, n]) => n >= 2).map(([k]) => k));
+
 	for (const [index, file] of ordered.entries()) {
-		const note = convertNote(file, attachmentIndex, downloaded, assets, index + 1);
+		const note = convertNote(file, attachmentIndex, downloaded, assets, index + 1, multiSub);
 		if (!note) {
 			console.log(`  - skipped (empty): ${file.rel}`);
 			continue;
