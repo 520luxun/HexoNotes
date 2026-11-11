@@ -59,12 +59,15 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -d "$(jq -n --arg d "$msg" '{state:"error",description:$d,context:"build-log"}')" \
             "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" || true
-          jq -Rs '{body: ("Build failed, log tail:\n\n```\n" + . + "\n```")}' /tmp/tail.log > /tmp/payload.json
-          curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            --data-binary @/tmp/payload.json \
-            "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/comments" || true
+          tail -n 600 build.log > /tmp/buildlog.txt || true
+          git config user.name "ci-log"
+          git config user.email "ci-log@localhost"
+          git checkout -q --orphan ci-logs-$$
+          git rm -rq --cached . >/dev/null 2>&1 || true
+          cp /tmp/buildlog.txt buildlog.txt
+          git add -f buildlog.txt
+          git commit -qm "build log" || true
+          git push -f origin HEAD:ci-logs || true
 
       - name: Fail if build failed
         if: steps.build.outcome == 'failure'
