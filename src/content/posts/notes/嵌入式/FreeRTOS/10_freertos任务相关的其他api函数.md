@@ -274,7 +274,7 @@ void   vTaskList(char * pcWriteBuffer)
 
 ### 11、代码
 
-==1-6vscode==
+<mark>1-6vscode</mark>
 
 
 ```c
@@ -557,7 +557,7 @@ void    vTaskGetRunTimeStats( char * pcWriteBuffer )
 
 2.将宏 configUSE_STATS_FORMATTING_FUNCTIONS 置1 。
 
-3.当将此宏 configGENERATE_RUN_TIME_STAT 置1之后，==还需要实现2个宏定义==：
+3.当将此宏 configGENERATE_RUN_TIME_STAT 置1之后，<mark>还需要实现2个宏定义</mark>：
 
 1）portCONFIGURE_TIMER_FOR_RUNTIME_STATE() ：用于初始化用于配置任务运行时间统计的时基定时器；
 

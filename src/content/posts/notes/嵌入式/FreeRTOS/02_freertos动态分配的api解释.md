@@ -747,7 +747,7 @@ void EXTI0_IRQHandler(void) {
 
 建议将所有的优先级指定为抢占式优先级位，不留下任何优先级作为子优先级位，任何其他配置都会是configMAX_SYSCALL_INTERRUPT设置于分配给更外设中断优先级至极爱你的直接关系复杂化
 
-==大多数系统默认为所需要的配置，但STM32驱动程序明显例外。如果将STM32于STM32驱动程序库一起使用，则在启动RTOS之前，通过调用NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);  来确保将所有优先级位分配为抢占式级位==
+<mark>大多数系统默认为所需要的配置，但STM32驱动程序明显例外。如果将STM32于STM32驱动程序库一起使用，则在启动RTOS之前，通过调用NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);  来确保将所有优先级位分配为抢占式级位</mark>
 
 
 

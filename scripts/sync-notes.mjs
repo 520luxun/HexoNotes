@@ -394,6 +394,11 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 	let output = body
 		.replace(/在这里插入图片描述/g, "")
 		.replace(/\uFEFF/g, "") // stray BOM from copied notes
+		// Obsidian-only syntax that plain Markdown would show literally.
+		.replace(/==([^=\n]+)==/g, "<mark>$1</mark>")
+		.replace(/^>\s*\[!(\w+)\][+-]?\s*(.*)$/gim, (_, _type, title) =>
+			title ? `> **${title.trim()}**` : ">",
+		)
 		// NOTE: do not rewrite $...$ here. Notes contain tables with several
 		// inline formulas per row; a cross-cell match would swallow the
 		// delimiters and break KaTeX rendering. Warnings about Chinese text in

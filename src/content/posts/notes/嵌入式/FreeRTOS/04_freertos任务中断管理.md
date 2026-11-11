@@ -93,7 +93,7 @@ order: 7
 
 2. 建议将所有优先级位指定为抢占优先级位，方便FreeRTOS管理。
 
-3. ==中断优先级数值越小越优先，任务优先级数值越大越优先==。
+3. <mark>中断优先级数值越小越优先，任务优先级数值越大越优先</mark>。
 
    > **宏configMAX_SYSCALL_INTERRUPT_PRIORITY的值是5，所以FreeRTOS中的中断优先级只能是5-15这个范围。**
 
@@ -123,7 +123,7 @@ order: 7
 
 > 注意：FreeRTOS主要是使用SHPR3寄存器对**PendSV**和**Systick**中断优先级进行设置(设置为最低优先级)。
 
-> ==SVC、PendSV、SysTick三个系统中断很重要==
+> <mark>SVC、PendSV、SysTick三个系统中断很重要</mark>
 
 ### 2、FreeRTOS如何配置PendSV和Systick中断优先级
 
@@ -173,7 +173,7 @@ FreeRTOS所使用的中断管理就是利用的**BASEPRI**这个寄存器。
 
 ### 5、FreeRTOS的关中断程序
 
-==BASEPRI：屏蔽优先级低于某一个阈值的中断，当设置为0时，则不关闭任何中断==
+<mark>BASEPRI：屏蔽优先级低于某一个阈值的中断，当设置为0时，则不关闭任何中断</mark>
 
 答：![](../../assets/关中断程序.png)**中断优先级在5 ~ 15的全部被关闭，0~4的我们是操作不了（意思是我们无法关闭0-4的，可以关闭5-15)**
 
@@ -441,7 +441,7 @@ void TIM4_IRQHandler(void){
 
 
 **总结：**
-**关中断和开中断实验中==不能使用FreeRTOS自带的vTaskDelay()函数进行非阻塞式延时==，==因为关闭所有中断后，SysTick中断也将被禁止==，==导致节拍计数器无法更新==，==因此vTaskDelay()所等待的节拍数将永远不会达到==，任务将无限期阻塞，无法继续运行。同时也不能进行任务切换**
+**关中断和开中断实验中<mark>不能使用FreeRTOS自带的vTaskDelay()函数进行非阻塞式延时</mark>，<mark>因为关闭所有中断后，SysTick中断也将被禁止</mark>，<mark>导致节拍计数器无法更新</mark>，<mark>因此vTaskDelay()所等待的节拍数将永远不会达到</mark>，任务将无限期阻塞，无法继续运行。同时也不能进行任务切换**
 
 
 

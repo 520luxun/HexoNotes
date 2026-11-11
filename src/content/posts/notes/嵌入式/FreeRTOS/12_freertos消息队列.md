@@ -482,7 +482,7 @@ char big_date[128] = "This is a big data queue used to store large data.";
     BaseType_t xStatus;
     while(1){
         KeyNum = Key_GetNum();
-        if(KeyNum == 1 || KeyNum == 2){
+        if(KeyNum <mark> 1 || KeyNum </mark> 2){
             xStatus = xQueueSend(MyQueue, &KeyNum, portMAX_DELAY);
             if(xStatus != pdPASS){
                 printf("Task1: xQueueSend MyQueue failed\r\n");
