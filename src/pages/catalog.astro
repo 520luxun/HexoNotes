@@ -59,17 +59,19 @@ const render = (node: Node, depth: number): string => {
 	);
 	for (const child of children) {
 		html +=
-			`<details class="py-0.5" style="padding-left:${depth * 1.25}rem" ${depth === 0 ? "open" : ""}>` +
-			`<summary class="cursor-pointer select-none font-bold text-lg py-1 whitespace-nowrap">` +
-			`${escapeHtml(child.label)} <span class="text-xs font-normal text-75">${countOf(child)} 篇</span>` +
+			`<details class="py-1" style="padding-left:${depth * 1.25}rem" ${depth === 0 ? "open" : ""}>` +
+			`<summary class="cursor-pointer select-none font-bold text-lg py-2 px-3 rounded-xl whitespace-nowrap transition hover:bg-[var(--btn-plain-bg-hover)] flex items-center gap-2">` +
+			`<span class="inline-block w-2 h-2 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)]"></span>` +
+			`<span>${escapeHtml(child.label)}</span>` +
+			`<span class="text-xs font-normal px-2 py-0.5 rounded-full bg-[var(--btn-regular-bg)] text-75">${countOf(child)} 篇</span>` +
 			`</summary>` +
-			`<div>${render(child, depth + 1)}</div>` +
+			`<div class="ml-3 border-l border-[var(--line-color)] pl-2">${render(child, depth + 1)}</div>` +
 			`</details>`;
 	}
 	for (const post of node.posts) {
 		html +=
-			`<div class="flex items-baseline gap-3 py-1" style="padding-left:${depth * 1.25 + 1.25}rem">` +
-			`<span class="text-50 text-xs w-12 shrink-0">${formatDate(post.data.published)}</span>` +
+			`<div class="flex items-baseline gap-3 py-1.5 px-2 rounded-lg transition hover:bg-[var(--btn-plain-bg-hover)]" style="padding-left:${depth * 1.25 + 1.25}rem">` +
+			`<span class="text-50 text-xs font-mono w-12 shrink-0">${formatDate(post.data.published)}</span>` +
 			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
 			`</div>`;
 	}
