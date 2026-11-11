@@ -5,6 +5,7 @@ description: "任务调度器的挂起和恢复 概念 1、任务调度器挂起
 tags: []
 category: "FreeRTOS"
 draft: false
+order: 9
 ---
 # 任务调度器的挂起和恢复
 

@@ -5,6 +5,7 @@ description: "FreeRTOS事件标志组 一、事件标志组简介 1、事件标�
 tags: []
 category: "FreeRTOS"
 draft: false
+order: 19
 ---
 # FreeRTOS事件标志组
 

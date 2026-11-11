@@ -13,6 +13,12 @@ const run = (command) => {
 	if (result.status !== 0) process.exit(result.status ?? 1);
 };
 
-run("node scripts/sync-notes.mjs");
-run("pnpm exec astro build");
-run("pnpm exec pagefind --site dist");
+const args = process.argv.slice(2);
+const syncOnly = args.includes("--sync-only");
+const syncArgs = args.filter((a) => a !== "--sync-only").join(" ");
+
+run(`node scripts/sync-notes.mjs ${syncArgs}`.trim());
+if (!syncOnly) {
+	run("pnpm exec astro build");
+	run("pnpm exec pagefind --site dist");
+}

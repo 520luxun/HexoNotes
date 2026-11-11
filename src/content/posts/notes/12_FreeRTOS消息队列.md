@@ -5,6 +5,7 @@ description: "FreeRTOS消息队列 一、队列简介 1、FreeRTOS中的消息�
 tags: []
 category: "FreeRTOS"
 draft: false
+order: 16
 ---
 # FreeRTOS消息队列
 

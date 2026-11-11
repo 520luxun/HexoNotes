@@ -5,6 +5,7 @@ description: "PCB 设计学习笔记 PCB 电路设计从入门到实践，涵盖
 tags: []
 category: "硬件电路"
 draft: false
+order: 53
 ---
 # PCB 设计学习笔记
 

@@ -5,6 +5,7 @@ description: "FreeRTOS 任务创建和删除 一、任务创建和删除 API 函
 tags: []
 category: "FreeRTOS"
 draft: false
+order: 5
 ---
 # FreeRTOS 任务创建和删除
 

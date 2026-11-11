@@ -5,6 +5,7 @@ description: "Expand 扩展资料目录说明 本文说明 D:ObsidianFirstNotesE
 tags: ["硬件基础", "文档索引", "目录说明", "Obsidian"]
 category: "硬件电路"
 draft: false
+order: 45
 ---
 
 # Expand 扩展资料目录说明

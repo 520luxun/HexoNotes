@@ -5,6 +5,7 @@ description: "容抗 Xc 原理 电阻会阻碍电流，电容也会对交流电�
 tags: ["硬件基础", "电容", "容抗", "交流电路", "去耦电容"]
 category: "硬件电路"
 draft: false
+order: 32
 ---
 
 # 容抗 Xc 原理

@@ -5,6 +5,7 @@ description: "FreeRTOS 入门 RTOS 入门知识 裸机与 RTOS 特点 裸机：�
 tags: []
 category: "FreeRTOS"
 draft: false
+order: 3
 ---
 # FreeRTOS 入门
 

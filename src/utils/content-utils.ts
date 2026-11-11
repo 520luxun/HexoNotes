@@ -3,16 +3,26 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-// // Retrieve posts and sort them by publication date
+const titleCollator = new Intl.Collator("zh", { numeric: true, sensitivity: "base" });
+
+// Notes carry an `order` matching their chapter position in the source vault.
+// Regular posts (no order) come first, newest first; then notes follow the
+// curriculum order. Same-day posts are sorted naturally instead of randomly.
 async function getRawSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 
 	const sorted = allBlogPosts.sort((a, b) => {
+		const orderA = a.data.order ?? 0;
+		const orderB = b.data.order ?? 0;
+		if (orderA !== orderB) return orderA - orderB;
+
 		const dateA = new Date(a.data.published);
 		const dateB = new Date(b.data.published);
-		return dateA > dateB ? -1 : 1;
+		if (dateA > dateB) return -1;
+		if (dateA < dateB) return 1;
+		return titleCollator.compare(a.data.title, b.data.title);
 	});
 	return sorted;
 }

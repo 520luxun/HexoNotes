@@ -5,6 +5,7 @@ description: "LC 谐振与 Q 值：零基础入门 这篇笔记不要求读者�
 tags: ["电感", "电容", "LC谐振", "Q值", "零基础", "滤波器"]
 category: "硬件电路"
 draft: false
+order: 43
 ---
 
 # LC 谐振与 Q 值：零基础入门

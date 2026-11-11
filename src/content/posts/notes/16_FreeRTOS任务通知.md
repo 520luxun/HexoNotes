@@ -5,6 +5,7 @@ description: "FreeRTOS任务通知 一、任务通知的简介 1、任务通知�
 tags: []
 category: "FreeRTOS"
 draft: false
+order: 20
 ---
 #  FreeRTOS任务通知
 

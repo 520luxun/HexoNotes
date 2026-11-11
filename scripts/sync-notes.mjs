@@ -105,6 +105,19 @@ const yamlQuote = (v) => JSON.stringify(String(v ?? ""));
 const yamlArray = (arr) => `[${arr.map((v) => JSON.stringify(String(v))).join(", ")}]`;
 const sha = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 12);
 const safeName = (s) => s.replace(/[\\/:*?"<>|#%\s]+/g, "_").replace(/^\.+/, "");
+const pathCollator = new Intl.Collator("zh", { numeric: true, sensitivity: "base" });
+
+// Directory-first natural ordering: FreeRTOS/01 < FreeRTOS/02 < .../10,
+// and parent-level notes before notes in subdirectories.
+const comparePath = (a, b) => {
+	const pa = a.split("/");
+	const pb = b.split("/");
+	for (let i = 0; i < Math.min(pa.length, pb.length); i++) {
+		const c = pathCollator.compare(pa[i], pb[i]);
+		if (c !== 0) return c;
+	}
+	return pa.length - pb.length;
+};
 
 const extOf = (url) => {
 	try {
@@ -204,7 +217,7 @@ function makeCategory(rel, data) {
 	);
 }
 
-function convertNote(file, attachmentIndex, downloaded, assets) {
+function convertNote(file, attachmentIndex, downloaded, assets, order) {
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
@@ -275,6 +288,7 @@ function convertNote(file, attachmentIndex, downloaded, assets) {
 		`tags: ${yamlArray(Array.isArray(data.tags) ? data.tags.map(String) : [])}`,
 		`category: ${yamlQuote(makeCategory(file.rel, data))}`,
 		`draft: ${data.draft === true || data.publish === false}`,
+		`order: ${order}`,
 		"---",
 		"",
 	].join("\n");
@@ -340,8 +354,9 @@ async function main() {
 	const assets = new Map();
 	const usedNames = new Set();
 	const outputs = [];
-	for (const file of selected) {
-		const note = convertNote(file, attachmentIndex, downloaded, assets);
+	const ordered = [...selected].sort((a, b) => comparePath(a.rel, b.rel));
+	for (const [index, file] of ordered.entries()) {
+		const note = convertNote(file, attachmentIndex, downloaded, assets, index + 1);
 		if (!note) {
 			console.log(`  - skipped (empty): ${file.rel}`);
 			continue;

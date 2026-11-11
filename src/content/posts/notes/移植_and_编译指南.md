@@ -5,6 +5,7 @@ description: "Linux 下 SDL 1.2.15 移植 / 编译完整指南 SDL 1.2.15 是经
 tags: []
 category: "知识点"
 draft: false
+order: 29
 ---
 
 # Linux 下 SDL 1.2.15 移植 / 编译完整指南

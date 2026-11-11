@@ -5,6 +5,7 @@ description: "Obsidian 插件完整指南 共 22 个社区插件（13 启用 / 9
 tags: ["obsidian", "plugins", "配置"]
 category: "效率工具"
 draft: false
+order: 119
 ---
 
 # Obsidian 插件完整指南

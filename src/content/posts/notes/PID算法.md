@@ -5,6 +5,7 @@ description: "PID算法 以下是根据PDF讲义、视频教程以及补充参�
 tags: []
 category: "PID 控制"
 draft: false
+order: 54
 ---
 
 # PID算法

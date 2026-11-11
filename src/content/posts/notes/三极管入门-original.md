@@ -5,6 +5,7 @@ description: "三极管入门 PN结 ==电子只能从$N$流向$P$，那么电流
 tags: []
 category: "硬件电路"
 draft: false
+order: 33
 ---
 # 三极管入门
 
