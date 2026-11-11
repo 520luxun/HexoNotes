@@ -20,71 +20,62 @@ interface Props {
 const className = Astro.props.class;
 const style = Astro.props.style;
 
-// Categories are hierarchical ("嵌入式/硬件电路/基础知识点"). Build a tree of
-// any depth, then flatten it with an indent level for rendering.
-type Node = {
-	label: string;
-	path: string;
-	count: number;
-	url: string;
-	children: Node[];
-};
+// Categories stay two levels: "计算机基础/计算机操作系统". Group them so the
+// widget shows a parent row plus indented children, keeping WidgetLayout's
+// collapse behaviour working.
+type Child = { label: string; count: number; url: string };
+type Node = { label: string; count: number; url: string; children: Child[] };
 
-const roots: Node[] = [];
-const index = new Map<string, Node>();
-
+const nodeMap = new Map<string, Node>();
 for (const c of categories) {
-	const segments = c.name.split("/").filter(Boolean);
-	let siblings = roots;
-	let pathKey = "";
-	for (const segment of segments) {
-		pathKey = pathKey ? `${pathKey}/${segment}` : segment;
-		let node = index.get(pathKey);
-		if (!node) {
-			node = {
-				label: segment,
-				path: pathKey,
-				count: 0,
-				url: getCategoryUrl(pathKey),
-				children: [],
-			};
-			index.set(pathKey, node);
-			siblings.push(node);
-		}
-		node.count += c.count;
-		siblings = node.children;
+	const [head, ...rest] = c.name.split("/");
+	const childLabel = rest.join("/");
+	let node = nodeMap.get(head);
+	if (!node) {
+		node = { label: head, count: 0, url: getCategoryUrl(head), children: [] };
+		nodeMap.set(head, node);
 	}
+	if (childLabel) {
+		node.children.push({ label: childLabel, count: c.count, url: c.url });
+	} else {
+		node.url = c.url;
+	}
+	node.count += c.count;
 }
 
-const sortNodes = (nodes: Node[]): Node[] => {
-	nodes.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"));
-	for (const n of nodes) sortNodes(n.children);
-	return nodes;
-};
-sortNodes(roots);
-
-const flat: { node: Node; depth: number }[] = [];
-const walk = (nodes: Node[], depth: number) => {
-	for (const n of nodes) {
-		flat.push({ node: n, depth });
-		walk(n.children, depth + 1);
-	}
-};
-walk(roots, 0);
+const tree = [...nodeMap.values()]
+	.map((node) => ({
+		...node,
+		children: node.children.sort(
+			(a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"),
+		),
+	}))
+	.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "zh"));
 ---
 
 <WidgetLayout name={i18n(I18nKey.categories)} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
                 class={className} style={style}
 >
-    {flat.map(({ node, depth }) => (
-        <div style={`padding-left:${depth * 1.25}rem`}>
+    {tree.map((node) => (
+        <>
             <ButtonLink
                 url={node.url}
                 badge={String(node.count)}
-                label={`View all posts in the ${node.path} category`}
+                label={`View all posts in the ${node.label} category`}
             >
                 {node.label}
             </ButtonLink>
-        </div>
+            {node.children.map((child) => (
+                <div class="pl-5">
+                    <ButtonLink
+                        url={child.url}
+                        badge={String(child.count)}
+                        label={`View all posts in the ${node.label} / ${child.label} category`}
+                    >
+                        {child.label}
+                    </ButtonLink>
+                </div>
+            ))}
+        </>
     ))}
 </WidgetLayout>

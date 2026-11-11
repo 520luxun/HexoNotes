@@ -223,17 +223,29 @@ function categoryParts(rel) {
 	return { parent, sub: sub === parent ? "" : sub };
 }
 
+// Category = the note's second-level folder (mapped to Chinese), e.g.
+// Embedded/FreeRTOS -> FreeRTOS, Embedded/PCB -> 硬件电路.
 function makeCategory(rel, data, _multiSub) {
 	if (data.category) return data.category;
-	// Mirror the vault folder tree; only pure image folders are skipped.
-	const parts = rel.split("/").slice(0, -1);
+	const parts = rel.split("/");
+	return (
+		config.categoryMap?.[parts[1]] ||
+		parts[1] ||
+		config.categoryMap?.[parts[0]] ||
+		config.defaultCategory ||
+		"笔记"
+	);
+}
+
+// URL path keeps the full folder tree so links stay readable.
+function categoryDirs(rel) {
 	const labels = [];
-	for (const p of parts) {
+	for (const p of rel.split("/").slice(0, -1)) {
 		if (/\.assets$/i.test(p)) continue;
 		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
-		labels.push(config.categoryMap?.[p] || p);
+		labels.push(stripPunct(config.categoryMap?.[p] || p));
 	}
-	return labels.join("/") || config.defaultCategory || "笔记";
+	return labels;
 }
 
 function preferNearest(list, noteDir) {
@@ -519,12 +531,8 @@ async function main() {
 		const basename = path.basename(file.rel, ".md");
 		const title = (data.title || basename).trim();
 		const category = makeCategory(file.rel, data, multiSub);
-		const dirs = category
-			? category
-					.split("/")
-					.map((d) => stripPunct(d))
-					.filter(Boolean)
-			: [];
+		// URL keeps the folder tree; the category label is the second level.
+		const dirs = categoryDirs(file.rel);
 		const baseSlug = slugOf(basename) || "note";
 		let slug = baseSlug;
 		let rel = [...dirs, `${slug}.md`].join("/");

@@ -3,7 +3,7 @@ title: "AGENTS"
 published: 2026-08-24
 description: "Memory Context claudemem status This project has no memory yet. The current sess"
 tags: []
-category: "嵌入式/硬件电路/扩展资料"
+category: "硬件电路"
 draft: false
 order: 31
 ---

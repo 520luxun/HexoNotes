@@ -3,7 +3,7 @@ title: "19 FreeRTOS内存管理"
 published: 2026-07-18
 description: "FreeRTOS 内存管理 一、FreeRTOS 内存管理简介 1、FreeRTOS 内存管理介绍 答：在使用 FreeRTOS 创建任务、队列、信号量等对象的"
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 24
 ---

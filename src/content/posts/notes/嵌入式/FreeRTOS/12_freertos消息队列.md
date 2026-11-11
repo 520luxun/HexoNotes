@@ -3,7 +3,7 @@ title: "12 FreeRTOS消息队列"
 published: 2026-07-18
 description: "FreeRTOS消息队列 一、队列简介 1、FreeRTOS中的消息队列是什么 答：消息队列是任务到任务、任务到中断、中断到任务数据交流的一种机制(消息传递)。"
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 16
 ---

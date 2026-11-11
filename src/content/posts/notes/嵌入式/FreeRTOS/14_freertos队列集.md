@@ -3,7 +3,7 @@ title: "14 FreeRTOS队列集"
 published: 2026-07-18
 description: "FreeRTOS队列集 一、队列集简介 1、队列集介绍 答： 一个队列只允许任务间传递的消息为同一种数据类型，如果==需要再任务间传递不同数据类型的消息时==，"
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 18
 ---

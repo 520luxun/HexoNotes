@@ -3,7 +3,7 @@ title: "04 FreeRTOS任务中断管理"
 published: 2026-07-18
 description: "FreeRTOS中断管理简介 一、中断介绍(了解) 1、什么是中断 答：让CPU打断正常运行的程序，转而去处理紧急的事件(程序)，就叫中断。 2、中断执行机制 "
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 7
 ---
