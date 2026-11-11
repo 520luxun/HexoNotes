@@ -8,6 +8,9 @@ import { getPostUrlBySlug } from "../utils/url-utils";
 export let tags: string[];
 export let categories: string[];
 export let sortedPosts: Post[] = [];
+// "archive" groups by year (newest first); "catalog" groups by category and
+// keeps the chapter order of the incoming list.
+export let mode: "archive" | "catalog" = "archive";
 
 const params = new URLSearchParams(window.location.search);
 tags = params.has("tag") ? params.getAll("tag") : [];
@@ -26,6 +29,7 @@ interface Post {
 
 interface Group {
 	year: number;
+	label?: string;
 	posts: Post[];
 }
 
@@ -74,6 +78,22 @@ onMount(async () => {
 		return db - da;
 	});
 
+	if (mode === "catalog") {
+		const byCategory = new Map<string, Post[]>();
+		for (const post of filteredPosts) {
+			const key = String(post.data.category ?? "未分类").split("/")[0];
+			const list = byCategory.get(key);
+			if (list) list.push(post);
+			else byCategory.set(key, [post]);
+		}
+		groups = [...byCategory.entries()].map(([label, posts]) => ({
+			year: 0,
+			label,
+			posts,
+		})) as Group[];
+		return;
+	}
+
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
 			const year = post.data.published.getFullYear();
@@ -102,7 +122,7 @@ onMount(async () => {
         <div>
             <div class="flex flex-row w-full items-center h-[3.75rem]">
                 <div class="w-[15%] md:w-[10%] transition text-2xl font-bold text-right text-75">
-                    {group.year}
+                    {group.label ?? group.year}
                 </div>
                 <div class="w-[15%] md:w-[10%]">
                     <div

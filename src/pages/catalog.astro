@@ -1,67 +1,12 @@
 ---
+import ArchivePanel from "@components/ArchivePanel.svelte";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getPostUrlBySlug } from "@utils/url-utils";
-import { getSortedPosts } from "../utils/content-utils";
+import { getSortedPostsList } from "../utils/content-utils";
 
-// 总目录：按文章 URL 的目录层级还原成一棵可折叠的树（<details> 自带展开/收起）。
-const posts = await getSortedPosts();
-
-type Node = {
-	label: string;
-	posts: { title: string; url: string }[];
-	children: Map<string, Node>;
-};
-
-const root: Node = { label: "", posts: [], children: new Map() };
-
-for (const post of posts) {
-	const segments = post.slug.split("/");
-	let node = root;
-	for (const segment of segments.slice(0, -1)) {
-		let child = node.children.get(segment);
-		if (!child) {
-			child = { label: segment, posts: [], children: new Map() };
-			node.children.set(segment, child);
-		}
-		node = child;
-	}
-	node.posts.push({ title: post.data.title, url: getPostUrlBySlug(post.slug) });
-}
-
-const escapeHtml = (s: string) =>
-	s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
-const render = (node: Node, depth: number): string => {
-	const parts: string[] = [];
-	for (const [label, child] of [...node.children.entries()].sort((a, b) =>
-		a[0].localeCompare(b[0], "zh"),
-	)) {
-		const total = countOf(child);
-		parts.push(
-			`<details ${depth === 0 ? "open" : ""} class="mb-2">` +
-				`<summary class="cursor-pointer font-bold py-1">${escapeHtml(label)} <span class="text-75 text-sm font-normal">(${total})</span></summary>` +
-				`<div class="pl-5">${render(child, depth + 1)}</div>` +
-				`</details>`,
-		);
-	}
-	for (const post of node.posts) {
-		parts.push(
-			`<div class="py-0.5"><a class="link" href="${post.url}">${escapeHtml(post.title)}</a></div>`,
-		);
-	}
-	return parts.join("");
-};
-
-const countOf = (node: Node): number =>
-	node.posts.length + [...node.children.values()].reduce((sum, c) => sum + countOf(c), 0);
-
-const html = render(root, 0);
+// 总目录：与归档同款展示，但按分类分组、组内保持章节顺序。
+const posts = await getSortedPostsList();
 ---
 
 <MainGridLayout title="总目录">
-    <div class="card-base px-8 py-6">
-        <h1 class="text-3xl font-bold mb-2">总目录</h1>
-        <p class="text-75 mb-6">共 {posts.length} 篇，按目录层级展开</p>
-        <div set:html={html} />
-    </div>
+    <ArchivePanel sortedPosts={posts} client:only="svelte" mode="catalog"></ArchivePanel>
 </MainGridLayout>
