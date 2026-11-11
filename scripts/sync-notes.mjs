@@ -240,8 +240,7 @@ function makeCategory(rel, data, _multiSub) {
 	// (基础知识点 for 1-1~1-7, 扩展资料 for everything else).
 	const topic = labels[1] || labels[0] || config.defaultCategory || "笔记";
 	const deep = labels.slice(2);
-	// Only the "扩展资料" subtree keeps a second level; everything else stays flat.
-	if (deep.includes("扩展资料")) return `${topic}/扩展资料`;
+	// Every post gets exactly one flat topic category.
 	return topic;
 }
 
