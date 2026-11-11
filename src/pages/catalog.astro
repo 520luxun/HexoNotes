@@ -28,14 +28,12 @@ const root: Node = { label: "", posts: [], children: new Map() };
 const CATALOG_GROUPS: Record<string, (post: (typeof sorted)[number]) => string[]> = {
 	硬件电路: (post) => {
 		// slug 形如 notes/嵌入式/硬件电路/<文件夹>/<笔记>。
-		// 只有紧跟「硬件电路」的文件夹是「基础知识点」时（即 1-1 ~ 1-7）：
-		// 该组提升为顶层分组「基础知识点」；其余内容留在「硬件电路 → 扩展」下。
+		// 1-1 ~ 1-7（源文件夹「基础知识点」）直接挂在「硬件电路」下，不设中间层；
+		// 其余内容归入「硬件电路 → 扩展」。
 		const parts = String(post.slug).split("/");
 		const i = parts.indexOf("硬件电路");
 		const section = i >= 0 ? parts[i + 1] : "";
-		return section === "基础知识点"
-			? ["基础知识点"]
-			: ["硬件电路", "扩展"];
+		return section === "基础知识点" ? ["硬件电路"] : ["硬件电路", "扩展"];
 	},
 };
 
@@ -74,6 +72,15 @@ const formatDate = (d: Date) => {
 
 const render = (node: Node, depth: number): string => {
 	let html = "";
+	// 直接挂在当前分类下的文章先显示（如「硬件电路」下的 1-1 ~ 1-7），
+	// 子分组（如「扩展」）排在其后。
+	for (const post of node.posts) {
+		html +=
+			`<div class="flex items-baseline gap-3 py-1.5 px-2 rounded-lg transition hover:bg-[var(--btn-plain-bg-hover)]" style="padding-left:${depth * 1.25 + 1.25}rem">` +
+			`<span class="text-50 text-xs font-mono w-12 shrink-0">${formatDate(post.data.published)}</span>` +
+			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
+			`</div>`;
+	}
 	const children = [...node.children.values()].sort((a, b) =>
 		a.label.localeCompare(b.label, "zh"),
 	);
@@ -87,13 +94,6 @@ const render = (node: Node, depth: number): string => {
 			`</summary>` +
 			`<div class="ml-3 border-l border-[var(--line-color)] pl-2">${render(child, depth + 1)}</div>` +
 			`</details>`;
-	}
-	for (const post of node.posts) {
-		html +=
-			`<div class="flex items-baseline gap-3 py-1.5 px-2 rounded-lg transition hover:bg-[var(--btn-plain-bg-hover)]" style="padding-left:${depth * 1.25 + 1.25}rem">` +
-			`<span class="text-50 text-xs font-mono w-12 shrink-0">${formatDate(post.data.published)}</span>` +
-			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
-			`</div>`;
 	}
 	return html;
 };
