@@ -81,7 +81,7 @@ onMount(async () => {
 	if (mode === "catalog") {
 		const byCategory = new Map<string, Post[]>();
 		for (const post of filteredPosts) {
-			const key = String(post.data.category ?? "未分类").split("/")[0];
+			const key = String(post.data.category ?? "未分类").split("/").join(" · ");
 			const list = byCategory.get(key);
 			if (list) list.push(post);
 			else byCategory.set(key, [post]);
@@ -121,7 +121,7 @@ onMount(async () => {
     {#each groups as group}
         <div>
             <div class="flex flex-row w-full items-center h-[3.75rem]">
-                <div class="w-[15%] md:w-[10%] transition text-2xl font-bold text-right text-75">
+                <div class="w-[26%] md:w-[20%] transition text-lg font-bold text-right text-75 break-words">
                     {group.label ?? group.year}
                 </div>
                 <div class="w-[15%] md:w-[10%]">
