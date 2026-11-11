@@ -285,7 +285,11 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
-	const title = data.title || basename.replace(/^\d{4}-\d{2}-\d{2}[-_\s]*/, "") || basename;
+	const fmTitle = data.title || basename.replace(/^\d{4}-\d{2}-\d{2}[-_\s]*/, "") || basename;
+	// Keep the descriptive bracket from the H1 when the frontmatter title drops it.
+	const h1Title = (body.match(/^#\s+(.+)$/m)?.[1] ?? "").trim();
+	const bracket = (s) => /[（(].+[）)]/.test(s);
+	const title = h1Title && !bracket(fmTitle) && bracket(h1Title) ? h1Title : fmTitle;
 	const published =
 		normalizeDate(data.published) ??
 		normalizeDate(data.date) ??
@@ -538,7 +542,12 @@ async function main() {
 		const raw = fs.readFileSync(file.full, "utf8");
 		const { data } = parseFrontmatter(raw);
 		const basename = path.basename(file.rel, ".md");
-		const title = (data.title || basename).trim();
+		const fmTitle = (data.title || basename).trim();
+		// Prefer a body H1 that carries the descriptive bracket, e.g.
+		// "1-3 基础知识点3（比较器）", when the frontmatter title lacks it.
+		const h1 = (raw.match(/^#\s+(.+)$/m)?.[1] ?? "").trim();
+		const hasBracket = (s) => /[（(].+[）)]/.test(s);
+		const title = h1 && !hasBracket(fmTitle) && hasBracket(h1) ? h1 : fmTitle;
 		const category = makeCategory(file.rel, data, multiSub);
 		// URL keeps the folder tree; the category label is the second level.
 		const dirs = categoryDirs(file.rel);
