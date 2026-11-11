@@ -3,7 +3,7 @@ title: "13 FreeRTOS信号量"
 published: 2026-07-18
 description: "FreeRTOS信号量 一、信号量简介 1、什么是信号量 答：信号量是一种解决同步问题的机制，可以实现对共享资源的有序访问。 假设有一个人需要在停车场停车。 空"
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 17
 ---

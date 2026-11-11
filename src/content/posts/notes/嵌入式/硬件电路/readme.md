@@ -3,7 +3,7 @@ title: "README"
 published: 2026-08-31
 description: "PCB 设计学习笔记 PCB 电路设计从入门到实践，涵盖基础元器件知识、经典电路分析、以及实际 EDA 工程案例。 当前目录结构： text PCB/ ├── "
 tags: []
-category: "嵌入式/硬件电路"
+category: "硬件电路"
 draft: false
 order: 53
 ---

@@ -3,7 +3,7 @@ title: "CLAUDE"
 published: 2026-07-16
 description: "CLAUDE.md This file provides guidance to Claude Code (claude.ai/code) when worki"
 tags: []
-category: "学习笔记/效率工具"
+category: "效率工具"
 draft: false
 order: 118
 ---

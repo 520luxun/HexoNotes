@@ -3,7 +3,7 @@ title: "18 Tickless低功耗模式"
 published: 2026-07-18
 description: "Tickless低功耗模式 一、低功耗模式简介 1、低功耗介绍 答：很多应用场合对于功耗的要求很严格，比如可穿戴低功耗产品、物联网低功耗产品等；一般MCU都有相"
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 23
 ---

@@ -3,7 +3,7 @@ title: "05 FreeRTOS临界段代码保护"
 published: 2026-07-18
 description: "FreeRTOS临界段代码保护 一、临界段代码保护简介(熟悉) 1、什么是临界段 答：临界段代码也叫临界区，是指那些必须完整运行，不能被打断的代码片段。运行时临"
 tags: []
-category: "嵌入式/FreeRTOS"
+category: "FreeRTOS"
 draft: false
 order: 8
 ---

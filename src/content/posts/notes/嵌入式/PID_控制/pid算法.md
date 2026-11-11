@@ -3,7 +3,7 @@ title: "PID算法"
 published: 2026-05-07
 description: "PID算法 以下是根据PDF讲义、视频教程以及补充参考资料，对PID从零到实战的全方位详细讲解。 视频链接：从不懂到会用！PID从理论到实践~ 哔哩哔哩_bil"
 tags: []
-category: "嵌入式/PID 控制"
+category: "PID 控制"
 draft: false
 order: 54
 ---

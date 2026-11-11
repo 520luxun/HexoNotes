@@ -236,7 +236,8 @@ function makeCategory(rel, data, _multiSub) {
 		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
 		labels.push(config.categoryMap?.[p] || p);
 	}
-	return labels.slice(0, 2).join("/") || config.defaultCategory || "笔记";
+	// One concrete topic per post: FreeRTOS / 计算机操作系统 / 硬件电路 ...
+	return labels[1] || labels[0] || config.defaultCategory || "笔记";
 }
 
 // URL path keeps the full folder tree so links stay readable.
