@@ -3,7 +3,8 @@ title: "嵌入式原理与实践"
 published: 2026-07-20
 description: "嵌入式原理与实践 1. 核心教材：《嵌入式系统原理及实践》 目前多所高校采用的教材是由 孟利民、宋秀兰 主编， 清华大学出版社 于 2024年 出版的版本 1"
 tags: []
-category: "KNOWLEDGEPOINTS"
+category: "KnowledgePoints"
+path: "Embedded/KnowledgePoints"
 draft: false
 order: 28
 ---

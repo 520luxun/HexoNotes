@@ -3,7 +3,8 @@ title: "10 FreeRTOS任务相关的其他API函数"
 published: 2026-07-18
 description: "FreeRTOS任务相关的其他API函数 一、FreeRTOS任务相关的其他API函数介绍 1、FreeRTOS任务相关API函数介绍(部分常用的) 答： 二、"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 14
 ---

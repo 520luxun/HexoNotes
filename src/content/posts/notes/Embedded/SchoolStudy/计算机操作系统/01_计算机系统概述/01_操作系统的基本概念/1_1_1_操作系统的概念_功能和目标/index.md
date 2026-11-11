@@ -3,7 +3,8 @@ title: "1.1.1 操作系统的概念、功能和目标"
 published: 2026-11-10
 description: "1.1.1 操作系统的概念、功能和目标 [!abstract] 核心结论 操作系统（Operating System，OS）是控制和管理整个计算机系统的硬件与软"
 tags: []
-category: "SCHOOLSTUDY"
+category: "SchoolStudy"
+path: "Embedded/SchoolStudy/计算机操作系统/01_计算机系统概述/01_操作系统的基本概念"
 draft: false
 order: 56
 ---

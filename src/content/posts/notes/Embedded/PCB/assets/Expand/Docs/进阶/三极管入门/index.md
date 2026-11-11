@@ -4,6 +4,7 @@ published: 2026-08-28
 description: "三极管入门：PN 结、NPN/PNP、工作区与实际应用 正式整理版。原始笔记备份：三极管入门original 本文在原始《三极管入门》笔记的基础上整理。原文中的"
 tags: []
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
 order: 40
 ---

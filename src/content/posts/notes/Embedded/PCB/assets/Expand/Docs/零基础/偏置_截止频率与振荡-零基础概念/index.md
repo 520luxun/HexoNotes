@@ -4,6 +4,7 @@ published: 2026-08-28
 description: "偏置、截止频率与振荡：零基础概念 这些词经常一起出现在电路题和调试报告里，但它们回答的问题完全不同。先记住： 概念 它回答的问题 偏置 没有交流变化时，器件停在"
 tags: ["模拟电路", "偏置", "截止频率", "谐振", "振荡", "零基础"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/零基础"
 draft: false
 order: 42
 ---
@@ -165,6 +166,6 @@ L 或 C 增大，能量交换变慢，$f_0$ 降低；L 或 C 减小，$f_0$ 升�
 
 ## 10. 下一步
 
-- LC 直觉入门：[零基础/LC谐振与Q值-零基础入门](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/lc谐振与q值-零基础入门/)
-- 电感与滤波入门：[零基础/电感与RL、LC滤波-零基础入门](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/电感与rl_lc滤波-零基础入门/)
-- 完整数学推导：[进阶/偏置、截止频率、谐振与振荡辨析](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/偏置_截止频率_谐振与振荡辨析/)
+- LC 直觉入门：[零基础/LC谐振与Q值-零基础入门](../../../../../../../Embedded/PCB/assets/Expand/Docs/零基础/lc谐振与q值-零基础入门/)
+- 电感与滤波入门：[零基础/电感与RL、LC滤波-零基础入门](../../../../../../../Embedded/PCB/assets/Expand/Docs/零基础/电感与rl_lc滤波-零基础入门/)
+- 完整数学推导：[进阶/偏置、截止频率、谐振与振荡辨析](../../../../../../../Embedded/PCB/assets/Expand/Docs/进阶/偏置_截止频率_谐振与振荡辨析/)

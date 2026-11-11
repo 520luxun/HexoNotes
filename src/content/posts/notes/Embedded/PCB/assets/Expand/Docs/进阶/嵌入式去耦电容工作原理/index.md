@@ -4,6 +4,7 @@ published: 2026-08-18
 description: "嵌入式去耦电容工作原理 在嵌入式电路中，MCU、传感器、存储器等芯片的 VCC 与 GND 之间，通常都会就近放置一颗 0.1uF（100nF）陶瓷电容。这颗看"
 tags: ["硬件基础", "去耦电容", "PCB设计", "示波器"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
 order: 39
 ---

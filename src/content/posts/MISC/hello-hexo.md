@@ -4,6 +4,7 @@ published: 2026-11-09
 description: 从 Hexo 迁移到 Fuwari 后的第一篇文章。
 tags: [Fuwari]
 category: 随笔
+path: "MISC"
 draft: false
 lang: zh_CN
 ---

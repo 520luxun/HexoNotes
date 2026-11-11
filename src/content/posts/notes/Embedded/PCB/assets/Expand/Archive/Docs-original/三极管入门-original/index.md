@@ -4,6 +4,7 @@ published: 2026-08-25
 description: "三极管入门 PN结 ==电子只能从$N$流向$P$，那么电流只能从$P$流向$N$== 引入 视频：极速入门三极管NPN与PNP放大原理【极速入门数模电路P05"
 tags: []
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Archive/Docs-original"
 draft: false
 order: 33
 ---

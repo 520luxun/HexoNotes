@@ -3,7 +3,8 @@ title: "15 FreeRTOS事件标志组"
 published: 2026-07-18
 description: "FreeRTOS事件标志组 一、事件标志组简介 1、事件标志组介绍 答： 事件标志位：用一个位，来表示事件是否发生。 事件标志组是一组事件标志位的合集，可以简单"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 19
 ---

@@ -10,6 +10,8 @@ const postsCollection = defineCollection({
 		image: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
+		// 库里的原始文件夹路径（保留大小写），仅用于目录页展示层级名
+		path: z.string().optional().default(""),
 		lang: z.string().optional().default(""),
 		order: z.number().optional(), // chapter order from the source vault
 

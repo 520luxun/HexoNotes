@@ -4,6 +4,7 @@ published: 2026-11-10
 description: 从 Ctrl+R 历史搜索到 alias 自定义快捷方式，10 个能立刻提升命令行效率的 bash 技巧，附详细用法与示例。
 tags: [Linux, Shell, 效率]
 category: Linux
+path: "MISC"
 draft: false
 lang: zh_CN
 ---

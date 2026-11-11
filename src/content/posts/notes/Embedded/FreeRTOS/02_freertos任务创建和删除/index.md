@@ -3,7 +3,8 @@ title: "02 FreeRTOS任务创建和删除"
 published: 2026-07-18
 description: "FreeRTOS 任务创建和删除 一、任务创建和删除 API 函数(熟悉) 任务创建和删除的本质 任务创建和删除的本质就是调用 FreeRTOS 的 API 函"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 5
 ---

@@ -282,29 +282,17 @@ function cleanDescription(desc, body) {
 	return d.replace(/["\\]/g, "");
 }
 
-// Category = 笔记所在的二级文件夹，英文统一大写（中文文件夹不受影响）。
-// 例：Embedded/PCB/... -> PCB，Embedded/FreeRTOS/... -> FREERTOS。
+// Category = 笔记所在的二级文件夹，名字与大小写完全按库里的原样。
+// 例：Embedded/PCB/... -> PCB，Embedded/FreeRTOS/... -> FreeRTOS。
 function makeCategory(rel, data) {
-	if (data.category) return String(data.category).toUpperCase();
+	if (data.category) return String(data.category);
 	const parts = rel.split("/").slice(0, -1);
-	return String(parts[1] || parts[0] || config.defaultCategory || "笔记").toUpperCase();
+	return String(parts[1] || parts[0] || config.defaultCategory || "笔记");
 }
 
-// URL path keeps the full folder tree so links stay readable.
-// URL path keeps the full folder tree so links stay readable.
-const isAssetSegment = (p) =>
-	/\.assets$/i.test(p) ||
-	/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p);
-
-// 拥有「扩展」容器的主题（源目录里存在 扩展资料 / 扩展 文件夹）。
-const extensionTopics = new Set();
-
-// URL path = 库里完整的文件夹树，层级照搬，英文文件夹名统一大写。
+// URL / 目录路径 = 库里完整的文件夹树，层级与大小写照搬。
 function categoryDirs(rel) {
-	return rel
-		.split("/")
-		.slice(0, -1)
-		.map((p) => p.toUpperCase());
+	return rel.split("/").slice(0, -1);
 }
 
 function preferNearest(list, noteDir) {
@@ -502,6 +490,9 @@ function convertNote(file, attachments, downloaded, assets, order, ctx) {
 		`description: ${yamlQuote(cleanDescription(data.description || data.summary, body))}`,
 		`tags: ${yamlArray(normalizeTags(Array.isArray(data.tags) ? data.tags : []))}`,
 		`category: ${yamlQuote(makeCategory(file.rel, data))}`,
+		// 库里原始文件夹路径（保留大小写），供总目录页显示真实的层级名。
+		// URL 会被 Astro 转成小写，因此显示名不能从 slug 反推。
+		`path: ${yamlQuote(ctx.dirs.join("/"))}`,
 		`draft: ${data.draft === true || data.publish === false}`,
 		`order: ${order}`,
 		"---",

@@ -3,7 +3,8 @@ title: "1.3.1 操作系统的运行机制和体系结构（大内核、小内核
 published: 2020-02-22
 description: "文章浏览阅读3.9w次，点赞95次，收藏48次。文章目录：1.操作系统的运行机制和体系结构2.操作系统内核在计算机系统中的层次结构3.操作系统体系结构类比1.操作系统的运行机制和体系结构2.操作系统内核在计算机系统中的层次结构3.操作系统体系结构类比参考：《2021王道操作系统考研》https://www.bilibili.com/video/av70156862?p=4..._小内核 大内核"
 tags: []
-category: "SCHOOLSTUDY"
+category: "SchoolStudy"
+path: "Embedded/SchoolStudy/计算机操作系统/01_计算机系统概述/03_运行机制和体系结构"
 draft: false
 order: 59
 ---

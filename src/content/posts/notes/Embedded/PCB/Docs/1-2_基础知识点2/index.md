@@ -4,6 +4,7 @@ published: 2026-08-29
 description: "三极管、常电电器与 MOS 管 章节 笔记中的核心知识点 三极管基础 结构与开关功能、三种工作状态（截止/放大/饱和）、NPN/PNP 开关电路设计、输出反相、"
 tags: ["模拟电路", "三极管", "MOS管", "传感器", "电源设计", "自举"]
 category: "PCB"
+path: "Embedded/PCB/Docs"
 draft: false
 order: 47
 ---
@@ -22,7 +23,7 @@ order: 47
 ## 三极管基础
 
 > **前提**
-> - [三极管入门](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/三极管入门/)
+> - [三极管入门](../../../../Embedded/PCB/assets/Expand/Docs/进阶/三极管入门/)
 > - [三极管的工作原理详解，图文+案例_三极管工作原理-CSDN博客](https://blog.csdn.net/weixin_44161807/article/details/130286668?ops_request_misc=elastic_search_misc&request_id=2c173113287a5a38306eacc17e2ef7b2&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-130286668-null-null.142^v102^pc_search_result_base1&utm_term=三极管&spm=1018.2226.3001.4187)
 
 ### 基本结构

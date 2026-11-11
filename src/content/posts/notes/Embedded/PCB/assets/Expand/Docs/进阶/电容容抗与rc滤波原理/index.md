@@ -4,6 +4,7 @@ published: 2026-08-18
 description: "电容容抗与 RC 低通、高通滤波原理 本文由原“容抗 Xc 原理”和“RC 低通与高通滤波电路原理”合并而成：前半部分先建立电容的频率、相位与储能直觉，后半部分"
 tags: ["硬件基础", "电容", "滤波器", "截止频率", "PCB设计"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
 order: 37
 ---
@@ -768,6 +769,6 @@ $$\varphi=360^\circ\frac{\Delta t}{T}$$
 
 ## 15. 相关文档
 
-- 需要学习电感、RL 和 LC 滤波：[进阶/电感、RL与LC滤波原理详解](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/电感_rl与lc滤波原理详解/)
-- 需要区分截止频率、谐振、振荡和偏置：[进阶/偏置、截止频率、谐振与振荡辨析](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/偏置_截止频率_谐振与振荡辨析/)
-- 需要学习芯片附近的瞬态供电：[进阶/嵌入式去耦电容工作原理](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/嵌入式去耦电容工作原理/)
+- 需要学习电感、RL 和 LC 滤波：[进阶/电感、RL与LC滤波原理详解](../../../../../../../Embedded/PCB/assets/Expand/Docs/进阶/电感_rl与lc滤波原理详解/)
+- 需要区分截止频率、谐振、振荡和偏置：[进阶/偏置、截止频率、谐振与振荡辨析](../../../../../../../Embedded/PCB/assets/Expand/Docs/进阶/偏置_截止频率_谐振与振荡辨析/)
+- 需要学习芯片附近的瞬态供电：[进阶/嵌入式去耦电容工作原理](../../../../../../../Embedded/PCB/assets/Expand/Docs/进阶/嵌入式去耦电容工作原理/)

@@ -3,7 +3,8 @@ title: "19-1 内存管理代码详解"
 published: 2026-07-18
 description: "c / FreeRTOS Kernel V10.5.1 Copyright (C) 2021 Amazon.com, Inc. or its affiliate"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 25
 ---

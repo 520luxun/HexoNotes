@@ -4,6 +4,7 @@ published: 2026-08-24
 description: "差模与共模干扰及滤波原理 1. 先给出结论 对于一组双导线，设两根线相对于某个参考节点的电压分别为 $V_1$ 和 $V_2$。任意一组电压都可以分解为： 共模"
 tags: ["硬件基础", "EMC", "共模电感"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
 order: 34
 ---

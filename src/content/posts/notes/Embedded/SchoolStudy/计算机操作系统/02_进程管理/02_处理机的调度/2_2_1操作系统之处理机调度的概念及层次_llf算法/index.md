@@ -3,7 +3,8 @@ title: "2.2.1操作系统之处理机调度的概念及层次_llf算法"
 published: 2020-04-05
 description: "文章浏览阅读2.4w次，点赞84次，收藏37次。本文详细探讨了操作系统的调度机制，包括高级调度（作业调度）、中级调度（内存调度）及低级调度（进程调度），并解析了进程的挂起状态与七状态模型，最后对比分析了三层调度之间的联系与差异。"
 tags: []
-category: "SCHOOLSTUDY"
+category: "SchoolStudy"
+path: "Embedded/SchoolStudy/计算机操作系统/02_进程管理/02_处理机的调度"
 draft: false
 order: 67
 ---

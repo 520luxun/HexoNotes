@@ -4,6 +4,7 @@ published: 2026-08-18
 description: "容抗 Xc 原理 电阻会阻碍电流，电容也会对交流电流表现出一种“阻碍”。电容对交流电流的这种阻碍程度叫作容抗，用 $X_C$ 表示，单位同样是欧姆（Ω）。 容抗"
 tags: ["硬件基础", "电容", "交流电路", "去耦电容"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Archive/Docs-original"
 draft: false
 order: 32
 ---

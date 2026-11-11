@@ -4,6 +4,7 @@ published: 2026-08-29
 description: "电阻、电容、电感、二极管 [!info] 说明 本文档整理自课堂笔记《11 基础知识点》，仅调整结构与格式，知识点内容保持不变。 元件 笔记中的核心知识点 电阻"
 tags: ["模拟电路", "电阻", "电容", "电感", "二极管", "滤波器"]
 category: "PCB"
+path: "Embedded/PCB/Docs"
 draft: false
 order: 46
 ---
@@ -186,7 +187,7 @@ $R = \frac{U}{I}$   $I = \frac{U}{R}$    $U = I * R$
 
 #### 扩展：上电浪涌与软启动
 
-链接文件：[大电容上电浪涌与软启动](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/大电容上电浪涌与软启动/)
+链接文件：[大电容上电浪涌与软启动](../../../../Embedded/PCB/assets/Expand/Docs/进阶/大电容上电浪涌与软启动/)
 
 ```
 电源12V ──[开关]── [大电容] ── GND
@@ -231,7 +232,7 @@ $R = \frac{U}{I}$   $I = \frac{U}{R}$    $U = I * R$
 
 #### 详细解释
 
-[嵌入式去耦电容工作原理](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/嵌入式去耦电容工作原理/)
+[嵌入式去耦电容工作原理](../../../../Embedded/PCB/assets/Expand/Docs/进阶/嵌入式去耦电容工作原理/)
 
 #### 演示
 
@@ -262,7 +263,7 @@ $R_C=\frac{1}{2 \pi fc}$
 > 1. 频率越高，$R_C$ 越小，$R_{总}$ 越小，电流越大；
 > 2. “隔直通交，通高频阻低频”：交流电充电方向来回变，导致电容循环充放电。频率高充放电更快，则通过的更快，显得阻力小。
 
-文件：[电容容抗与RC滤波原理](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/电容容抗与rc滤波原理/)
+文件：[电容容抗与RC滤波原理](../../../../Embedded/PCB/assets/Expand/Docs/进阶/电容容抗与rc滤波原理/)
 
 ### 低通滤波电路原理及作用
 
@@ -348,7 +349,7 @@ $R_C=\frac{1}{2 \pi fc}$
 - 工频干扰（低频的干扰）；
 - 如果是共模，那就用共模的滤波（共模高频滤波）的办法。
 
-文件：[差模与共模干扰及滤波原理](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/差模与共模干扰及滤波原理/)
+文件：[差模与共模干扰及滤波原理](../../../../Embedded/PCB/assets/Expand/Docs/进阶/差模与共模干扰及滤波原理/)
 
 测试：
 
@@ -438,7 +439,7 @@ $u=L\frac{di}{dt}$
 
 ### 电感的感抗计算公式
 
-文件：[电感与RL、LC滤波-零基础入门](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/电感与rl_lc滤波-零基础入门/)
+文件：[电感与RL、LC滤波-零基础入门](../../../../Embedded/PCB/assets/Expand/Docs/零基础/电感与rl_lc滤波-零基础入门/)
 
 <mark>电感在频率越高时，阻抗越大，频率越低时，阻抗越小。</mark>
 
@@ -450,7 +451,7 @@ $u=L\frac{di}{dt}$
 
 ### 电感的低通滤波原理
 
-文件：[电感与RL、LC滤波-零基础入门](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/电感与rl_lc滤波-零基础入门/)
+文件：[电感与RL、LC滤波-零基础入门](../../../../Embedded/PCB/assets/Expand/Docs/零基础/电感与rl_lc滤波-零基础入门/)
 
 <mark>低通滤波电路可以让低频的信号流过，衰减高频信号</mark>
 
@@ -485,7 +486,7 @@ $u=L\frac{di}{dt}$
 
 ### 电感的高通滤波原理
 
-文件：[电感、RL与LC滤波原理详解](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/电感_rl与lc滤波原理详解/)
+文件：[电感、RL与LC滤波原理详解](../../../../Embedded/PCB/assets/Expand/Docs/进阶/电感_rl与lc滤波原理详解/)
 
 <mark>高通滤波电路可以让高频的信号流过，衰减低频信号</mark>
 
@@ -513,15 +514,15 @@ $u=L\frac{di}{dt}$
 > - <mark>滤除直流偏置：$RC$、$RL$ 高通滤波电路</mark>；
 > - <mark>保留直流偏置：$RC$、$RL$ 低通滤波电路</mark>。
 
-文件：[偏置、截止频率与振荡-零基础概念](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/偏置_截止频率与振荡-零基础概念/)
+文件：[偏置、截止频率与振荡-零基础概念](../../../../Embedded/PCB/assets/Expand/Docs/零基础/偏置_截止频率与振荡-零基础概念/)
 
 ![](./assets/QQ_1768185139044.png)
 
 ### LC 低通滤波原理
 
 文件：
-[零基础/电感与RL、LC滤波-零基础入门](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/电感与rl_lc滤波-零基础入门/)
-[LC谐振与Q值-零基础入门](../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/lc谐振与q值-零基础入门/)
+[零基础/电感与RL、LC滤波-零基础入门](../../../../Embedded/PCB/assets/Expand/Docs/零基础/电感与rl_lc滤波-零基础入门/)
+[LC谐振与Q值-零基础入门](../../../../Embedded/PCB/assets/Expand/Docs/零基础/lc谐振与q值-零基础入门/)
 
 <mark>LC低通滤波电路比RC低通滤波、LR低通滤波电路的滤波效果更好</mark>
 

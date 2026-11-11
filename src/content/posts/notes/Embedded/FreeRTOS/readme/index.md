@@ -3,7 +3,8 @@ title: "README"
 published: 2026-07-19
 description: "FreeRTOS 学习笔记 & 实战代码 基于 STM32F1 / STM32F4 平台的 FreeRTOS 实时操作系统学习资源，包含从入门到进阶的 19 篇"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 26
 ---

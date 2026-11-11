@@ -3,7 +3,8 @@ title: "01 FreeRTOS入门"
 published: 2026-07-18
 description: "FreeRTOS 入门 RTOS 入门知识 裸机与 RTOS 特点 裸机：裸机又称为前后台系统，前台系统指中断服务函数，后台系统指的是无限大循环，即应用程序。 "
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 3
 ---

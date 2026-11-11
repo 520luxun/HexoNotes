@@ -3,7 +3,8 @@ title: "17 FreeRTOS软件定时器"
 published: 2026-07-18
 description: "FreeRTOS软件定时器 一、软件定时器的简介 1、定时器介绍 定时器：从指定的时刻开始，经过一个指定时间（超时时间），然后触发一个超时事件，用户可以自定义定"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 21
 ---

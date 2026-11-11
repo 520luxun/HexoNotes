@@ -4,13 +4,14 @@ published: 2026-08-24
 description: "电感与 RL、LC 滤波原理详解 本文是进阶详解版。第一次接触电感和滤波，建议先读：[[零基础/电感与RL、LC滤波零基础入门]] 本文整理并扩展原笔记中的内容"
 tags: ["电感", "滤波器", "截止频率", "谐振"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
 order: 36
 ---
 
 # 电感与 RL、LC 滤波原理详解
 
-> 本文是进阶详解版。第一次接触电感和滤波，建议先读：[零基础/电感与RL、LC滤波-零基础入门](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/电感与rl_lc滤波-零基础入门/)
+> 本文是进阶详解版。第一次接触电感和滤波，建议先读：[零基础/电感与RL、LC滤波-零基础入门](../../../../../../../Embedded/PCB/assets/Expand/Docs/零基础/电感与rl_lc滤波-零基础入门/)
 
 本文整理并扩展原笔记中的内容，重点说明：
 

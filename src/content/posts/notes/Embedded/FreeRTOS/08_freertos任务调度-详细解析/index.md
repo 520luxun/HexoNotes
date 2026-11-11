@@ -3,7 +3,8 @@ title: "08 FreeRTOS任务调度-详细解析"
 published: 2026-07-18
 description: "08 FreeRTOS任务调度 为什么要重新赋值MSP（主堆栈指针） 要理解“为什么要重新赋值MSP（主堆栈指针）”，需要结合CortexM架构的堆栈机制和嵌入"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 11
 ---

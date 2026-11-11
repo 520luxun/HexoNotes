@@ -4,6 +4,7 @@ published: 2026-08-29
 description: "电流检测电路 [!info] 说明 本文档整理自课堂笔记《14 电流检测电路》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 单端检测（低端"
 tags: ["模拟电路", "电流检测", "运算放大器", "偏置"]
 category: "PCB"
+path: "Embedded/PCB/Docs"
 draft: false
 order: 49
 ---

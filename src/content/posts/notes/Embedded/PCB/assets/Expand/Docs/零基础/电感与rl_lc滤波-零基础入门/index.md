@@ -4,6 +4,7 @@ published: 2026-08-28
 description: "电感与 RL、LC 滤波：零基础入门 本文不要求先学习复数、相量或传递函数。目标是让你看到电感、RL、LC 电路时，能够先判断它大致让低频通过还是让高频通过。 "
 tags: ["电感", "滤波器", "零基础"]
 category: "PCB"
+path: "Embedded/PCB/assets/Expand/Docs/零基础"
 draft: false
 order: 41
 ---
@@ -203,6 +204,6 @@ $$
 
 ## 14. 下一步
 
-- LC 谐振与 Q 值直觉：[零基础/LC谐振与Q值-零基础入门](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/lc谐振与q值-零基础入门/)
-- 偏置、截止频率和振荡概念：[零基础/偏置、截止频率与振荡-零基础概念](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/零基础/偏置_截止频率与振荡-零基础概念/)
-- 完整公式与工程推导：[进阶/电感、RL与LC滤波原理详解](../../../../../../../EMBEDDED/PCB/ASSETS/EXPAND/DOCS/进阶/电感_rl与lc滤波原理详解/)
+- LC 谐振与 Q 值直觉：[零基础/LC谐振与Q值-零基础入门](../../../../../../../Embedded/PCB/assets/Expand/Docs/零基础/lc谐振与q值-零基础入门/)
+- 偏置、截止频率和振荡概念：[零基础/偏置、截止频率与振荡-零基础概念](../../../../../../../Embedded/PCB/assets/Expand/Docs/零基础/偏置_截止频率与振荡-零基础概念/)
+- 完整公式与工程推导：[进阶/电感、RL与LC滤波原理详解](../../../../../../../Embedded/PCB/assets/Expand/Docs/进阶/电感_rl与lc滤波原理详解/)

@@ -3,7 +3,8 @@ title: "17-1 软件定时器解释"
 published: 2026-07-18
 description: "软件定时器 软件定时器 软件定时器服务任务（Timer Daemon Task）自身可以进入阻塞状态，并且它的大部分时间都处于阻塞状态，这是其高效工作的关键。但"
 tags: []
-category: "FREERTOS"
+category: "FreeRTOS"
+path: "Embedded/FreeRTOS"
 draft: false
 order: 22
 ---

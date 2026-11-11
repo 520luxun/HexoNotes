@@ -23,9 +23,12 @@ const sorted = [...posts].sort((a, b) =>
 type Node = { label: string; posts: typeof sorted; children: Map<string, Node> };
 const root: Node = { label: "", posts: [], children: new Map() };
 
-// 目录页 = Obsidian 文件夹结构的原样镜像。
-// slug 形如 notes/<文件夹树>/<笔记文件夹>，去掉首段 notes 与末段笔记即可得到层级树。
+// 目录页 = Obsidian 文件夹结构的原样镜像，层级名用 frontmatter 的 path
+// （保留库里的原始大小写，例如 Embedded / PCB / Docs / Expand）。
+// 注意不能用 slug：Astro 生成的 slug 是小写的。
 const catalogSegments = (post: (typeof sorted)[number]): string[] => {
+	const raw = String(post.data.path ?? "").trim();
+	if (raw) return raw.split("/").filter(Boolean);
 	const parts = String(post.slug).split("/").filter(Boolean);
 	return parts.slice(1, -1);
 };

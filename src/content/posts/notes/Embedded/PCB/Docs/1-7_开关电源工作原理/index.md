@@ -4,6 +4,7 @@ published: 2026-08-25
 description: "17 开关电源工作原理 [!info] 说明 本文档整理自课堂笔记《17 开关电源工作原理》，仅调整结构与格式，知识点内容保持不变。 章节 笔记中的核心知识点 "
 tags: ["电源设计", "电感"]
 category: "PCB"
+path: "Embedded/PCB/Docs"
 draft: false
 order: 52
 ---

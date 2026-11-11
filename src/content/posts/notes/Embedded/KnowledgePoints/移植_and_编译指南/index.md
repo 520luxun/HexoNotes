@@ -3,7 +3,8 @@ title: "移植 and 编译指南"
 published: 2026-07-20
 description: "Linux 下 SDL 1.2.15 移植 / 编译完整指南 SDL 1.2.15 是经典的跨平台多媒体开发库，常用于旧版游戏、模拟器、FFmpeg 等项目。以"
 tags: []
-category: "KNOWLEDGEPOINTS"
+category: "KnowledgePoints"
+path: "Embedded/KnowledgePoints"
 draft: false
 order: 29
 ---

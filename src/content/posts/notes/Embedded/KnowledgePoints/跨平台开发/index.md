@@ -3,7 +3,8 @@ title: "跨平台开发"
 published: 2026-08-07
 description: "嵌入式 提到“嵌入式”，通常指的是嵌入式系统，这是一个将计算机硬件与软件结合，用于实现特定功能的专用计算机系统。它和我们熟悉的PC或智能手机不同，通常是作为一个"
 tags: []
-category: "KNOWLEDGEPOINTS"
+category: "KnowledgePoints"
+path: "Embedded/KnowledgePoints"
 draft: false
 order: 27
 ---
