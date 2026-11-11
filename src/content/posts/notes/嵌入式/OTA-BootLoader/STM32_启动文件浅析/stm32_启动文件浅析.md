@@ -3,7 +3,7 @@ title: "STM32 启动文件浅析"
 published: 2026-10-23
 description: "相关文件： [[STM32 启动文件浅析_V1.2.pdf]] 中断向量表 一、中断向量表是什么 中断向量表（Vector Table）本质上是一张函数指针数组"
 tags: []
-category: "嵌入式/OTA-BootLoader/STM32 启动文件浅析"
+category: "嵌入式/OTA-BootLoader"
 draft: false
 order: 30
 ---
