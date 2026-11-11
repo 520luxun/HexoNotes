@@ -1,6 +1,20 @@
-# 博客部署说明（blog.luxunacc.xyz）
+# 博客部署说明
 
-## 先回答：域名一定要有服务器吗
+## 当前状态（2026-11）
+
+| 入口 | 地址 | 说明 |
+|---|---|---|
+| 主站 | https://hexonotes.pages.dev | Cloudflare Pages，跟着 `main` 分支自动构建 |
+| 备用 | https://520luxun.github.io/HexoNotes/ | GitHub Pages，Actions 自动部署 |
+
+- **不使用 `blog.luxunacc.xyz`**：`luxunacc.xyz` 的 NS 在阿里云，且 `api` 子域承担比赛项目的 API 与视频，
+  把 NS 迁到 Cloudflare 有影响线上接口的风险，因此保持原样
+- 博客与 ECS 服务器、域名完全解耦，服务器到期不影响站点
+- 内容更新：`git push`（或 `pnpm push:all`）后两个平台都会自动重建
+
+---
+
+## 如果以后仍想绑自定义域名（博客专用的新域名最安全）
 
 不需要。域名只是 DNS 指向，指向哪里都行：
 
