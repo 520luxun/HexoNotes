@@ -26,8 +26,10 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://520luxun.github.io/HexoNotes/",
-	base: "/HexoNotes/",
+	// Defaults to the GitHub Pages project path; override with DEPLOY_SITE /
+	// DEPLOY_BASE when building for a custom domain served from the root.
+	site: process.env.DEPLOY_SITE ?? "https://520luxun.github.io/HexoNotes/",
+	base: process.env.DEPLOY_BASE ?? "/HexoNotes/",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({

@@ -14,6 +14,20 @@ const run = (command) => {
 };
 
 const args = process.argv.slice(2);
+const takeFlag = (name) => {
+	const i = args.indexOf(name);
+	if (i === -1) return undefined;
+	const value = args[i + 1];
+	args.splice(i, 2);
+	return value;
+};
+
+// Allow building for another origin/path (e.g. a custom domain served at "/").
+const site = takeFlag("--site");
+const base = takeFlag("--base");
+if (site) env.DEPLOY_SITE = site;
+if (base) env.DEPLOY_BASE = base;
+
 const syncOnly = args.includes("--sync-only");
 const syncArgs = args.filter((a) => a !== "--sync-only").join(" ");
 

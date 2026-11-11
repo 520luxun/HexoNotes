@@ -1,0 +1,9 @@
+# 追加到 ECS 上 Caddyfile 的末尾，然后执行: sudo caddy reload --config /etc/caddy/Caddyfile
+# 只新增 blog.luxunacc.xyz 这一个站点，不会影响 api.luxunacc.xyz 的现有反代。
+blog.luxunacc.xyz {
+	root * /var/www/blog
+	encode zstd gzip
+	# Astro 使用 trailingSlash: "always"，页面输出为 <dir>/index.html
+	try_files {path} {path}/ {path}/index.html /404.html
+	file_server
+}
