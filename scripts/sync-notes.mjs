@@ -236,8 +236,13 @@ function makeCategory(rel, data, _multiSub) {
 		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
 		labels.push(config.categoryMap?.[p] || p);
 	}
-	// One concrete topic per post: FreeRTOS / 计算机操作系统 / 硬件电路 ...
-	return labels[1] || labels[0] || config.defaultCategory || "笔记";
+	// Topic = the concrete subject folder; only 硬件电路 keeps a second level
+	// (基础知识点 for 1-1~1-7, 扩展资料 for everything else).
+	const topic = labels[1] || labels[0] || config.defaultCategory || "笔记";
+	const deep = labels.slice(2);
+	if (deep.includes("扩展资料")) return `${topic}/扩展资料`;
+	if (deep.includes("基础知识点")) return `${topic}/基础知识点`;
+	return topic;
 }
 
 // URL path keeps the full folder tree so links stay readable.
