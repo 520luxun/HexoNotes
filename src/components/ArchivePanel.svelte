@@ -79,9 +79,23 @@ onMount(async () => {
 	});
 
 	if (mode === "catalog") {
+		// Sort inside each group by the chapter number in the title
+		// (00_, 1.1.1, 1.2, 2.1 ...), not by file-system order.
+		const chapterKey = (title: string) => {
+			const m = title.match(/^(\d+(?:\.\d+)*)/);
+			return m
+				? m[1]
+						.split(".")
+						.map((n) => n.padStart(4, "0"))
+						.join(".")
+				: "9999";
+		};
+		filteredPosts = [...filteredPosts].sort((a, b) =>
+			chapterKey(a.data.title).localeCompare(chapterKey(b.data.title)),
+		);
 		const byCategory = new Map<string, Post[]>();
 		for (const post of filteredPosts) {
-			const key = String(post.data.category ?? "未分类").split("/").join(" · ");
+			const key = String(post.data.category ?? "未分类").split("/").join(" / ");
 			const list = byCategory.get(key);
 			if (list) list.push(post);
 			else byCategory.set(key, [post]);
@@ -121,7 +135,7 @@ onMount(async () => {
     {#each groups as group}
         <div>
             <div class="flex flex-row w-full items-center h-[3.75rem]">
-                <div class="w-[26%] md:w-[20%] transition text-lg font-bold text-right text-75 break-words">
+                <div class="w-[26%] md:w-[20%] transition text-lg font-bold text-center text-75 break-words">
                     {group.label ?? group.year}
                 </div>
                 <div class="w-[15%] md:w-[10%]">
