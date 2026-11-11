@@ -28,14 +28,14 @@ const root: Node = { label: "", posts: [], children: new Map() };
 const CATALOG_GROUPS: Record<string, (post: (typeof sorted)[number]) => string[]> = {
 	硬件电路: (post) => {
 		// slug 形如 notes/嵌入式/硬件电路/<文件夹>/<笔记>。
-		// 只有紧跟「硬件电路」的文件夹是「基础知识点」时（即 1-1 ~ 1-7）
-		// 归入基础知识点，其余（扩展资料 + 根级说明文档）全部归入扩展资料。
+		// 只有紧跟「硬件电路」的文件夹是「基础知识点」时（即 1-1 ~ 1-7）：
+		// 该组提升为顶层分组「基础知识点」；其余内容留在「硬件电路 → 扩展」下。
 		const parts = String(post.slug).split("/");
 		const i = parts.indexOf("硬件电路");
 		const section = i >= 0 ? parts[i + 1] : "";
 		return section === "基础知识点"
-			? ["硬件电路", "基础知识点"]
-			: ["硬件电路", "扩展资料"];
+			? ["基础知识点"]
+			: ["硬件电路", "扩展"];
 	},
 };
 
