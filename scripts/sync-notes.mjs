@@ -223,13 +223,17 @@ function categoryParts(rel) {
 	return { parent, sub: sub === parent ? "" : sub };
 }
 
-function makeCategory(rel, data, multiSub) {
+function makeCategory(rel, data, _multiSub) {
 	if (data.category) return data.category;
-	const { parent, sub } = categoryParts(rel);
-	if (!sub) return parent;
-	// Only folders that hold several notes become a sub-category, so a lone
-	// attachment folder does not create noise like 硬件电路/Docs.
-	return multiSub.has(`${parent}\u0000${sub}`) ? `${parent}/${sub}` : parent;
+	// Mirror the vault folder tree; only pure image folders are skipped.
+	const parts = rel.split("/").slice(0, -1);
+	const labels = [];
+	for (const p of parts) {
+		if (/\.assets$/i.test(p)) continue;
+		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
+		labels.push(config.categoryMap?.[p] || p);
+	}
+	return labels.join("/") || config.defaultCategory || "笔记";
 }
 
 function preferNearest(list, noteDir) {
@@ -444,15 +448,19 @@ async function main() {
 		else attachments.byBase.set(base, [f.full]);
 	}
 
-	const candidates = files.filter(
-		(f) => f.rel.toLowerCase().endsWith(".md") && !isExcluded(f.rel),
-	);
+	// Keep excluded folders (Clippings/Daily/...) as candidates so a note can
+	// still opt in with `publish: true`.
+	const candidates = files.filter((f) => f.rel.toLowerCase().endsWith(".md"));
 	const hasPublishFlag = (file) => {
 		const flag = parseFrontmatter(fs.readFileSync(file.full, "utf8")).data[config.publishField];
 		return flag === true || flag === "true" || flag === "yes" || flag === 1;
 	};
 	const selected = candidates.filter(
-		(f) => syncAll || isAlwaysIncluded(f.rel) || isFeatured(f.rel) || hasPublishFlag(f),
+		(f) =>
+			syncAll ||
+			hasPublishFlag(f) ||
+			isFeatured(f.rel) ||
+			(!isExcluded(f.rel) && isAlwaysIncluded(f.rel)),
 	);
 
 	console.log(

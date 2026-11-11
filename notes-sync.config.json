@@ -32,7 +32,13 @@
     "PID": "PID 控制",
     "PCB": "硬件电路",
     "SchoolStudy": "计算机基础",
-    "Claude": "效率工具"
+    "Claude": "效率工具",
+    "Docs": "基础知识点",
+    "Expand": "扩展资料",
+    "Photo": "配图",
+    "Simulation": "仿真",
+    "Animations": "动画",
+    "Archive": "归档资料"
   },
   "copyAttachments": true
 }
