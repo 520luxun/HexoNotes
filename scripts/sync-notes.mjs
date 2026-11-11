@@ -248,7 +248,20 @@ function preferNearest(list, noteDir) {
 	return best;
 }
 
-function convertNote(file, attachments, downloaded, assets, order, multiSub) {
+// Astro slugs come from the file name: keep only letters/digits/CJK/_/- so the
+// generated URL is predictable (Astro lowercases it).
+const stripPunct = (s) =>
+	s
+		.replace(/[^\p{L}\p{N}_-]+/gu, "_")
+		.replace(/_+/g, "_")
+		.replace(/^_+|_+$/g, "");
+const slugOf = (s) => stripPunct(s).toLowerCase();
+
+// Relative link from a page at /posts/notes/<dirs>/<slug>/ to another note.
+const relLink = (fromDirs, toDirs, toSlug) =>
+	`${"../".repeat(fromDirs + 1)}${toDirs.length ? `${toDirs.join("/")}/` : ""}${toSlug}/`;
+
+function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx) {
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
@@ -348,6 +361,20 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub) {
 		return null; // missing source file: drop the broken image rather than guess
 	};
 
+	// Resolve [[note]] to a relative URL; unknown targets fall back to plain text.
+	const noteLink = (target, alias) => {
+		const raw = target.trim();
+		const [pathPart] = raw.split("#");
+		const key = pathPart.replace(/\\/g, "/").replace(/\.md$/i, "");
+		const base = path.basename(key);
+		const hit =
+			ctx.byRel.get(key.toLowerCase()) ??
+			ctx.byBase.get(base.toLowerCase()) ??
+			ctx.byBase.get(slugOf(base));
+		if (!hit) return (alias ?? raw).trim();
+		return `[${(alias ?? pathPart).trim()}](${relLink(ctx.dirs.length, hit.dirs, hit.slug)})`;
+	};
+
 	let output = body
 		.replace(/在这里插入图片描述/g, "")
 		.replace(/\uFEFF/g, "") // stray BOM from copied notes
@@ -360,9 +387,18 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub) {
 		.replace(/^```\s*C#\s*$/gim, "```csharp")
 		.replace(/^```\s*C\s*$/gim, "```c")
 		.replace(/^```\s*ld\s*$/gim, "```txt")
-		// Dead links to other vault notes ("./assets/.../note.md") become text.
-		.replace(/\[([^\]]+)\]\((?:\.\/)?assets\/[^)]*\.md\)/g, "$1")
-		.replace(/!\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g, (_, n) => `![](${n.trim()})`)
+		// Dead links to other vault notes (*.md that is not published) become text.
+		.replace(/\[([^\]]+)\]\((?![a-z][a-z0-9+.-]*:)[^)]*\.md(?:#[^)]*)?\)/gi, "$1")
+		// Obsidian embeds: images stay images, notes become links.
+		.replace(/!\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g, (_, target, alias) => {
+			const t = target.trim();
+			if (/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(t)) return `![](${t})`;
+			return noteLink(t, alias);
+		})
+		// Obsidian wiki links: [[note]] / [[note|alias]] / [[note#heading]]
+		.replace(/\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g, (_, target, alias) =>
+			noteLink(target, alias),
+		)
 		.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, ref) => {
 			const resolved = resolveImage(ref);
 			return resolved === null ? "" : `![${alt}](${resolved})`;
@@ -451,7 +487,6 @@ async function main() {
 	}
 
 	const assets = new Map();
-	const usedNames = new Set();
 	const outputs = [];
 	const ordered = [...selected].sort((a, b) => comparePath(a.rel, b.rel));
 
@@ -465,23 +500,68 @@ async function main() {
 	}
 	const multiSub = new Set([...subCounts].filter(([, n]) => n >= 2).map(([k]) => k));
 
-	for (const [index, file] of ordered.entries()) {
-		const note = convertNote(file, attachments, downloaded, assets, index + 1, multiSub);
+	// Pass 1: plan where every note lives, so [[wiki links]] can point at it.
+	const byRel = new Map();
+	const byBase = new Map();
+	const usedPaths = new Set();
+	const planned = [];
+	for (const file of ordered) {
+		const raw = fs.readFileSync(file.full, "utf8");
+		const { data } = parseFrontmatter(raw);
+		const basename = path.basename(file.rel, ".md");
+		const title = (data.title || basename).trim();
+		const category = makeCategory(file.rel, data, multiSub);
+		const dirs = category
+			? category
+					.split("/")
+					.map((d) => stripPunct(d))
+					.filter(Boolean)
+			: [];
+		const baseSlug = slugOf(basename) || "note";
+		let slug = baseSlug;
+		let rel = [...dirs, `${slug}.md`].join("/");
+		let n = 2;
+		while (usedPaths.has(rel)) {
+			slug = `${baseSlug}-${n++}`;
+			rel = [...dirs, `${slug}.md`].join("/");
+		}
+		usedPaths.add(rel);
+		const entry = { file, title, category, dirs, slug, rel };
+		planned.push(entry);
+		byRel.set(file.rel.replace(/\.md$/i, "").toLowerCase(), entry);
+		byBase.set(basename.toLowerCase(), entry);
+		byBase.set(slug, entry);
+		byBase.set(title.toLowerCase(), entry);
+	}
+
+	// Pass 2: convert bodies with the link map and matching relative depth.
+	for (const [index, p] of planned.entries()) {
+		const ctx = {
+			dirs: p.dirs,
+			byRel,
+			byBase,
+			assetPrefix: `${"../".repeat(p.dirs.length)}assets/`,
+		};
+		const note = convertNote(p.file, attachments, downloaded, assets, index + 1, multiSub, ctx);
 		if (!note) {
-			console.log(`  - skipped (empty): ${file.rel}`);
+			console.log(`  - skipped (empty): ${p.file.rel}`);
 			continue;
 		}
-		let name = `${safeName(note.basename)}.md`;
-		let n = 2;
-		while (usedNames.has(name)) name = `${safeName(note.basename)}-${n++}.md`;
-		usedNames.add(name);
-		outputs.push({ name, content: `${note.frontmatter}${note.output}`, rel: file.rel });
+		outputs.push({
+			name: p.rel,
+			content: `${note.frontmatter}${note.output.replace(/\.\/assets\//g, ctx.assetPrefix)}`,
+			rel: p.file.rel,
+		});
 	}
 
 	if (!dryRun) {
 		fs.rmSync(targetDir, { recursive: true, force: true });
 		fs.mkdirSync(targetDir, { recursive: true });
-		for (const o of outputs) fs.writeFileSync(path.join(targetDir, o.name), o.content, "utf8");
+		for (const o of outputs) {
+			const dest = path.join(targetDir, o.name);
+			fs.mkdirSync(path.dirname(dest), { recursive: true });
+			fs.writeFileSync(dest, o.content, "utf8");
+		}
 		if (assets.size) {
 			const assetDir = path.join(targetDir, "assets");
 			fs.mkdirSync(assetDir, { recursive: true });
