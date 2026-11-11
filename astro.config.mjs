@@ -26,9 +26,8 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	// Overridable for the Gitee Pages mirror (different repo path).
-	site: process.env.DEPLOY_SITE ?? "https://520luxun.github.io/HexoNotes/",
-	base: process.env.DEPLOY_BASE ?? "/HexoNotes/",
+	site: "https://520luxun.github.io/HexoNotes/",
+	base: "/HexoNotes/",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
