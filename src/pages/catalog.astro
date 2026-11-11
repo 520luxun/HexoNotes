@@ -23,18 +23,11 @@ const sorted = [...posts].sort((a, b) =>
 type Node = { label: string; posts: typeof sorted; children: Map<string, Node> };
 const root: Node = { label: "", posts: [], children: new Map() };
 
-// 目录页二级分组规则（通用，对所有分类生效）：
-// 同步脚本按 A/B 布局输出 notes/<分类>/<笔记> 与 notes/<分类>/扩展/<笔记>，
-// 位于「扩展」子目录的笔记收进「扩展」分组，其余笔记直接列在分类下。
-// 只影响总目录页；侧边栏、归档、标签用的是 frontmatter 的 category，保持扁平。
+// 目录页 = Obsidian 文件夹结构的原样镜像。
+// slug 形如 notes/<文件夹树>/<笔记文件夹>，去掉首段 notes 与末段笔记即可得到层级树。
 const catalogSegments = (post: (typeof sorted)[number]): string[] => {
-	const base = String(post.data.category ?? "未分类")
-		.split("/")
-		.filter(Boolean);
-	const topic = base[base.length - 1] ?? "";
-	const parts = String(post.slug).split("/");
-	const i = topic ? parts.lastIndexOf(topic) : -1;
-	return i >= 0 && parts[i + 1] === "扩展" ? [...base, "扩展"] : base;
+	const parts = String(post.slug).split("/").filter(Boolean);
+	return parts.slice(1, -1);
 };
 
 for (const post of sorted) {

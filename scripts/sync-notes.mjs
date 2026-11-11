@@ -282,43 +282,12 @@ function cleanDescription(desc, body) {
 	return d.replace(/["\\]/g, "");
 }
 
-// Splits a note path into the first and second category levels.
-function categoryParts(rel) {
-	const parts = rel.split("/");
-	const parent =
-		config.categoryMap?.[parts[1]] ||
-		parts[1] ||
-		config.categoryMap?.[parts[0]] ||
-		config.defaultCategory ||
-		"";
-	const raw = parts.length > 3 ? config.categoryMap?.[parts[2]] || parts[2] : "";
-	// Attachment folders must not turn into visible sub-categories.
-	const isAssetFolder = /^(assets?|images?|imgs?|pics?|attachments?|files?|docs?|附件|图片|素材)$/i.test(
-		raw.trim(),
-	);
-	const sub = isAssetFolder ? "" : raw;
-	return { parent, sub: sub === parent ? "" : sub };
-}
-
-// Category = the note's second-level folder (mapped to Chinese), e.g.
-// Embedded/FreeRTOS -> FreeRTOS, Embedded/PCB -> 硬件电路.
-function makeCategory(rel, data, _multiSub) {
+// Category = 笔记所在的二级文件夹，原样使用（不翻译、不改名）。
+// 例：Embedded/PCB/... -> PCB，Embedded/FreeRTOS/... -> FreeRTOS，Study/Claude/... -> Claude。
+function makeCategory(rel, data) {
 	if (data.category) return data.category;
-	const parts = rel.split("/");
-	// Keep it shallow: only the top two folder levels become the category,
-	// e.g. 嵌入式/硬件电路. Deeper folders are merged into the second level.
-	const labels = [];
-	for (const p of parts.slice(0, -1)) {
-		if (/\.assets$/i.test(p)) continue;
-		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
-		labels.push(config.categoryMap?.[p] || p);
-	}
-	// Topic = the concrete subject folder; only 硬件电路 keeps a second level
-	// (基础知识点 for 1-1~1-7, 扩展资料 for everything else).
-	const topic = labels[1] || labels[0] || config.defaultCategory || "笔记";
-	const deep = labels.slice(2);
-	// Every post gets exactly one flat topic category.
-	return topic;
+	const parts = rel.split("/").slice(0, -1);
+	return parts[1] || parts[0] || config.defaultCategory || "笔记";
 }
 
 // URL path keeps the full folder tree so links stay readable.
@@ -330,36 +299,9 @@ const isAssetSegment = (p) =>
 // 拥有「扩展」容器的主题（源目录里存在 扩展资料 / 扩展 文件夹）。
 const extensionTopics = new Set();
 
-// 主题内部布局（A/B 结构）：
-//   A = 主题文件夹，主题笔记直接平铺在其中；
-//   B = A 下的「扩展」文件夹，扩展笔记统一收进来（内部可继续保留子文件夹）。
-// 只对存在 扩展资料/扩展 文件夹的主题生效，其余主题保持原样。
-// 把源路径（英文文件夹名）映射成中文标签，用于 A/B 判断与 URL 生成。
-function mappedDirs(rel) {
-	return rel
-		.split("/")
-		.slice(0, -1)
-		.filter((p) => !isAssetSegment(p))
-		.map((p) => stripPunct(config.categoryMap?.[p] || p));
-}
-
-function topicDirs(rel) {
-	const labels = mappedDirs(rel);
-	const topic = labels[1];
-	if (labels.length < 2 || !topic || !extensionTopics.has(topic)) return labels;
-	const rest = labels.slice(2);
-	// 主题根级的说明类文件也归入扩展，让 A 只保留主题笔记。
-	if (rest.length === 0) return [labels[0], topic, "扩展"];
-	// 主题笔记（如 1-1 ~ 1-7）去掉中间层，直接挂在主题文件夹下。
-	if (rest[0] === "基础知识点") return [labels[0], topic];
-	// 扩展资料 / 扩展 统一改名为「扩展」，内部结构原样保留。
-	if (rest[0] === "扩展资料" || rest[0] === "扩展")
-		return [labels[0], topic, "扩展", ...rest.slice(1)];
-	return labels;
-}
-
+// URL path = 库里完整的文件夹树，原样照搬（层级、英文文件夹名都不改）。
 function categoryDirs(rel) {
-	return topicDirs(rel);
+	return rel.split("/").slice(0, -1);
 }
 
 function preferNearest(list, noteDir) {
@@ -391,7 +333,7 @@ const slugOf = (s) => stripPunct(s).toLowerCase();
 const relLink = (fromDirs, toDirs, toSlug) =>
 	`${"../".repeat(fromDirs + 1)}${toDirs.length ? `${toDirs.join("/")}/` : ""}${toSlug}/`;
 
-function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx) {
+function convertNote(file, attachments, downloaded, assets, order, ctx) {
 	const raw = fs.readFileSync(file.full, "utf8");
 	const { data, body } = parseFrontmatter(raw);
 	const basename = path.basename(file.rel, ".md");
@@ -556,7 +498,7 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 		`published: ${published}`,
 		`description: ${yamlQuote(cleanDescription(data.description || data.summary, body))}`,
 		`tags: ${yamlArray(normalizeTags(Array.isArray(data.tags) ? data.tags : []))}`,
-		`category: ${yamlQuote(makeCategory(file.rel, data, multiSub))}`,
+		`category: ${yamlQuote(makeCategory(file.rel, data))}`,
 		`draft: ${data.draft === true || data.publish === false}`,
 		`order: ${order}`,
 		"---",
@@ -633,27 +575,6 @@ async function main() {
 	const outputs = [];
 	const ordered = [...selected].sort((a, b) => comparePath(a.rel, b.rel));
 
-	// 先扫一遍：哪些主题拥有「扩展」容器（映射后存在 扩展资料 / 扩展 文件夹）。
-	// 只有这些主题会应用 A/B 布局，其余主题的目录结构保持不变。
-	for (const f of ordered) {
-		const labels = mappedDirs(f.rel);
-		if (
-			labels[1] &&
-			labels.slice(2).some((p) => p === "扩展资料" || p === "扩展")
-		)
-			extensionTopics.add(labels[1]);
-	}
-
-	// A folder only becomes a visible sub-category when it holds 2+ notes.
-	const subCounts = new Map();
-	for (const file of ordered) {
-		const { parent, sub } = categoryParts(file.rel);
-		if (!sub) continue;
-		const key = `${parent}\u0000${sub}`;
-		subCounts.set(key, (subCounts.get(key) ?? 0) + 1);
-	}
-	const multiSub = new Set([...subCounts].filter(([, n]) => n >= 2).map(([k]) => k));
-
 	// Pass 1: plan where every note lives, so [[wiki links]] can point at it.
 	const byRel = new Map();
 	const byBase = new Map();
@@ -664,7 +585,7 @@ async function main() {
 		const { data } = parseFrontmatter(raw);
 		const basename = path.basename(file.rel, ".md");
 		const title = basename.replace(/^\d{4}-\d{2}-\d{2}[-_\s]*/, "") || basename;
-		const category = makeCategory(file.rel, data, multiSub);
+		const category = makeCategory(file.rel, data);
 		// URL keeps the folder tree; the category label is the second level.
 		const dirs = categoryDirs(file.rel);
 		const baseSlug = slugOf(basename) || "note";
@@ -695,7 +616,7 @@ async function main() {
 			byBase,
 			assetDir: [...p.dirs, p.slug, "assets"].join("/"),
 		};
-		const note = convertNote(p.file, attachments, downloaded, assets, index + 1, multiSub, ctx);
+		const note = convertNote(p.file, attachments, downloaded, assets, index + 1, ctx);
 		if (!note) {
 			console.log(`  - skipped (empty): ${p.file.rel}`);
 			continue;
