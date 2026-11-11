@@ -3,7 +3,7 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getPostUrlBySlug } from "@utils/url-utils";
 import { getSortedPosts } from "../utils/content-utils";
 
-// 总目录：按分类层级缩进，父级一行、子级缩进、文章再缩进；窄屏可横向滚动。
+// 总目录：分类层级用 <details> 折叠，文章按章节号排序，窄屏可横向滚动。
 const posts = await getSortedPosts();
 
 const chapterKey = (title: string) => {
@@ -52,39 +52,45 @@ const formatDate = (d: Date) => {
 	return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
-const rows: string[] = [];
-
-const walk = (node: Node, depth: number) => {
-	for (const child of [...node.children.values()].sort((a, b) =>
+const render = (node: Node, depth: number): string => {
+	let html = "";
+	const children = [...node.children.values()].sort((a, b) =>
 		a.label.localeCompare(b.label, "zh"),
-	)) {
-		rows.push(
-			`<div class="flex items-baseline gap-3 py-2" style="padding-left:${depth * 1.5}rem">` +
-				`<span class="font-bold text-lg whitespace-nowrap">${escapeHtml(child.label)}</span>` +
-				`<span class="text-75 text-xs">${countOf(child)} 篇</span>` +
-				`</div>`,
-		);
-		walk(child, depth + 1);
+	);
+	for (const child of children) {
+		html +=
+			`<details class="py-0.5" style="padding-left:${depth * 1.25}rem" ${depth === 0 ? "open" : ""}>` +
+			`<summary class="cursor-pointer select-none font-bold text-lg py-1 whitespace-nowrap">` +
+			`${escapeHtml(child.label)} <span class="text-xs font-normal text-75">${countOf(child)} 篇</span>` +
+			`</summary>` +
+			`<div>${render(child, depth + 1)}</div>` +
+			`</details>`;
 	}
 	for (const post of node.posts) {
-		rows.push(
-			`<div class="flex items-baseline gap-3 py-1" style="padding-left:${depth * 1.5 + 1.5}rem">` +
-				`<span class="text-50 text-xs w-12 shrink-0">${formatDate(post.data.published)}</span>` +
-				`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
-				`</div>`,
-		);
+		html +=
+			`<div class="flex items-baseline gap-3 py-1" style="padding-left:${depth * 1.25 + 1.25}rem">` +
+			`<span class="text-50 text-xs w-12 shrink-0">${formatDate(post.data.published)}</span>` +
+			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
+			`</div>`;
 	}
+	return html;
 };
 
-walk(root, 0);
+const html = render(root, 0);
 ---
 
 <MainGridLayout title="总目录">
     <div class="card-base px-6 py-6">
-        <h1 class="text-3xl font-bold mb-1">总目录</h1>
-        <p class="text-75 text-sm mb-5">共 {posts.length} 篇 · 按分类层级与章节顺序排列</p>
-        <div class="overflow-x-auto">
-            <div class="min-w-[30rem]" set:html={rows.join("")} />
+        <div class="flex items-center justify-between mb-1">
+            <h1 class="text-3xl font-bold">总目录</h1>
+            <div class="flex gap-2">
+                <button class="btn-regular text-sm px-3 py-1" onclick="document.querySelectorAll('#catalog details').forEach(d=>d.open=true)">全部展开</button>
+                <button class="btn-regular text-sm px-3 py-1" onclick="document.querySelectorAll('#catalog details').forEach(d=>d.open=false)">全部收起</button>
+            </div>
+        </div>
+        <p class="text-75 text-sm mb-5">共 {posts.length} 篇 · 点击分类可展开/收起</p>
+        <div id="catalog" class="overflow-x-auto">
+            <div class="min-w-[30rem]" set:html={html} />
         </div>
     </div>
 </MainGridLayout>
