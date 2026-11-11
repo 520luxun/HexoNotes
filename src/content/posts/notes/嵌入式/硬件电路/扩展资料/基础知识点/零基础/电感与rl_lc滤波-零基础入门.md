@@ -2,7 +2,7 @@
 title: "电感与RL、LC滤波-零基础入门"
 published: 2026-08-28
 description: "电感与 RL、LC 滤波：零基础入门 本文不要求先学习复数、相量或传递函数。目标是让你看到电感、RL、LC 电路时，能够先判断它大致让低频通过还是让高频通过。 "
-tags: ["电感", "RL滤波", "LC滤波", "零基础"]
+tags: ["电感", "滤波器", "零基础"]
 category: "硬件电路"
 draft: false
 order: 41

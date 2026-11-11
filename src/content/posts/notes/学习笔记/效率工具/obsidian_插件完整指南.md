@@ -2,7 +2,7 @@
 title: "Obsidian 插件完整指南"
 published: 2026-07-17
 description: "Obsidian 插件完整指南 共 22 个社区插件（13 启用 / 9 未启用）+ 25 个核心插件（24 启用 / 1 禁用） 数据采集自 .obsidia"
-tags: ["obsidian", "plugins", "配置"]
+tags: ["Obsidian"]
 category: "效率工具"
 draft: false
 order: 119

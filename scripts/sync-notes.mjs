@@ -103,6 +103,83 @@ const normalizeDate = (value) => {
 
 const yamlQuote = (v) => JSON.stringify(String(v ?? ""));
 const yamlArray = (arr) => `[${arr.map((v) => JSON.stringify(String(v))).join(", ")}]`;
+
+// ---------------------------------------------------------------------------
+// 标签规范化：同步时压缩标签体系
+// 1) DROP_TAGS   —— 无意义标签直接丢弃（clippings 为网页剪藏器自动添加）
+// 2) TAG_MERGE   —— 近义/大小写标签合并到规范名
+// 需要调整时只改这两张表即可，重新 pnpm sync-notes 生效。
+// ---------------------------------------------------------------------------
+const DROP_TAGS = new Set([
+	"clippings", // Obsidian Web Clipper 自动标签
+	"文档索引", // 导航元信息，分类已覆盖
+	"目录说明", // 同上
+]);
+
+const TAG_MERGE = new Map([
+	// 工具类
+	["obsidian", "Obsidian"],
+	["plugins", "Obsidian"],
+	["配置", "Obsidian"],
+	// 滤波类 -> 滤波器
+	["低通滤波", "滤波器"],
+	["高通滤波", "滤波器"],
+	["滤波", "滤波器"],
+	["LC滤波", "滤波器"],
+	["RL滤波", "滤波器"],
+	["RC滤波器", "滤波器"],
+	// 谐振类 -> 谐振
+	["LC谐振", "谐振"],
+	["RLC", "谐振"],
+	["Q值", "谐振"],
+	["阻尼", "谐振"],
+	// EMC 类 -> EMC
+	["EMI", "EMC"],
+	["共模干扰", "EMC"],
+	["差模干扰", "EMC"],
+	["X电容", "EMC"],
+	["Y电容", "EMC"],
+	// 运放细节 -> 运算放大器
+	["虚短虚断", "运算放大器"],
+	["偏置电流", "偏置"],
+	["输入失调电压", "运算放大器"],
+	["轨对轨", "运算放大器"],
+	["差分放大", "运算放大器"],
+	["比较器", "运算放大器"],
+	// 电源类 -> 电源设计
+	["稳压电源", "电源设计"],
+	["线性稳压", "电源设计"],
+	["开关电源", "电源设计"],
+	["降压电路", "电源设计"],
+	["升压电路", "电源设计"],
+	["电荷泵", "电源设计"],
+	["软启动", "电源设计"],
+	["浪涌电流", "电源设计"],
+	["防反接", "电源设计"],
+	["恒流源", "电源设计"],
+	// 阻抗概念归入元件
+	["容抗", "电容"],
+	["感抗", "电感"],
+	// 其他
+	["采样电阻", "电流检测"],
+	["信号完整性", "PCB设计"],
+	["电源完整性", "PCB设计"],
+]);
+
+const normalizeTags = (tags) => {
+	const out = [];
+	const seen = new Set();
+	for (const raw of tags) {
+		const t = String(raw).trim();
+		if (!t || DROP_TAGS.has(t)) continue;
+		const norm = TAG_MERGE.get(t) ?? t;
+		if (!seen.has(norm)) {
+			seen.add(norm);
+			out.push(norm);
+		}
+	}
+	return out;
+};
 const sha = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 12);
 const safeName = (s) => s.replace(/[\\/:*?"<>|#%\s]+/g, "_").replace(/^\.+/, "");
 const pathCollator = new Intl.Collator("zh", { numeric: true, sensitivity: "base" });
@@ -446,7 +523,7 @@ function convertNote(file, attachments, downloaded, assets, order, multiSub, ctx
 		`title: ${yamlQuote(title)}`,
 		`published: ${published}`,
 		`description: ${yamlQuote(cleanDescription(data.description || data.summary, body))}`,
-		`tags: ${yamlArray(Array.isArray(data.tags) ? data.tags.map(String) : [])}`,
+		`tags: ${yamlArray(normalizeTags(Array.isArray(data.tags) ? data.tags : []))}`,
 		`category: ${yamlQuote(makeCategory(file.rel, data, multiSub))}`,
 		`draft: ${data.draft === true || data.publish === false}`,
 		`order: ${order}`,
