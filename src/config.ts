@@ -68,12 +68,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "BiliBili",
 			icon: "bilibili", // local icon file: src/icons/bilibili.svg
-			url: "https://space.bilibili.com",
-		},
-		{
-			name: "Email",
-			icon: "fa6-regular:envelope",
-			url: "https://mail.qq.com/",
+			url: "https://www.bilibili.com/",
 		},
 		{
 			name: "Obsidian",
