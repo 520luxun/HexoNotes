@@ -240,10 +240,6 @@ function makeCategory(rel, data, _multiSub) {
 	// (基础知识点 for 1-1~1-7, 扩展资料 for everything else).
 	const topic = labels[1] || labels[0] || config.defaultCategory || "笔记";
 	const deep = labels.slice(2);
-	if (deep.includes("扩展资料")) return `${topic}/扩展资料`;
-	if (deep.includes("基础知识点")) return `${topic}/基础知识点`;
-	// Loose files at the PCB root (README etc.) join 扩展资料 as well.
-	if (topic === "硬件电路") return `${topic}/扩展资料`;
 	return topic;
 }
 
