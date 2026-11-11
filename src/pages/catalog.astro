@@ -27,13 +27,14 @@ const root: Node = { label: "", posts: [], children: new Map() };
 // 只影响总目录页，侧边栏分类（frontmatter 的 category）保持扁平不变。
 const CATALOG_GROUPS: Record<string, (post: (typeof sorted)[number]) => string[]> = {
 	硬件电路: (post) => {
-		// slug 形如 notes/嵌入式/硬件电路/<文件夹>/<笔记>。
-		// 1-1 ~ 1-7（源文件夹「基础知识点」）直接挂在「硬件电路」下，不设中间层；
-		// 其余内容归入「硬件电路 → 扩展」。
+		// 同步脚本已按 A/B 布局输出：notes/嵌入式/硬件电路/<笔记> 与
+		// notes/嵌入式/硬件电路/扩展/...。主题笔记直接列在分类下，
+		// 扩展笔记收进「扩展」子分组。
 		const parts = String(post.slug).split("/");
 		const i = parts.indexOf("硬件电路");
-		const section = i >= 0 ? parts[i + 1] : "";
-		return section === "基础知识点" ? ["硬件电路"] : ["硬件电路", "扩展"];
+		return i >= 0 && parts[i + 1] === "扩展"
+			? ["硬件电路", "扩展"]
+			: ["硬件电路"];
 	},
 };
 

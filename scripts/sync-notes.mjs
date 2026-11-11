@@ -322,14 +322,44 @@ function makeCategory(rel, data, _multiSub) {
 }
 
 // URL path keeps the full folder tree so links stay readable.
-function categoryDirs(rel) {
-	const labels = [];
-	for (const p of rel.split("/").slice(0, -1)) {
-		if (/\.assets$/i.test(p)) continue;
-		if (/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p)) continue;
-		labels.push(stripPunct(config.categoryMap?.[p] || p));
-	}
+// URL path keeps the full folder tree so links stay readable.
+const isAssetSegment = (p) =>
+	/\.assets$/i.test(p) ||
+	/^(assets?|images?|imgs?|pics?|photos?|attachments?|files?)$/i.test(p);
+
+// 拥有「扩展」容器的主题（源目录里存在 扩展资料 / 扩展 文件夹）。
+const extensionTopics = new Set();
+
+// 主题内部布局（A/B 结构）：
+//   A = 主题文件夹，主题笔记直接平铺在其中；
+//   B = A 下的「扩展」文件夹，扩展笔记统一收进来（内部可继续保留子文件夹）。
+// 只对存在 扩展资料/扩展 文件夹的主题生效，其余主题保持原样。
+// 把源路径（英文文件夹名）映射成中文标签，用于 A/B 判断与 URL 生成。
+function mappedDirs(rel) {
+	return rel
+		.split("/")
+		.slice(0, -1)
+		.filter((p) => !isAssetSegment(p))
+		.map((p) => stripPunct(config.categoryMap?.[p] || p));
+}
+
+function topicDirs(rel) {
+	const labels = mappedDirs(rel);
+	const topic = labels[1];
+	if (labels.length < 2 || !topic || !extensionTopics.has(topic)) return labels;
+	const rest = labels.slice(2);
+	// 主题根级的说明类文件也归入扩展，让 A 只保留主题笔记。
+	if (rest.length === 0) return [labels[0], topic, "扩展"];
+	// 主题笔记（如 1-1 ~ 1-7）去掉中间层，直接挂在主题文件夹下。
+	if (rest[0] === "基础知识点") return [labels[0], topic];
+	// 扩展资料 / 扩展 统一改名为「扩展」，内部结构原样保留。
+	if (rest[0] === "扩展资料" || rest[0] === "扩展")
+		return [labels[0], topic, "扩展", ...rest.slice(1)];
 	return labels;
+}
+
+function categoryDirs(rel) {
+	return topicDirs(rel);
 }
 
 function preferNearest(list, noteDir) {
@@ -602,6 +632,17 @@ async function main() {
 	const assets = new Map();
 	const outputs = [];
 	const ordered = [...selected].sort((a, b) => comparePath(a.rel, b.rel));
+
+	// 先扫一遍：哪些主题拥有「扩展」容器（映射后存在 扩展资料 / 扩展 文件夹）。
+	// 只有这些主题会应用 A/B 布局，其余主题的目录结构保持不变。
+	for (const f of ordered) {
+		const labels = mappedDirs(f.rel);
+		if (
+			labels[1] &&
+			labels.slice(2).some((p) => p === "扩展资料" || p === "扩展")
+		)
+			extensionTopics.add(labels[1]);
+	}
 
 	// A folder only becomes a visible sub-category when it holds 2+ notes.
 	const subCounts = new Map();
