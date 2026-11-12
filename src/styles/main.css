@@ -156,9 +156,9 @@ body::after {
     position: fixed;
     inset: 0;
     z-index: -1;
-    background-color: rgba(255, 255, 255, 0.82);
+    background-color: rgba(255, 255, 255, 0.45);
     pointer-events: none;
 }
 html.dark body::after {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.75);
 }
