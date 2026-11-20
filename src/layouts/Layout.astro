@@ -476,6 +476,13 @@ const setup = () => {
 	})
 	// 滚动条初始化不参与首帧，放到空闲时段，避免和过渡动画抢主线程
 	window.swup.hooks.on('content:replace', () => {
+		// 换页后的内容不再重播 onload 入场动画，否则容器淡入时内容还是透明的，
+		// 看起来就是「淡出 -> 空白 -> 内容突然出现」的碎片化效果
+		document.querySelectorAll('#swup-container .onload-animation').forEach((el) => {
+			el.classList.remove('onload-animation')
+		})
+	})
+	window.swup.hooks.on('content:replace', () => {
 		if ('requestIdleCallback' in window) {
 			window.requestIdleCallback(() => initCustomScrollbar(), { timeout: 400 })
 		} else {
