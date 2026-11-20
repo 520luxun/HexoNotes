@@ -168,7 +168,7 @@ const bannerOffset =
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
-		  style={`--site-bg: url('${import.meta.env.BASE_URL}background.jpg')`}
+		  style={`--site-bg: url('${import.meta.env.BASE_URL}background.webp')`}
 	>
 		<!-- 风格装饰层（扫描线/胶片颗粒/光斑），位于背景之上、内容之下 -->
 		<div id="style-decor" aria-hidden="true"></div>
@@ -189,13 +189,13 @@ const bannerOffset =
 	bannerOffset,
 	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,
 	'banner-height': `${BANNER_HEIGHT}vh`,
-	'site-bg-bocchi': `url('${import.meta.env.BASE_URL}background.jpg')`,
-	'site-bg-eva': `url('${import.meta.env.BASE_URL}bg/bg-eva.jpg')`,
-	'site-bg-retro90': `url('${import.meta.env.BASE_URL}bg/bg-retro90.jpg')`,
-	'site-bg-sakura': `url('${import.meta.env.BASE_URL}bg/bg-sakura.jpg')`,
-	'site-bg-violet': `url('${import.meta.env.BASE_URL}bg/bg-violet.jpg')`,
-	'site-bg-shinkai': `url('${import.meta.env.BASE_URL}bg/bg-shinkai.jpg')`,
-	'site-bg-demon': `url('${import.meta.env.BASE_URL}bg/bg-demon.jpg')`,
+	'site-bg-bocchi': `url('${import.meta.env.BASE_URL}background.webp')`,
+	'site-bg-eva': `url('${import.meta.env.BASE_URL}bg/bg-eva.webp')`,
+	'site-bg-retro90': `url('${import.meta.env.BASE_URL}bg/bg-retro90.webp')`,
+	'site-bg-sakura': `url('${import.meta.env.BASE_URL}bg/bg-sakura.webp')`,
+	'site-bg-violet': `url('${import.meta.env.BASE_URL}bg/bg-violet.webp')`,
+	'site-bg-shinkai': `url('${import.meta.env.BASE_URL}bg/bg-shinkai.webp')`,
+	'site-bg-demon': `url('${import.meta.env.BASE_URL}bg/bg-demon.webp')`,
 }}>
 @tailwind components;
 @layer components {
@@ -399,9 +399,21 @@ function showBanner() {
 }
 
 // banner 图缺失时优雅隐藏，避免裸露 alt 文字/裂图图标
+// 只有当前风格的那张 banner 才带 src，切换风格时按需补上
+function syncBannerSrc() {
+	const style = document.documentElement.dataset.style || '';
+	document.querySelectorAll('#banner .banner-img').forEach(img => {
+		if (img.dataset.bannerStyle === style && !img.getAttribute('src')) {
+			img.setAttribute('src', img.dataset.src || '');
+			img.style.display = '';
+		}
+	});
+}
+
 function hideBrokenBannerImages() {
 	const bannerImgs = document.querySelectorAll('#banner .banner-img');
 	bannerImgs.forEach(img => {
+		if (!img.getAttribute('src')) return;
 		if (img.complete && img.naturalWidth === 0) {
 			img.style.display = 'none';
 		} else {
@@ -416,10 +428,16 @@ function init() {
 	loadHue();
 	initCustomScrollbar();
 	showBanner();
+	syncBannerSrc();
 	hideBrokenBannerImages();
 	initReveal();
 	setProgressBar(getEffects().progress);
 }
+
+// 切换站点风格时补载对应的 banner 图
+document.addEventListener('site-style-changed', () => {
+	syncBannerSrc();
+});
 
 // 特效开关变化时同步进度条
 document.addEventListener("effects-changed", (e) => {

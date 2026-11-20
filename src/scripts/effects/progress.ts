@@ -24,12 +24,19 @@ export function setProgressBar(enabled: boolean): void {
 		window.removeEventListener("scroll", onScroll);
 	}
 	const barEl = bar;
-	const update = () => {
+	let raf = 0;
+	// 用 transform: scaleX 代替 width，并把多次 scroll 合并到一帧里，
+	// 避免滚动时反复触发布局。
+	const paint = () => {
+		raf = 0;
 		const max = document.documentElement.scrollHeight - window.innerHeight;
 		const pct = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-		barEl.style.width = `${(pct * 100).toFixed(2)}%`;
+		barEl.style.transform = `scaleX(${pct.toFixed(4)})`;
+	};
+	const update = () => {
+		if (!raf) raf = requestAnimationFrame(paint);
 	};
 	onScroll = update;
 	window.addEventListener("scroll", onScroll, { passive: true });
-	update();
+	paint();
 }

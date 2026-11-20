@@ -51,15 +51,15 @@ const mainPanelTop = siteConfig.banner.enable
 const BANNER_IMAGES: [string, string, string][] = [
 	[
 		STYLE_BOCCHI,
-		"/bg/banner-bocchi.jpg",
+		"/bg/banner-bocchi.webp",
 		siteConfig.banner.position || "center",
 	],
-	[STYLE_EVA, "/bg/banner-eva.jpg", "center"],
-	[STYLE_RETRO90, "/bg/banner-retro90.jpg", "center"],
-	[STYLE_SAKURA, "/bg/banner-sakura.jpg", "center"],
-	[STYLE_VIOLET, "/bg/banner-violet.jpg", "center"],
-	[STYLE_SHINKAI, "/bg/banner-shinkai.jpg", "center"],
-	[STYLE_DEMON, "/bg/banner-demon.jpg", "center"],
+	[STYLE_EVA, "/bg/banner-eva.webp", "center"],
+	[STYLE_RETRO90, "/bg/banner-retro90.webp", "center"],
+	[STYLE_SAKURA, "/bg/banner-sakura.webp", "center"],
+	[STYLE_VIOLET, "/bg/banner-violet.webp", "center"],
+	[STYLE_SHINKAI, "/bg/banner-shinkai.webp", "center"],
+	[STYLE_DEMON, "/bg/banner-demon.webp", "center"],
 ];
 ---
 
@@ -76,13 +76,24 @@ const BANNER_IMAGES: [string, string, string][] = [
 <!-- Banner -->
 {siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
     <div id="banner" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105 overflow-hidden relative"]}>
+        {/* 只加载当前风格的那一张，避免一次拉 7 张大图 */}
         {BANNER_IMAGES.map(([styleId, src, position]) => (
-            <img src={url(src)} alt="Banner image of the blog"
+            <img data-src={url(src)} alt="Banner image of the blog"
                  class="banner-img w-full h-full object-cover"
                  data-banner-style={styleId}
                  style={`object-position: ${position}`}
-                 loading="eager" />
+                 decoding="async" />
         ))}
+        <script is:inline>
+            (function () {
+                var style = document.documentElement.dataset.style || "";
+                document.querySelectorAll("#banner .banner-img").forEach(function (img) {
+                    if (img.dataset.bannerStyle === style && !img.getAttribute("src")) {
+                        img.setAttribute("src", img.dataset.src);
+                    }
+                });
+            })();
+        </script>
         <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
     </div>
 </div>}

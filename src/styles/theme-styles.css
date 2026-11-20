@@ -296,8 +296,8 @@ html[data-style="demon"] .intro-overlay.eva {
 #navbar .card-base,
 #navbar > div.absolute.h-8 {
 	background: var(--nav-bg);
-	backdrop-filter: blur(18px) saturate(1.5);
-	-webkit-backdrop-filter: blur(18px) saturate(1.5);
+	backdrop-filter: blur(10px) saturate(1.2);
+	-webkit-backdrop-filter: blur(10px) saturate(1.2);
 }
 #navbar .card-base {
 	box-shadow:

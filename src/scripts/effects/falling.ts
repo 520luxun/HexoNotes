@@ -146,7 +146,8 @@ export class FallingLayer {
 	}
 
 	private resize(): void {
-		this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+		// 粒子是装饰层，1.5 倍足够清晰，填充率比 2 倍低约 45%
+		this.dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 		this.canvas.width = Math.floor(window.innerWidth * this.dpr);
 		this.canvas.height = Math.floor(window.innerHeight * this.dpr);
 	}
