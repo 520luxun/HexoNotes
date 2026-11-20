@@ -35,4 +35,21 @@ export const es: Translation = {
 	[Key.author]: "Autor",
 	[Key.publishedAt]: "Publicado el",
 	[Key.license]: "Licencia",
+
+	[Key.siteStyle]: "Estilo del sitio",
+	[Key.styleBocchi]: "Bocchi · K-On",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "Retro 90s",
+	[Key.styleSakura]: "Sakura",
+	[Key.styleViolet]: "Violet Evergarden",
+	[Key.styleShinkai]: "Estilo Shinkai",
+	[Key.styleDemon]: "Demon Slayer",
+
+	[Key.effectTitle]: "Efectos",
+	[Key.effectFalling]: "Efectos de caída",
+	[Key.effectClick]: "Efectos de clic",
+	[Key.effectReveal]: "Animación al desplazar",
+	[Key.effectProgress]: "Progreso de lectura",
+
+	[Key.skipIntro]: "Clic para omitir",
 };

@@ -6,7 +6,7 @@ tags: ["模拟电路", "偏置", "截止频率", "谐振", "振荡"]
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
-order: 38
+order: 99
 ---
 
 # 偏置、截止频率、谐振与振荡

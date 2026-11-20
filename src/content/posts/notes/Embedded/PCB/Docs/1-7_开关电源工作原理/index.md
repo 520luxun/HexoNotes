@@ -6,7 +6,7 @@ tags: ["电源设计", "电感"]
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 52
+order: 113
 ---
 
 # 1-7 开关电源工作原理

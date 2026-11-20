@@ -1,110 +1,239 @@
 ---
+import CatalogCard from "@components/catalog/CatalogCard.astro";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getPostUrlBySlug } from "@utils/url-utils";
+import {
+	buildCatalogTree,
+	type CatalogNode,
+	countPosts,
+	formatFullDate,
+	iconForLabel,
+	sortedChildren,
+} from "@utils/catalog-utils";
+import { Icon } from "astro-icon/components";
 import { getSortedPosts } from "../utils/content-utils";
 
-// 总目录：分类层级用 <details> 折叠，文章按章节号排序，窄屏可横向滚动。
+// 总目录：把 Obsidian 库的文件夹层级摊平成卡片网格。
+// 一级分类 → 一个分节标题；二级分类 → 一张卡片；更深的层级在卡片内部折叠，
+// 避免整页变成一棵缩进很深的树。
 const posts = await getSortedPosts();
+const root = buildCatalogTree(posts);
+const total = posts.length;
 
-const chapterKey = (title: string) => {
-	const m = title.match(/^(\d+(?:\.\d+)*)/);
-	return m
-		? m[1]
-				.split(".")
-				.map((n) => n.padStart(4, "0"))
-				.join(".")
-		: "9999";
-};
+const latest = posts.reduce((acc, post) => {
+	const time = new Date(post.data.updated ?? post.data.published).getTime();
+	return time > acc ? time : acc;
+}, 0);
 
-const sorted = [...posts].sort((a, b) =>
-	chapterKey(a.data.title).localeCompare(chapterKey(b.data.title)),
+// 每个分类的强调色 = 主题主色 + 固定偏移，换主题配色时会自动跟随。
+const HUE_SHIFTS = [0, 42, 84, 150, 205, 250, 300, 330];
+
+type Card = { node: CatalogNode; hueShift: number };
+type Section = { top: CatalogNode; cards: Card[] };
+
+let cardIndex = 0;
+const sections: Section[] = sortedChildren(root).map((top) => {
+	const kids = sortedChildren(top);
+	const cards: Card[] = kids.map((child) => ({
+		node: child,
+		hueShift: HUE_SHIFTS[cardIndex++ % HUE_SHIFTS.length],
+	}));
+
+	// 一级文件夹里也可能直接放文章（README / 索引页），单独收一张小卡。
+	if (kids.length > 0 && top.posts.length > 0) {
+		cards.push({
+			node: {
+				label: "直属文章",
+				posts: top.posts,
+				children: new Map<string, CatalogNode>(),
+			},
+			hueShift: HUE_SHIFTS[cardIndex++ % HUE_SHIFTS.length],
+		});
+	}
+	if (cards.length === 0) {
+		cards.push({
+			node: top,
+			hueShift: HUE_SHIFTS[cardIndex++ % HUE_SHIFTS.length],
+		});
+	}
+	return { top, cards };
+});
+
+const cardTotal = sections.reduce(
+	(sum, section) => sum + section.cards.length,
+	0,
 );
-
-type Node = { label: string; posts: typeof sorted; children: Map<string, Node> };
-const root: Node = { label: "", posts: [], children: new Map() };
-
-// 目录页 = Obsidian 文件夹结构的原样镜像，层级名用 frontmatter 的 path
-// （保留库里的原始大小写，例如 Embedded / PCB / Docs / Expand）。
-// 注意不能用 slug：Astro 生成的 slug 是小写的。
-const catalogSegments = (post: (typeof sorted)[number]): string[] => {
-	const raw = String(post.data.path ?? "").trim();
-	if (raw) return raw.split("/").filter(Boolean);
-	const parts = String(post.slug).split("/").filter(Boolean);
-	return parts.slice(1, -1);
-};
-
-for (const post of sorted) {
-	const segments = catalogSegments(post);
-	let node = root;
-	for (const segment of segments) {
-		let child = node.children.get(segment);
-		if (!child) {
-			child = { label: segment, posts: [], children: new Map() };
-			node.children.set(segment, child);
-		}
-		node = child;
-	}
-	node.posts.push(post);
-}
-
-const escapeHtml = (s: string) =>
-	String(s)
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;");
-
-const countOf = (n: Node): number =>
-	n.posts.length + [...n.children.values()].reduce((sum, c) => sum + countOf(c), 0);
-
-const formatDate = (d: Date) => {
-	const date = new Date(d);
-	return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-};
-
-const render = (node: Node, depth: number): string => {
-	let html = "";
-	// 先列文件夹（子分组），再列当前文件夹下直接存放的文章（如 README）。
-	const children = [...node.children.values()].sort((a, b) =>
-		a.label.localeCompare(b.label, "zh"),
-	);
-	for (const child of children) {
-		html +=
-			`<details class="py-1" style="padding-left:${depth * 1.25}rem" ${depth === 0 ? "open" : ""}>` +
-			`<summary class="cursor-pointer select-none font-bold text-lg py-2 px-3 rounded-xl whitespace-nowrap transition hover:bg-[var(--btn-plain-bg-hover)] flex items-center gap-2">` +
-			`<span class="inline-block w-2 h-2 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)]"></span>` +
-			`<span>${escapeHtml(child.label)}</span>` +
-			`<span class="text-xs font-normal px-2 py-0.5 rounded-full bg-[var(--btn-regular-bg)] text-75">${countOf(child)} 篇</span>` +
-			`</summary>` +
-			`<div class="ml-3 border-l border-[var(--line-color)] pl-2">${render(child, depth + 1)}</div>` +
-			`</details>`;
-	}
-	// 文件夹列完后再列直接放在当前文件夹里的文章（README、索引等）。
-	for (const post of node.posts) {
-		html +=
-			`<div class="flex items-baseline gap-3 py-1.5 px-2 rounded-lg transition hover:bg-[var(--btn-plain-bg-hover)]" style="padding-left:${depth * 1.25 + 1.25}rem">` +
-			`<span class="text-50 text-xs font-mono w-12 shrink-0">${formatDate(post.data.published)}</span>` +
-			`<a class="link text-sm font-bold whitespace-nowrap" href="${getPostUrlBySlug(post.slug)}">${escapeHtml(post.data.title)}</a>` +
-			`</div>`;
-	}
-	return html;
-};
-
-const html = render(root, 0);
+const latestText = formatFullDate(new Date(latest));
 ---
 
 <MainGridLayout title="总目录">
-    <div class="card-base px-6 py-6">
-        <div class="flex items-center justify-between mb-1">
-            <h1 class="text-3xl font-bold">总目录</h1>
-            <div class="flex gap-2">
-                <button class="btn-regular text-sm px-3 py-1" onclick="document.querySelectorAll('#catalog details').forEach(d=>d.open=true)">全部展开</button>
-                <button class="btn-regular text-sm px-3 py-1" onclick="document.querySelectorAll('#catalog details').forEach(d=>d.open=false)">全部收起</button>
-            </div>
-        </div>
-        <p class="text-75 text-sm mb-5">共 {posts.length} 篇 · 点击分类可展开/收起</p>
-        <div id="catalog" class="overflow-x-auto">
-            <div class="min-w-[30rem]" set:html={html} />
-        </div>
-    </div>
+	<div class="card-base relative overflow-hidden px-5 py-5 md:px-6">
+		<div
+			class="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full opacity-50 blur-2xl"
+			style="background: radial-gradient(circle, oklch(0.78 0.12 var(--hue) / 0.55), transparent 65%)"
+		>
+		</div>
+
+		<div class="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+			<div>
+				<h1 class="text-2xl font-bold tracking-tight md:text-[1.75rem]">总目录</h1>
+				<p class="mt-1.5 text-[12.5px] text-50">
+					共 <span class="font-mono font-semibold text-75">{total}</span> 篇笔记 ·
+					<span class="font-mono font-semibold text-75">{cardTotal}</span> 个分类 ·
+					最近更新 <span class="font-mono text-75">{latestText}</span>
+				</p>
+			</div>
+
+			<div class="flex flex-wrap items-center gap-2">
+				<label
+					for="catalog-filter"
+					class="flex h-9 items-center gap-2 rounded-xl bg-[var(--btn-regular-bg)] px-3 transition-colors focus-within:bg-[var(--btn-regular-bg-hover)]"
+				>
+					<Icon name="fa6-solid:magnifying-glass" class="h-3 w-3 shrink-0 text-50" />
+					<input
+						id="catalog-filter"
+						type="search"
+						placeholder="筛选标题"
+						autocomplete="off"
+						class="w-24 bg-transparent text-[13px] text-75 outline-none placeholder:text-30 md:w-32"
+					/>
+				</label>
+				<button
+					type="button"
+					data-catalog="expand"
+					class="btn-regular h-9 gap-1.5 rounded-xl px-3 text-[12.5px]"
+				>
+					<Icon name="fa6-solid:angles-down" class="h-3 w-3" />
+					<span>展开</span>
+				</button>
+				<button
+					type="button"
+					data-catalog="collapse"
+					class="btn-regular h-9 gap-1.5 rounded-xl px-3 text-[12.5px]"
+				>
+					<Icon name="fa6-solid:angles-up" class="h-3 w-3" />
+					<span>收起</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="mt-4 border-t border-black/[0.06] dark:border-white/[0.07]"></div>
+
+		<div id="catalog">
+		{sections.map((section) => (
+			<section class="mt-7 first:mt-5" data-section>
+				<div class="flex items-center gap-2.5 px-1">
+					<span class="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]"></span>
+					<h2 class="text-[14px] font-bold tracking-wide text-75">{section.top.label}</h2>
+					<span class="shrink-0 font-mono text-[11px] tabular-nums text-30">
+						{countPosts(section.top)} 篇
+						{section.cards.length > 1 && ` · ${section.cards.length} 个分类`}
+					</span>
+					<span class="h-px flex-1 bg-black/[0.07] dark:bg-white/[0.09]"></span>
+				</div>
+
+				<div
+					class:list={[
+						"mt-3.5 gap-4",
+						section.cards.length > 1 ? "columns-1 md:columns-2" : "columns-1",
+					]}
+				>
+					{section.cards.map((card) => (
+						<CatalogCard
+							node={card.node}
+							icon={iconForLabel(card.node.label)}
+							hueShift={card.hueShift}
+							share={(countPosts(card.node) / Math.max(total, 1)) * 100}
+						/>
+					))}
+				</div>
+			</section>
+		))}
+		</div>
+
+		<p id="catalog-empty" class="hidden py-12 text-center text-sm text-50">
+			没有匹配的标题
+		</p>
+	</div>
 </MainGridLayout>
+
+<script is:inline>
+	(function () {
+		if (window.__catalogUI) return;
+		window.__catalogUI = true;
+
+		function applyFilter(raw) {
+			var root = document.getElementById("catalog");
+			var empty = document.getElementById("catalog-empty");
+			if (!root) return;
+			var query = String(raw || "").trim().toLowerCase();
+			var anyVisible = false;
+
+			root.querySelectorAll("[data-cat-card]").forEach(function (card) {
+				var cardHas = false;
+
+				card.querySelectorAll("[data-post]").forEach(function (row) {
+					var title = row.getAttribute("data-title") || "";
+					var match = !query || title.indexOf(query) !== -1;
+					var isExtra =
+						row.classList.contains("cat-extra") &&
+						!row.classList.contains("cat-extra-shown");
+					// 关键字的优先级高于「首屏只显示 N 篇」的截断。
+					var hide = !match || (isExtra && query === "");
+					row.classList.toggle("hidden", hide);
+					if (!hide) cardHas = true;
+				});
+
+				card.querySelectorAll("details[data-node]").forEach(function (group) {
+					var hit = group.querySelector("[data-post]:not(.hidden)");
+					group.classList.toggle("hidden", query !== "" && !hit);
+					if (query !== "" && hit) group.open = true;
+				});
+
+				var more = card.querySelector("[data-more]");
+				if (more) more.classList.toggle("hidden", query !== "");
+
+				card.classList.toggle("hidden", query !== "" && !cardHas);
+				if (cardHas) anyVisible = true;
+			});
+
+			root.querySelectorAll("[data-section]").forEach(function (section) {
+				var hasCard = section.querySelector("[data-cat-card]:not(.hidden)");
+				section.classList.toggle("hidden", query !== "" && !hasCard);
+			});
+
+			if (empty) empty.classList.toggle("hidden", anyVisible || query === "");
+		}
+
+		document.addEventListener("input", function (event) {
+			var el = event.target;
+			if (el && el.id === "catalog-filter") applyFilter(el.value);
+		});
+
+		document.addEventListener("click", function (event) {
+			var el = event.target;
+			if (!el || !el.closest) return;
+
+			var more = el.closest("[data-more]");
+			if (more) {
+				var card = more.closest("[data-cat-card]");
+				if (card) {
+					card.querySelectorAll(".cat-extra").forEach(function (row) {
+						row.classList.remove("hidden");
+						row.classList.add("cat-extra-shown");
+					});
+				}
+				more.remove();
+				return;
+			}
+
+			var toggle = el.closest("[data-catalog]");
+			if (!toggle) return;
+			var root = document.getElementById("catalog");
+			if (!root) return;
+			var open = toggle.getAttribute("data-catalog") === "expand";
+			root.querySelectorAll("details").forEach(function (item) {
+				item.open = open;
+			});
+		});
+	})();
+</script>

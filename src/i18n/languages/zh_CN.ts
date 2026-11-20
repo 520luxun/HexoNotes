@@ -35,4 +35,21 @@ export const zh_CN: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",
 	[Key.license]: "许可协议",
+
+	[Key.siteStyle]: "站点风格",
+	[Key.styleBocchi]: "波奇·轻音",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "90年代复古",
+	[Key.styleSakura]: "樱花粉",
+	[Key.styleViolet]: "紫罗兰永恒",
+	[Key.styleShinkai]: "新海诚",
+	[Key.styleDemon]: "鬼灭之刃",
+
+	[Key.effectTitle]: "动态特效",
+	[Key.effectFalling]: "飘落特效",
+	[Key.effectClick]: "点击特效",
+	[Key.effectReveal]: "滚动动画",
+	[Key.effectProgress]: "阅读进度条",
+
+	[Key.skipIntro]: "点击跳过",
 };

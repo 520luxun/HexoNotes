@@ -35,4 +35,21 @@ export const th: Translation = {
 	[Key.author]: "ผู้เขียน",
 	[Key.publishedAt]: "เผยแพร่เมื่อ",
 	[Key.license]: "สัญญาอนุญาต",
+
+	[Key.siteStyle]: "สไตล์ของเว็บ",
+	[Key.styleBocchi]: "โบจจิ · เค-ออน",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "เรโทร 90s",
+	[Key.styleSakura]: "ซากุระ",
+	[Key.styleViolet]: "วิโอเลท",
+	[Key.styleShinkai]: "สไตล์ชินไก",
+	[Key.styleDemon]: "ปีศาจดาบฆ่าอสูร",
+
+	[Key.effectTitle]: "เอฟเฟกต์",
+	[Key.effectFalling]: "เอฟเฟกต์ร่วงหล่น",
+	[Key.effectClick]: "เอฟเฟกต์คลิก",
+	[Key.effectReveal]: "อนิเมชันเลื่อน",
+	[Key.effectProgress]: "แถบความคืบหน้า",
+
+	[Key.skipIntro]: "คลิกเพื่อข้าม",
 };

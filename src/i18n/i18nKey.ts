@@ -32,6 +32,23 @@ enum I18nKey {
 	author = "author",
 	publishedAt = "publishedAt",
 	license = "license",
+
+	siteStyle = "siteStyle",
+	styleBocchi = "styleBocchi",
+	styleEva = "styleEva",
+	styleRetro = "styleRetro",
+	styleSakura = "styleSakura",
+	styleViolet = "styleViolet",
+	styleShinkai = "styleShinkai",
+	styleDemon = "styleDemon",
+
+	effectTitle = "effectTitle",
+	effectFalling = "effectFalling",
+	effectClick = "effectClick",
+	effectReveal = "effectReveal",
+	effectProgress = "effectProgress",
+
+	skipIntro = "skipIntro",
 }
 
 export default I18nKey;

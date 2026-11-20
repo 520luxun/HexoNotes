@@ -6,7 +6,7 @@ tags: ["硬件基础", "去耦电容", "PCB设计", "示波器"]
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
-order: 39
+order: 100
 ---
 
 # 嵌入式去耦电容工作原理

@@ -6,7 +6,7 @@ tags: []
 category: "SchoolStudy"
 path: "Embedded/SchoolStudy/计算机操作系统/03_内存管理/01_内存管理的概念"
 draft: false
-order: 82
+order: 144
 ---
 ## 3.1.3 操作系统覆盖技术与交换技术的思想
 

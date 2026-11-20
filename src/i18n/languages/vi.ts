@@ -35,4 +35,21 @@ export const vi: Translation = {
 	[Key.author]: "Tác giả",
 	[Key.publishedAt]: "Đăng vào lúc",
 	[Key.license]: "Giấy phép bản quyền",
+
+	[Key.siteStyle]: "Phong cách trang",
+	[Key.styleBocchi]: "Bocchi · K-On",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "Retro 90s",
+	[Key.styleSakura]: "Sakura",
+	[Key.styleViolet]: "Violet Evergarden",
+	[Key.styleShinkai]: "Phong cách Shinkai",
+	[Key.styleDemon]: "Thanh gươm diệt quỷ",
+
+	[Key.effectTitle]: "Hiệu ứng",
+	[Key.effectFalling]: "Hiệu ứng rơi",
+	[Key.effectClick]: "Hiệu ứng nhấp",
+	[Key.effectReveal]: "Hoạt ảnh cuộn",
+	[Key.effectProgress]: "Tiến độ đọc",
+
+	[Key.skipIntro]: "Nhấp để bỏ qua",
 };

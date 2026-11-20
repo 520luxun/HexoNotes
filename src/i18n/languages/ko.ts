@@ -35,4 +35,21 @@ export const ko: Translation = {
 	[Key.author]: "저자",
 	[Key.publishedAt]: "게시일",
 	[Key.license]: "라이선스",
+
+	[Key.siteStyle]: "사이트 스타일",
+	[Key.styleBocchi]: "보치·경음",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "90년대 레트로",
+	[Key.styleSakura]: "사쿠라",
+	[Key.styleViolet]: "바이올렛",
+	[Key.styleShinkai]: "신카이 스타일",
+	[Key.styleDemon]: "귀멸의 칼날",
+
+	[Key.effectTitle]: "이펙트",
+	[Key.effectFalling]: "떨어지는 효과",
+	[Key.effectClick]: "클릭 효과",
+	[Key.effectReveal]: "스크롤 애니메이션",
+	[Key.effectProgress]: "읽기 진행률",
+
+	[Key.skipIntro]: "클릭하여 건너뛰기",
 };

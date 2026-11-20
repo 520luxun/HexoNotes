@@ -6,7 +6,7 @@ tags: ["模拟电路", "电源设计", "运算放大器", "负反馈", "三极�
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 50
+order: 111
 ---
 
 # 恒流源电路

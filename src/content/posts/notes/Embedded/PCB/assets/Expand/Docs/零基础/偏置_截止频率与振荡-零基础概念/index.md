@@ -6,7 +6,7 @@ tags: ["模拟电路", "偏置", "截止频率", "谐振", "振荡", "零基础"
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/零基础"
 draft: false
-order: 42
+order: 103
 ---
 
 # 偏置、截止频率与振荡：零基础概念

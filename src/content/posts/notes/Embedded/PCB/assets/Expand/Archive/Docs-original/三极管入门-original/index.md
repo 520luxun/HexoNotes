@@ -6,7 +6,7 @@ tags: []
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Archive/Docs-original"
 draft: false
-order: 33
+order: 94
 ---
 # 三极管入门
 

@@ -6,7 +6,7 @@ tags: ["模拟电路", "三极管", "MOS管", "传感器", "电源设计", "自�
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 47
+order: 108
 ---
 
 # 三极管、常电电器与 MOS 管

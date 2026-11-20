@@ -2,8 +2,16 @@
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import "@fontsource/zen-maru-gothic/400.css";
+import "@fontsource/zen-maru-gothic/700.css";
+import "@fontsource/zen-maru-gothic/japanese-400.css";
+import "@fontsource/zen-maru-gothic/japanese-700.css";
+import "@fontsource/dotgothic16/400.css";
+import "@fontsource/dotgothic16/japanese-400.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
+import EffectsLayer from "@components/EffectsLayer.svelte";
+import IntroOverlay from "@components/intro/IntroOverlay.svelte";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
@@ -11,9 +19,11 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	BANNER_HEIGHT_HOME,
 	DARK_MODE,
+	DEFAULT_STYLE,
 	DEFAULT_THEME,
 	LIGHT_MODE,
 	PAGE_WIDTH,
+	STYLE_DEFAULT_HUE,
 } from "../constants/constants";
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
@@ -111,7 +121,14 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, DEFAULT_STYLE, styleDefaultHue: STYLE_DEFAULT_HUE}}>
+			// Load the site style from local storage (anime style switcher)
+			let siteStyle = localStorage.getItem('site-style') || DEFAULT_STYLE;
+			if (!styleDefaultHue.hasOwnProperty(siteStyle)) {
+				siteStyle = DEFAULT_STYLE;
+			}
+			document.documentElement.dataset.style = siteStyle;
+
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
 			switch (theme) {
@@ -129,8 +146,8 @@ const bannerOffset =
 					}
 			}
 
-			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
+			// Load the hue from local storage; fall back to the current style's default
+			const hue = localStorage.getItem('hue') || styleDefaultHue[siteStyle] || configHue;
 			document.documentElement.style.setProperty('--hue', hue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
@@ -153,8 +170,15 @@ const bannerOffset =
 		  data-overlayscrollbars-initialize
 		  style={`--site-bg: url('${import.meta.env.BASE_URL}background.jpg')`}
 	>
+		<!-- 风格装饰层（扫描线/胶片颗粒/光斑），位于背景之上、内容之下 -->
+		<div id="style-decor" aria-hidden="true"></div>
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
+
+		<!-- 进站开场动画（每会话首次） -->
+		<IntroOverlay client:load />
+		<!-- 全站动态特效（飘落/点击） -->
+		<EffectsLayer client:load />
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -165,6 +189,13 @@ const bannerOffset =
 	bannerOffset,
 	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,
 	'banner-height': `${BANNER_HEIGHT}vh`,
+	'site-bg-bocchi': `url('${import.meta.env.BASE_URL}background.jpg')`,
+	'site-bg-eva': `url('${import.meta.env.BASE_URL}bg/bg-eva.jpg')`,
+	'site-bg-retro90': `url('${import.meta.env.BASE_URL}bg/bg-retro90.jpg')`,
+	'site-bg-sakura': `url('${import.meta.env.BASE_URL}bg/bg-sakura.jpg')`,
+	'site-bg-violet': `url('${import.meta.env.BASE_URL}bg/bg-violet.jpg')`,
+	'site-bg-shinkai': `url('${import.meta.env.BASE_URL}bg/bg-shinkai.jpg')`,
+	'site-bg-demon': `url('${import.meta.env.BASE_URL}bg/bg-demon.jpg')`,
 }}>
 @tailwind components;
 @layer components {
@@ -204,7 +235,7 @@ import {
 	// SizeObserverPlugin,
 	// ClickScrollPlugin
 } from 'overlayscrollbars';
-import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
+import {getEffects, getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
 	BANNER_HEIGHT,
@@ -213,6 +244,8 @@ import {
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT
 } from "../constants/constants";
 import { siteConfig } from '../config';
+import { initReveal } from "../scripts/effects/reveal";
+import { setProgressBar } from "../scripts/effects/progress";
 
 /* Preload fonts */
 // (async function() {
@@ -365,13 +398,36 @@ function showBanner() {
 	banner.classList.remove('opacity-0', 'scale-105');
 }
 
+// banner 图缺失时优雅隐藏，避免裸露 alt 文字/裂图图标
+function hideBrokenBannerImages() {
+	const bannerImgs = document.querySelectorAll('#banner .banner-img');
+	bannerImgs.forEach(img => {
+		if (img.complete && img.naturalWidth === 0) {
+			img.style.display = 'none';
+		} else {
+			img.addEventListener('error', () => { img.style.display = 'none'; }, { once: true });
+		}
+	});
+}
+
 function init() {
 	// disableAnimation()()		// TODO
 	loadTheme();
 	loadHue();
 	initCustomScrollbar();
 	showBanner();
+	hideBrokenBannerImages();
+	initReveal();
+	setProgressBar(getEffects().progress);
 }
+
+// 特效开关变化时同步进度条
+document.addEventListener("effects-changed", (e) => {
+	const detail = (e as CustomEvent<{ progress: boolean }>).detail;
+	if (detail && typeof detail.progress === "boolean") {
+		setProgressBar(detail.progress);
+	}
+});
 
 /* Load settings when entering the site */
 init();
@@ -407,6 +463,8 @@ const setup = () => {
 		}
 	})
 	window.swup.hooks.on('content:replace', initCustomScrollbar)
+	window.swup.hooks.on('content:replace', initReveal)
+	window.swup.hooks.on('content:replace', () => setProgressBar(getEffects().progress))
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')

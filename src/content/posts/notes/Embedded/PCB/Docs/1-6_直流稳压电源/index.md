@@ -6,7 +6,7 @@ tags: ["模拟电路", "电源设计", "负反馈", "运算放大器", "三极�
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 51
+order: 112
 ---
 
 # 直流稳压电源

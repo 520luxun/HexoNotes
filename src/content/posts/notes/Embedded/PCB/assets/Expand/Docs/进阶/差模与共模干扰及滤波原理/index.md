@@ -6,7 +6,7 @@ tags: ["硬件基础", "EMC", "共模电感"]
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
-order: 34
+order: 95
 ---
 
 # 差模与共模干扰及滤波原理

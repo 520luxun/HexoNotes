@@ -6,7 +6,7 @@ tags: []
 category: "PID"
 path: "Embedded/PID"
 draft: false
-order: 54
+order: 115
 ---
 
 # PID算法

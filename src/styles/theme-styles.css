@@ -1,0 +1,370 @@
+/* ==========================================================================
+   动漫风格切换系统（site style switcher）
+   由 <html data-style="bocchi|eva|retro90|sakura"> 驱动，localStorage 持久化。
+   每种风格覆盖一组 CSS 变量并挂上专属装饰层 #style-decor。
+   ========================================================================== */
+
+/* ---------- 标题字体（按风格切换） ---------- */
+:root {
+	--font-heading: "Zen Maru Gothic", "Roboto", sans-serif;
+}
+:root[data-style="retro90"] {
+	--font-heading: "DotGothic16", "Zen Maru Gothic", "Roboto", sans-serif;
+}
+:root[data-style="eva"] {
+	--font-heading: "Roboto", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--font-heading);
+}
+
+/* ---------- 波奇/轻音（默认，柔和紫罗兰） ---------- */
+:root[data-style="bocchi"] {
+	--radius-large: 1rem;
+}
+/* 顶部一层淡淡的紫色光晕 */
+:root[data-style="bocchi"] #style-decor {
+	background:
+		radial-gradient(110% 55% at 50% -8%, oklch(0.75 0.09 var(--hue) / 0.14), transparent 65%);
+}
+
+/* ---------- EVA（暗色玻璃 + 荧光绿/橙，棱角化） ---------- */
+:root[data-style="eva"] {
+	--radius-large: 0.375rem;
+	--selection-bg: oklch(0.92 0.08 145);
+	--link-underline: oklch(0.9 0.07 145 / 0.5);
+	/* EVA 专属强调色：荧光绿 + 警告橙 */
+	--eva-green: oklch(0.86 0.19 152);
+	--eva-orange: oklch(0.75 0.16 60);
+}
+:root[data-style="eva"] {
+	--card-bg: oklch(0.97 0.012 var(--hue) / 0.88);
+	--float-panel-bg: oklch(0.98 0.01 var(--hue) / 0.96);
+}
+:root.dark[data-style="eva"] {
+	--card-bg: oklch(0.16 0.03 var(--hue) / 0.82);
+	--float-panel-bg: oklch(0.15 0.03 var(--hue) / 0.96);
+	--selection-bg: oklch(0.38 0.08 145);
+	--link-underline: oklch(0.45 0.1 145 / 0.55);
+}
+:root[data-style="eva"] h1,
+:root[data-style="eva"] h2 {
+	letter-spacing: 0.06em;
+}
+/* 扫描线 + 顶部荧光绿辉光 + 底部橙色警戒光 */
+:root[data-style="eva"] #style-decor {
+	background:
+		repeating-linear-gradient(0deg, oklch(0.86 0.19 152 / 0.05) 0 1px, transparent 1px 3px),
+		radial-gradient(120% 60% at 50% -10%, oklch(0.86 0.19 152 / 0.10), transparent 60%),
+		radial-gradient(90% 55% at 108% 112%, oklch(0.75 0.16 60 / 0.12), transparent 60%);
+}
+/* 终端感的链接下划线 */
+:root[data-style="eva"] .link-underline {
+	text-decoration-style: solid;
+}
+
+/* ---------- 90年代复古（暖黄泛色 + 胶片颗粒） ---------- */
+:root[data-style="retro90"] {
+	--radius-large: 0.75rem;
+	--card-bg: oklch(0.985 0.012 85);
+	--selection-bg: oklch(0.92 0.07 85);
+}
+:root.dark[data-style="retro90"] {
+	--card-bg: oklch(0.22 0.02 60);
+	--selection-bg: oklch(0.4 0.08 85);
+}
+/* 胶片颗粒（SVG feTurbulence 噪点）+ 暖色渐晕 */
+:root[data-style="retro90"] #style-decor {
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+		radial-gradient(115% 75% at 50% 45%, transparent 55%, oklch(0.68 0.12 55 / 0.16) 100%);
+	background-size: 180px 180px, 100% 100%;
+	opacity: 0.35;
+}
+
+/* ---------- 樱花粉少女（粉彩 + 大圆角） ---------- */
+:root[data-style="sakura"] {
+	--radius-large: 1.25rem;
+	--card-bg: oklch(0.985 0.014 var(--hue) / 0.95);
+	--selection-bg: oklch(0.93 0.05 var(--hue));
+}
+:root.dark[data-style="sakura"] {
+	--card-bg: oklch(0.24 0.03 var(--hue) / 0.88);
+	--selection-bg: oklch(0.42 0.08 var(--hue));
+}
+/* 两团柔和粉色光斑 */
+:root[data-style="sakura"] #style-decor {
+	background:
+		radial-gradient(65% 42% at 8% 2%, oklch(0.87 0.07 var(--hue) / 0.32), transparent 70%),
+		radial-gradient(60% 40% at 100% 100%, oklch(0.85 0.06 calc(var(--hue) + 40) / 0.26), transparent 70%);
+}
+
+/* ---------- 紫罗兰永恒花园（钢青蓝 × 黄铜金，水彩欧风） ---------- */
+:root[data-style="violet"] {
+	--radius-large: 1.125rem;
+	--card-bg: oklch(0.98 0.008 215 / 0.9);
+	--selection-bg: oklch(0.9 0.04 215);
+}
+:root.dark[data-style="violet"] {
+	--card-bg: oklch(0.2 0.03 215 / 0.85);
+	--selection-bg: oklch(0.38 0.07 215);
+}
+/* 水彩晕染：左上钢青、右下黄铜 */
+:root[data-style="violet"] #style-decor {
+	background:
+		radial-gradient(70% 45% at 4% 0%, oklch(0.72 0.07 230 / 0.22), transparent 68%),
+		radial-gradient(60% 42% at 102% 104%, oklch(0.75 0.1 80 / 0.18), transparent 66%);
+}
+:root[data-style="violet"] body::after {
+	background-color: rgba(250, 248, 244, 0.4);
+}
+:root.dark[data-style="violet"] body::after {
+	background-color: rgba(2, 6, 18, 0.7);
+}
+
+/* ---------- 新海诚（高饱和蓝天 × 黄昏橙，光晕流光） ---------- */
+:root[data-style="shinkai"] {
+	--radius-large: 1rem;
+	--card-bg: oklch(0.98 0.01 205 / 0.95);
+	--selection-bg: oklch(0.9 0.05 205);
+}
+:root.dark[data-style="shinkai"] {
+	--card-bg: oklch(0.18 0.03 205 / 0.8);
+	--selection-bg: oklch(0.38 0.08 205);
+}
+/* 斜向光带 + 黄昏辉光 */
+:root[data-style="shinkai"] #style-decor {
+	background:
+		linear-gradient(115deg, transparent 38%, oklch(0.88 0.05 205 / 0.09) 50%, transparent 62%),
+		radial-gradient(70% 40% at 96% 0%, oklch(0.78 0.12 60 / 0.14), transparent 65%),
+		radial-gradient(55% 35% at 0% 100%, oklch(0.7 0.09 240 / 0.16), transparent 70%);
+}
+:root[data-style="shinkai"] body::after {
+	background-color: rgba(240, 247, 255, 0.48);
+}
+:root.dark[data-style="shinkai"] body::after {
+	background-color: rgba(1, 5, 15, 0.7);
+}
+
+/* ---------- 鬼灭之刃（靛蓝 × 朱红 × 藤花，和风菱纹） ---------- */
+:root[data-style="demon"] {
+	--radius-large: 0.5rem;
+	--font-heading: "Roboto", sans-serif;
+	--card-bg: oklch(0.97 0.01 230 / 0.9);
+	--selection-bg: oklch(0.9 0.04 25);
+}
+:root.dark[data-style="demon"] {
+	--card-bg: oklch(0.15 0.03 230 / 0.82);
+	--selection-bg: oklch(0.36 0.07 25);
+}
+/* 菱形麻纹（浅色黑纹/深色白纹）+ 顶部藤花光晕 + 底部朱红辉光 */
+:root[data-style="demon"] #style-decor {
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Cpath d='M0 14 L14 0 L28 14 L14 28 Z M14 0 V28 M0 14 H28' fill='none' stroke='%23202240' stroke-opacity='0.5'/%3E%3C/svg%3E"),
+		radial-gradient(60% 36% at 8% 0%, oklch(0.75 0.07 300 / 0.2), transparent 68%),
+		radial-gradient(65% 40% at 100% 105%, oklch(0.6 0.16 25 / 0.14), transparent 68%);
+	background-size: 28px 28px, 100% 100%, 100% 100%;
+	opacity: 0.5;
+}
+:root.dark[data-style="demon"] #style-decor {
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Cpath d='M0 14 L14 0 L28 14 L14 28 Z M14 0 V28 M0 14 H28' fill='none' stroke='%23b9a8e8' stroke-opacity='0.4'/%3E%3C/svg%3E"),
+		radial-gradient(60% 36% at 8% 0%, oklch(0.75 0.07 300 / 0.24), transparent 68%),
+		radial-gradient(65% 40% at 100% 105%, oklch(0.6 0.16 25 / 0.18), transparent 68%);
+	opacity: 0.6;
+}
+:root[data-style="demon"] body::after {
+	background-color: rgba(245, 244, 252, 0.45);
+}
+:root.dark[data-style="demon"] body::after {
+	background-color: rgba(2, 3, 12, 0.72);
+}
+
+/* ---------- 开场动画配色（按风格覆盖变体家族默认值） ---------- */
+/* 紫罗兰：藏蓝 → 黄铜金的柔幕，金色星光漂浮 */
+html[data-style="violet"] .intro-overlay.bocchi {
+	--intro-bg: linear-gradient(
+		155deg,
+		oklch(0.26 0.05 255) 0%,
+		oklch(0.38 0.07 245) 45%,
+		oklch(0.58 0.09 80) 100%
+	);
+	--intro-note: oklch(0.82 0.11 85);
+}
+/* 新海诚：深蓝 → 天蓝 → 黄昏橙的柔幕，白色星光漂浮 */
+html[data-style="shinkai"] .intro-overlay.bocchi {
+	--intro-bg: linear-gradient(
+		160deg,
+		oklch(0.2 0.05 250) 0%,
+		oklch(0.42 0.1 240) 50%,
+		oklch(0.72 0.13 60) 100%
+	);
+	--intro-note: rgba(255, 255, 255, 0.92);
+}
+/* 鬼灭之刃：靛蓝底 + 藤花紫的系统启动 */
+html[data-style="demon"] .intro-overlay.eva {
+	--intro-bg: #0c0e1d;
+	--intro-fg: oklch(0.8 0.09 300);
+}
+
+/* ---------- 背景图随风格切换 ---------- */
+/* --site-bg-* 由 Layout.astro 以 BASE_URL 计算后注入 */
+:root[data-style="bocchi"] body::before {
+	background-image: var(--site-bg-bocchi, var(--site-bg));
+}
+:root[data-style="eva"] body::before {
+	background-image: var(--site-bg-eva);
+}
+:root[data-style="retro90"] body::before {
+	background-image: var(--site-bg-retro90);
+}
+:root[data-style="sakura"] body::before {
+	background-image: var(--site-bg-sakura);
+}
+:root[data-style="violet"] body::before {
+	background-image: var(--site-bg-violet);
+}
+:root[data-style="shinkai"] body::before {
+	background-image: var(--site-bg-shinkai);
+}
+:root[data-style="demon"] body::before {
+	background-image: var(--site-bg-demon);
+}
+
+/* ---------- 背景遮罩微调（每种风格对照片底色的适配） ---------- */
+:root[data-style="eva"] body::after {
+	background-color: rgba(255, 255, 255, 0.4);
+}
+:root.dark[data-style="eva"] body::after {
+	background-color: rgba(0, 0, 0, 0.62);
+}
+:root[data-style="retro90"] body::after {
+	background-color: rgba(255, 244, 224, 0.4);
+}
+:root.dark[data-style="retro90"] body::after {
+	background-color: rgba(8, 4, 0, 0.72);
+}
+:root[data-style="sakura"] body::after {
+	background-color: rgba(255, 240, 246, 0.5);
+}
+:root.dark[data-style="sakura"] body::after {
+	background-color: rgba(4, 0, 8, 0.72);
+}
+
+/* ---------- banner 图随风格切换 ---------- */
+#banner .banner-img {
+	display: none;
+}
+:root[data-style="bocchi"] #banner .banner-img[data-banner-style="bocchi"],
+:root[data-style="eva"] #banner .banner-img[data-banner-style="eva"],
+:root[data-style="retro90"] #banner .banner-img[data-banner-style="retro90"],
+:root[data-style="sakura"] #banner .banner-img[data-banner-style="sakura"],
+:root[data-style="violet"] #banner .banner-img[data-banner-style="violet"],
+:root[data-style="shinkai"] #banner .banner-img[data-banner-style="shinkai"],
+:root[data-style="demon"] #banner .banner-img[data-banner-style="demon"] {
+	display: block;
+}
+
+/* ---------- 装饰层基座 ---------- */
+#style-decor {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 0.5s ease;
+}
+
+/* ==========================================================================
+   质感打磨：玻璃导航栏 / 卡片描边与层次阴影 / 头像光环 / banner 暗角
+   ========================================================================== */
+
+/* ---------- 导航栏玻璃拟态（背景色随色相/风格自动适配） ---------- */
+:root {
+	--nav-bg: oklch(0.985 0.005 var(--hue) / 0.72);
+}
+:root.dark {
+	--nav-bg: oklch(0.21 0.015 var(--hue) / 0.58);
+}
+:root[data-style="eva"] {
+	--nav-bg: oklch(0.97 0.012 var(--hue) / 0.78);
+}
+:root.dark[data-style="eva"] {
+	--nav-bg: oklch(0.17 0.03 var(--hue) / 0.66);
+}
+
+#navbar .card-base,
+#navbar > div.absolute.h-8 {
+	background: var(--nav-bg);
+	backdrop-filter: blur(18px) saturate(1.5);
+	-webkit-backdrop-filter: blur(18px) saturate(1.5);
+}
+#navbar .card-base {
+	box-shadow:
+		0 12px 32px -16px rgba(0, 0, 0, 0.3),
+		inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- 浮动面板玻璃化（设置/搜索/目录等） ---------- */
+:root {
+	--float-panel-bg-override: oklch(0.985 0.005 var(--hue) / 0.86);
+}
+:root.dark {
+	--float-panel-bg-override: oklch(0.21 0.015 var(--hue) / 0.84);
+}
+.float-panel {
+	background: var(--float-panel-bg-override) !important;
+	backdrop-filter: blur(16px) saturate(1.4);
+	-webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+/* ---------- 卡片：细描边 + 分层阴影（深色下靠描边与背景区分） ---------- */
+.card-base {
+	box-shadow:
+		0 2px 6px -2px rgba(0, 0, 0, 0.06),
+		0 12px 32px -16px rgba(0, 0, 0, 0.14),
+		inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+:root.dark .card-base {
+	box-shadow:
+		0 4px 10px -4px rgba(0, 0, 0, 0.35),
+		0 16px 40px -18px rgba(0, 0, 0, 0.5),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* ---------- Profile 头像光环 + 名字渐变分隔条 ---------- */
+.profile-avatar {
+	box-shadow:
+		0 0 0 2px oklch(0.94 0.02 var(--hue)),
+		0 0 0 5px oklch(0.72 0.11 var(--hue) / 0.38),
+		0 12px 26px -12px rgba(0, 0, 0, 0.32);
+	transition: box-shadow 0.3s ease;
+}
+.profile-avatar:hover {
+	box-shadow:
+		0 0 0 2px oklch(0.9 0.03 var(--hue)),
+		0 0 0 6px oklch(0.72 0.13 var(--hue) / 0.55),
+		0 14px 30px -12px rgba(0, 0, 0, 0.4);
+}
+:root.dark .profile-avatar {
+	box-shadow:
+		0 0 0 2px oklch(0.36 0.03 var(--hue)),
+		0 0 0 5px oklch(0.7 0.1 var(--hue) / 0.42),
+		0 12px 26px -12px rgba(0, 0, 0, 0.5);
+}
+.name-divider {
+	background: linear-gradient(
+		90deg,
+		oklch(0.62 0.13 var(--hue)),
+		oklch(0.74 0.11 calc(var(--hue) + 60))
+	) !important;
+}
+
+/* ---------- banner 顶部渐晕（仅深色，提升导航可读性） ---------- */
+html.dark #banner::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.32), transparent 30%);
+	pointer-events: none;
+}

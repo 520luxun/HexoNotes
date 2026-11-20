@@ -6,7 +6,7 @@ tags: []
 category: "SchoolStudy"
 path: "Embedded/SchoolStudy/计算机操作系统/01_计算机系统概述/01_操作系统的基本概念"
 draft: false
-order: 56
+order: 118
 ---
 
 # 1.1.1 操作系统的概念、功能和目标

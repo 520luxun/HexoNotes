@@ -6,7 +6,7 @@ tags: ["硬件基础", "电容", "交流电路", "去耦电容"]
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Archive/Docs-original"
 draft: false
-order: 32
+order: 93
 ---
 
 # 容抗 Xc 原理

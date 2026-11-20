@@ -6,7 +6,7 @@ tags: ["运算放大器", "模拟电路"]
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 48
+order: 109
 ---
 
 # 比较器与运算放大器基础

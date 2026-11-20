@@ -22,7 +22,13 @@ const style = Astro.props.style;
 
 // Categories may be deep paths ("嵌入式/硬件电路/扩展资料/进阶"). Flatten the
 // tree into rows with an indent level so any depth renders cleanly.
-type Row = { label: string; path: string; count: number; url: string; depth: number };
+type Row = {
+	label: string;
+	path: string;
+	count: number;
+	url: string;
+	depth: number;
+};
 
 const tree = new Map<string, number>();
 for (const c of categories) {

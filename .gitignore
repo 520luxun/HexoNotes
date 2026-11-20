@@ -32,3 +32,6 @@ yarn.lock
 # ide
 .idea
 *.iml
+
+# 本地 agent 计划缓存
+.zcode/

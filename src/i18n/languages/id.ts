@@ -35,4 +35,21 @@ export const id: Translation = {
 	[Key.author]: "Penulis",
 	[Key.publishedAt]: "Diterbitkan pada",
 	[Key.license]: "Lisensi",
+
+	[Key.siteStyle]: "Gaya Situs",
+	[Key.styleBocchi]: "Bocchi · K-On",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "Retro 90-an",
+	[Key.styleSakura]: "Sakura",
+	[Key.styleViolet]: "Violet Evergarden",
+	[Key.styleShinkai]: "Gaya Shinkai",
+	[Key.styleDemon]: "Demon Slayer",
+
+	[Key.effectTitle]: "Efek",
+	[Key.effectFalling]: "Efek jatuh",
+	[Key.effectClick]: "Efek klik",
+	[Key.effectReveal]: "Animasi gulir",
+	[Key.effectProgress]: "Progres membaca",
+
+	[Key.skipIntro]: "Klik untuk lewati",
 };

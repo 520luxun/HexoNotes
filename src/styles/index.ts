@@ -12,3 +12,5 @@ import "./transition.css";
 import "./scrollbar.css";
 import "./expressive-code.css";
 import "./photoswipe.css";
+import "./theme-styles.css";
+import "./effects.css";

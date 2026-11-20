@@ -3,7 +3,10 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-const titleCollator = new Intl.Collator("zh", { numeric: true, sensitivity: "base" });
+const titleCollator = new Intl.Collator("zh", {
+	numeric: true,
+	sensitivity: "base",
+});
 
 // Notes carry an `order` matching their chapter position in the source vault.
 // Regular posts (no order) come first, newest first; then notes follow the

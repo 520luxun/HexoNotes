@@ -6,7 +6,7 @@ tags: ["模拟电路", "电阻", "电容", "电感", "二极管", "滤波器"]
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 46
+order: 107
 ---
 
 # 电阻、电容、电感、二极管

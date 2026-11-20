@@ -1,8 +1,9 @@
 <script lang="ts">
-import { onMount } from "svelte";
+import { afterUpdate, onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
+import { initReveal } from "../scripts/effects/reveal";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
 export let tags: string[];
@@ -61,7 +62,8 @@ onMount(async () => {
 			(post) =>
 				post.data.category &&
 				categories.some(
-					(c) => post.data.category === c || post.data.category.startsWith(`${c}/`),
+					(c) =>
+						post.data.category === c || post.data.category.startsWith(`${c}/`),
 				),
 		);
 	}
@@ -95,7 +97,9 @@ onMount(async () => {
 		);
 		const byCategory = new Map<string, Post[]>();
 		for (const post of filteredPosts) {
-			const key = String(post.data.category ?? "未分类").split("/").join(" / ");
+			const key = String(post.data.category ?? "未分类")
+				.split("/")
+				.join(" / ");
 			const list = byCategory.get(key);
 			if (list) list.push(post);
 			else byCategory.set(key, [post]);
@@ -129,11 +133,16 @@ onMount(async () => {
 
 	groups = groupedPostsArray;
 });
+
+// 分组块是滚动入场元素；组件每次 DOM 更新后重新观察
+afterUpdate(() => {
+	initReveal();
+});
 </script>
 
 <div class="card-base px-8 py-6">
-    {#each groups as group}
-        <div>
+    {#each groups as group, gi}
+        <div class="reveal" style={`transition-delay: ${Math.min(gi, 4) * 80}ms;`}>
             <div class="flex flex-row w-full items-center h-[3.75rem]">
                 <div class="w-[26%] md:w-[20%] transition text-lg font-bold text-center text-75 break-words">
                     {group.label ?? group.year}

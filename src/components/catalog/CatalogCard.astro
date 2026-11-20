@@ -1,0 +1,68 @@
+---
+import { type CatalogNode, countPosts } from "@utils/catalog-utils";
+import { Icon } from "astro-icon/components";
+import CatalogNodeView from "./CatalogNode.astro";
+
+interface Props {
+	node: CatalogNode;
+	/** 该分类占全站文章的比例（0-100），用于卡片顶部细条。 */
+	share?: number;
+	icon?: string;
+	/** 主题主色 hue 的偏移量，让每张卡片有自己的强调色。 */
+	hueShift?: number;
+}
+
+const {
+	node,
+	share = 0,
+	icon = "fa6-solid:folder-open",
+	hueShift = 0,
+} = Astro.props;
+
+const count = countPosts(node);
+const accent = `oklch(0.68 0.115 calc(var(--hue) + ${hueShift}))`;
+const barWidth = Math.max(3, Math.min(100, Math.round(share)));
+---
+
+<section
+	class="cat-card mb-4 break-inside-avoid overflow-hidden rounded-[0.9rem] border border-black/[0.06] bg-black/[0.02] dark:border-white/[0.08] dark:bg-white/[0.03]"
+	data-cat-card
+	style={`--cat: ${accent};`}
+>
+	<header class="relative px-4 pb-3 pt-3.5">
+		<div
+			class="pointer-events-none absolute inset-x-0 top-0 h-20"
+			style="background: linear-gradient(180deg, color-mix(in oklab, var(--cat) 13%, transparent), transparent)"
+		>
+		</div>
+		<div class="relative flex items-center gap-3">
+			<span
+				class="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-white shadow-sm"
+				style="background: linear-gradient(135deg, var(--cat), color-mix(in oklab, var(--cat) 55%, white))"
+			>
+				<Icon name={icon} class="h-4 w-4" />
+			</span>
+			<div class="min-w-0 flex-1">
+				<h3 class="truncate text-[15px] font-bold leading-snug">{node.label}</h3>
+			</div>
+			<span
+				class="shrink-0 rounded-full px-2 py-0.5 font-mono text-[10.5px] tabular-nums"
+				style="background: color-mix(in oklab, var(--cat) 14%, transparent); color: var(--cat)"
+			>
+				{count} 篇
+			</span>
+		</div>
+		<div
+			class="relative mt-3 h-1 overflow-hidden rounded-full bg-black/[0.05] dark:bg-white/[0.08]"
+		>
+			<div
+				class="h-full rounded-full"
+				style={`width:${barWidth}%; background: linear-gradient(90deg, var(--cat), color-mix(in oklab, var(--cat) 60%, white))`}
+			>
+			</div>
+		</div>
+	</header>
+	<div class="px-2 pb-2">
+		<CatalogNodeView node={node} depth={0} limit={10} />
+	</div>
+</section>

@@ -6,7 +6,7 @@ tags: ["模拟电路", "电流检测", "运算放大器", "偏置"]
 category: "PCB"
 path: "Embedded/PCB/Docs"
 draft: false
-order: 49
+order: 110
 ---
 
 # 电流检测电路

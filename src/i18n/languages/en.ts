@@ -35,4 +35,21 @@ export const en: Translation = {
 	[Key.author]: "Author",
 	[Key.publishedAt]: "Published at",
 	[Key.license]: "License",
+
+	[Key.siteStyle]: "Site Style",
+	[Key.styleBocchi]: "Bocchi · K-On",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "Retro 90s",
+	[Key.styleSakura]: "Sakura",
+	[Key.styleViolet]: "Violet Evergarden",
+	[Key.styleShinkai]: "Shinkai Style",
+	[Key.styleDemon]: "Demon Slayer",
+
+	[Key.effectTitle]: "Effects",
+	[Key.effectFalling]: "Falling effects",
+	[Key.effectClick]: "Click effects",
+	[Key.effectReveal]: "Scroll animation",
+	[Key.effectProgress]: "Reading progress",
+
+	[Key.skipIntro]: "Click to skip",
 };

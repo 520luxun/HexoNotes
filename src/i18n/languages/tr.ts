@@ -35,4 +35,21 @@ export const tr: Translation = {
 	[Key.author]: "Yazar",
 	[Key.publishedAt]: "Yayınlanma:",
 	[Key.license]: "Lisans",
+
+	[Key.siteStyle]: "Site Stili",
+	[Key.styleBocchi]: "Bocchi · K-On",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "90'lar Retro",
+	[Key.styleSakura]: "Sakura",
+	[Key.styleViolet]: "Violet Evergarden",
+	[Key.styleShinkai]: "Shinkai Stili",
+	[Key.styleDemon]: "Demon Slayer",
+
+	[Key.effectTitle]: "Efektler",
+	[Key.effectFalling]: "Düşme efektleri",
+	[Key.effectClick]: "Tıklama efektleri",
+	[Key.effectReveal]: "Kaydırma animasyonu",
+	[Key.effectProgress]: "Okuma ilerlemesi",
+
+	[Key.skipIntro]: "Atlamak için tıkla",
 };

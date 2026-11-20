@@ -6,7 +6,7 @@ tags: []
 category: "SchoolStudy"
 path: "Embedded/SchoolStudy/计算机操作系统/01_计算机系统概述/03_运行机制和体系结构"
 draft: false
-order: 60
+order: 122
 ---
 ## 1.3.2 中断和异常（内中断和外中断、中断处理过程）
 

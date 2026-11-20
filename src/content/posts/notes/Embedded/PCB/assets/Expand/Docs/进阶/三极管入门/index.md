@@ -6,7 +6,7 @@ tags: []
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
-order: 40
+order: 101
 ---
 # 三极管入门：PN 结、NPN/PNP、工作区与实际应用
 

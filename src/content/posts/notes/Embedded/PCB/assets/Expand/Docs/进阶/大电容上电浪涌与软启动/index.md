@@ -6,7 +6,7 @@ tags: ["硬件基础", "电容", "电源设计"]
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/进阶"
 draft: false
-order: 35
+order: 96
 ---
 
 # 大电容上电浪涌与软启动

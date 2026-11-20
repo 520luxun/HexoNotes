@@ -35,4 +35,21 @@ export const ja: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "公開日",
 	[Key.license]: "ライセンス",
+
+	[Key.siteStyle]: "サイトスタイル",
+	[Key.styleBocchi]: "ぼっち・軽音",
+	[Key.styleEva]: "EVA",
+	[Key.styleRetro]: "90年代レトロ",
+	[Key.styleSakura]: "桜カラー",
+	[Key.styleViolet]: "ヴァイオレット",
+	[Key.styleShinkai]: "新海誠スタイル",
+	[Key.styleDemon]: "鬼滅の刃",
+
+	[Key.effectTitle]: "エフェクト",
+	[Key.effectFalling]: "舞い落ちる演出",
+	[Key.effectClick]: "クリック演出",
+	[Key.effectReveal]: "スクロール演出",
+	[Key.effectProgress]: "読書プログレス",
+
+	[Key.skipIntro]: "クリックでスキップ",
 };

@@ -6,7 +6,7 @@ tags: ["电感", "电容", "谐振", "零基础", "滤波器"]
 category: "PCB"
 path: "Embedded/PCB/assets/Expand/Docs/零基础"
 draft: false
-order: 43
+order: 104
 ---
 
 # LC 谐振与 Q 值：零基础入门

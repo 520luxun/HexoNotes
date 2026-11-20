@@ -6,7 +6,7 @@ tags: []
 category: "SchoolStudy"
 path: "Embedded/SchoolStudy/计算机操作系统/01_计算机系统概述/03_运行机制和体系结构"
 draft: false
-order: 59
+order: 121
 ---
 ### 1.操作系统的运行机制和体系结构
 
