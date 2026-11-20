@@ -1,0 +1,522 @@
+<!DOCTYPE html><html lang="zh-CN" class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]" data-overlayscrollbars-initialize data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;"> <head><title>GPU与NPU - 晚霞小站</title><meta charset="UTF-8"><meta name="description" content="GPU与NPU [!abstract] 本文定位 GPU 与 NPU 的架构差异、分工与应用：嵌入式 GPU、NPU 的硬件级加速、两者在手机 SoC 中的协同"><meta name="author" content="520luxun"><meta property="og:site_name" content="晚霞小站"><meta property="og:url" content="https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%9F%BA%E7%A1%80/%E7%A1%AC%E4%BB%B6%E4%B8%8E%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/gpu%E4%B8%8Enpu/"><meta property="og:title" content="GPU与NPU - 晚霞小站"><meta property="og:description" content="GPU与NPU [!abstract] 本文定位 GPU 与 NPU 的架构差异、分工与应用：嵌入式 GPU、NPU 的硬件级加速、两者在手机 SoC 中的协同"><meta property="og:type" content="article"><meta name="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%9F%BA%E7%A1%80/%E7%A1%AC%E4%BB%B6%E4%B8%8E%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/gpu%E4%B8%8Enpu/"><meta name="twitter:title" content="GPU与NPU - 晚霞小站"><meta name="twitter:description" content="GPU与NPU [!abstract] 本文定位 GPU 与 NPU 的架构差异、分工与应用：嵌入式 GPU、NPU 的硬件级加速、两者在手机 SoC 中的协同"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.10"><link rel="icon" href="/HexoNotes/favicon/favicon-light-32.png" sizes="32x32" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-128.png" sizes="128x128" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-180.png" sizes="180x180" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-192.png" sizes="192x192" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-32.png" sizes="32x32" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-128.png" sizes="128x128" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-180.png" sizes="180x180" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-192.png" sizes="192x192" media="(prefers-color-scheme: dark)"><!-- Set the theme before the page is rendered to avoid a flash --><script>(function(){const DEFAULT_THEME = "auto";
+const LIGHT_MODE = "light";
+const DARK_MODE = "dark";
+const AUTO_MODE = "auto";
+const BANNER_HEIGHT_EXTEND = 30;
+const PAGE_WIDTH = 75;
+const configHue = 250;
+const DEFAULT_STYLE = "bocchi";
+const styleDefaultHue = {"bocchi":250,"eva":285,"retro90":35,"sakura":330,"violet":215,"shinkai":205,"demon":230};
+
+			// Load the site style from local storage (anime style switcher)
+			let siteStyle = localStorage.getItem('site-style') || DEFAULT_STYLE;
+			if (!styleDefaultHue.hasOwnProperty(siteStyle)) {
+				siteStyle = DEFAULT_STYLE;
+			}
+			document.documentElement.dataset.style = siteStyle;
+
+			// Load the theme from local storage
+			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+			switch (theme) {
+				case LIGHT_MODE:
+					document.documentElement.classList.remove('dark');
+					break
+				case DARK_MODE:
+					document.documentElement.classList.add('dark');
+					break
+				case AUTO_MODE:
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+			}
+
+			// Load the hue from local storage; fall back to the current style's default
+			const hue = localStorage.getItem('hue') || styleDefaultHue[siteStyle] || configHue;
+			document.documentElement.style.setProperty('--hue', hue);
+
+			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+			offset = offset - offset % 4;
+			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		})();</script><!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"GPU与NPU","description":"GPU与NPU [!abstract] 本文定位 GPU 与 NPU 的架构差异、分工与应用：嵌入式 GPU、NPU 的硬件级加速、两者在手机 SoC 中的协同","keywords":["嵌入式","嵌入式/硬件"],"author":{"@type":"Person","name":"520luxun","url":"https://520luxun.github.io/HexoNotes/"},"datePublished":"2026-11-18","inLanguage":"zh-CN"}</script><link rel="alternate" type="application/rss+xml" title="520luxun" href="https://520luxun.github.io/HexoNotes/rss.xml"><link rel="stylesheet" href="/HexoNotes/_astro/Layout.DSulWsr7.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/Layout.y4KPJ9hc.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/_page_.v8bPqb9r.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/about.JLkcjWQJ.css">
+<style>input.svelte-1wah7ro:focus{outline:0}.search-panel.svelte-1wah7ro{max-height:calc(100vh - 100px);overflow-y:auto}
+#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k){-webkit-appearance:none;height:1.5rem;background-image:var(--color-selection-bar);transition:background-image .15s ease-in-out}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb:active{background:#fff9}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;border-width:0;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb:active{background:#fff9}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb:active{background:#fff9}.style-card.svelte-d7tq3k{display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:.6rem .5rem .5rem;border-radius:.75rem;background:var(--btn-regular-bg);transition:transform .2s cubic-bezier(.34,1.3,.64,1),background-color .2s,box-shadow .2s}.style-card.svelte-d7tq3k:hover{transform:translateY(-2px);background:var(--btn-plain-bg-hover)}.style-card.svelte-d7tq3k:active{transform:scale(.96)}.style-card-current.svelte-d7tq3k{box-shadow:0 0 0 2px var(--primary),0 6px 16px -6px #0000004d}.style-swatch.svelte-d7tq3k{width:100%;height:2.4rem;border-radius:.5rem;box-shadow:inset 0 0 0 1px #ffffff2e}.style-name.svelte-d7tq3k{font-size:.8rem;font-weight:700;color:var(--btn-content)}.effect-row.svelte-d7tq3k{display:flex;align-items:center;justify-content:space-between;width:100%;height:2.25rem;padding:0 .5rem 0 .75rem;border-radius:.5rem;transition:background-color .15s}.effect-row.svelte-d7tq3k:hover{background:var(--btn-plain-bg-hover)}.effect-label.svelte-d7tq3k{font-size:.875rem;font-weight:500;color:var(--btn-content)}.fx-switch.svelte-d7tq3k{position:relative;width:2.1rem;height:1.15rem;border-radius:9999px;background:var(--btn-regular-bg);transition:background-color .2s}.fx-switch.svelte-d7tq3k .fx-knob:where(.svelte-d7tq3k){position:absolute;top:.14rem;left:.14rem;width:.87rem;height:.87rem;border-radius:9999px;background:#fff;box-shadow:0 1px 3px #00000040;transition:transform .2s cubic-bezier(.34,1.3,.64,1)}.fx-switch-on.svelte-d7tq3k{background:var(--primary)}.fx-switch-on.svelte-d7tq3k .fx-knob:where(.svelte-d7tq3k){transform:translate(.95rem)}
+</style><script type="module" src="/HexoNotes/_astro/page.CupyVmFr.js"></script></head> <body class=" min-h-screen transition  enable-banner" data-overlayscrollbars-initialize style="--site-bg: url('/HexoNotes/background.jpg'); --bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;" data-astro-cid-sckkx6r4> <!-- 风格装饰层（扫描线/胶片颗粒/光斑），位于背景之上、内容之下 --> <div id="style-decor" aria-hidden="true" data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;"></div> <div id="config-carrier" data-hue="250"></div>    <div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto"> <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all"> <div id="navbar" class="z-50 onload-animation"> <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation --> <div class="card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"> <a href="/HexoNotes/" class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95"> <div class="flex flex-row text-[var(--primary)] items-center text-md"> <svg width="1em" height="1em" class="text-[1.75rem] mb-1 mr-2" data-icon="material-symbols:home-outline-rounded">   <symbol id="ai:material-symbols:home-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19h3v-5q0-.425.288-.712T10 13h4q.425 0 .713.288T15 14v5h3v-9l-6-4.5L6 10zm-2 0v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-4q-.425 0-.712-.288T13 20v-5h-2v5q0 .425-.288.713T10 21H6q-.825 0-1.412-.587T4 19m8-6.75"/></symbol><use href="#ai:material-symbols:home-outline-rounded"></use>  </svg> 晚霞小站 </div> </a> <div class="hidden md:flex"> <a aria-label="主页" href="/HexoNotes/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 主页  </div> </a><a aria-label="归档" href="/HexoNotes/archive/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 归档  </div> </a><a aria-label="总目录" href="/HexoNotes/catalog/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 总目录  </div> </a><a aria-label="关于" href="/HexoNotes/about/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 关于  </div> </a><a aria-label="GitHub" href="https://github.com/520luxun/HexoNotes" target="_blank" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> GitHub <svg width="1em" height="1em" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]" data-icon="fa6-solid:arrow-up-right-from-square">   <symbol id="ai:fa6-solid:arrow-up-right-from-square" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32zM80 32C35.8 32 0 67.8 0 112v320c0 44.2 35.8 80 80 80h320c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v112c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h112c17.7 0 32-14.3 32-32s-14.3-32-32-32z"/></symbol><use href="#ai:fa6-solid:arrow-up-right-from-square"></use>  </svg> </div> </a> </div> <div class="flex"> <!--<SearchPanel client:load>--> <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="Z1aBrwi" component-url="/HexoNotes/_astro/Search.B-v3mN4v.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;Search&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch"> <svg width="1em" height="1em" class="text-[1.25rem]" data-icon="material-symbols:palette-outline">   <symbol id="ai:material-symbols:palette-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.813-3.9t2.2-3.175T8.25 2.788T12.2 2q2 0 3.775.688t3.113 1.9t2.125 2.875T22 11.05q0 2.875-1.75 4.413T16 17h-1.85q-.225 0-.312.125t-.088.275q0 .3.375.863t.375 1.287q0 1.25-.687 1.85T12 22m-5.5-9q.65 0 1.075-.425T8 11.5t-.425-1.075T6.5 10t-1.075.425T5 11.5t.425 1.075T6.5 13m3-4q.65 0 1.075-.425T11 7.5t-.425-1.075T9.5 6t-1.075.425T8 7.5t.425 1.075T9.5 9m5 0q.65 0 1.075-.425T16 7.5t-.425-1.075T14.5 6t-1.075.425T13 7.5t.425 1.075T14.5 9m3 4q.65 0 1.075-.425T19 11.5t-.425-1.075T17.5 10t-1.075.425T16 11.5t.425 1.075T17.5 13M12 20q.225 0 .363-.125t.137-.325q0-.35-.375-.825T11.75 17.3q0-1.05.725-1.675T14.25 15H16q1.65 0 2.825-.962T20 11.05q0-3.025-2.312-5.038T12.2 4Q8.8 4 6.4 6.325T4 12q0 3.325 2.338 5.663T12 20"/></symbol><use href="#ai:material-symbols:palette-outline"></use>  </svg> </button> <astro-island uid="20d3r6" component-url="/HexoNotes/_astro/LightDarkSwitch.N_jAJHLb.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;LightDarkSwitch&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch"> <svg width="1em" height="1em" class="text-[1.25rem]" data-icon="material-symbols:menu-rounded">   <symbol id="ai:material-symbols:menu-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/></symbol><use href="#ai:material-symbols:menu-rounded"></use>  </svg> </button> </div> <div id="nav-menu-panel" class="float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"> <a href="/HexoNotes/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 主页 </div> <svg width="1em" height="1em" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <symbol id="ai:material-symbols:chevron-right-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M12.6 12L8.7 8.1q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.6 4.6q.15.15.213.325t.062.375t-.062.375t-.213.325l-4.6 4.6q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7z"/></symbol><use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/archive/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 归档 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/catalog/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 总目录 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/about/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 关于 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="https://github.com/520luxun/HexoNotes" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        " target="_blank"> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> GitHub </div>  <svg width="1em" height="1em" viewBox="0 0 512 512" class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1" data-icon="fa6-solid:arrow-up-right-from-square">   <use href="#ai:fa6-solid:arrow-up-right-from-square"></use>  </svg> </a> </div> <astro-island uid="Z1OfgCX" component-url="/HexoNotes/_astro/DisplaySettings.Dv247you.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;DisplaySettings&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> </div> </div> <script type="module">function c(){localStorage.theme==="dark"?(document.documentElement.classList.remove("dark"),localStorage.theme="light"):(document.documentElement.classList.add("dark"),localStorage.theme="dark")}function o(){let t=document.getElementById("scheme-switch");t&&(t.onclick=function(){c()});let n=document.getElementById("display-settings-switch");n&&(n.onclick=function(){let e=document.getElementById("display-setting");e&&e.classList.toggle("float-panel-closed")});let l=document.getElementById("nav-menu-switch");l&&(l.onclick=function(){let e=document.getElementById("nav-menu-panel");e&&e.classList.toggle("float-panel-closed")})}o();</script> <script>(function(){const scriptUrl = "/HexoNotes/pagefind/pagefind.js";
+
+async function loadPagefind() {
+    try {
+        const response = await fetch(scriptUrl, { method: 'HEAD' });
+        if (!response.ok) {
+            throw new Error(`Pagefind script not found: ${response.status}`);
+        }
+
+        const pagefind = await import(scriptUrl);
+
+        await pagefind.options({
+            excerptLength: 20
+        });
+
+        window.pagefind = pagefind;
+
+        document.dispatchEvent(new CustomEvent('pagefindready'));
+        console.log('Pagefind loaded and initialized successfully, event dispatched.');
+    } catch (error) {
+        console.error('Failed to load Pagefind:', error);
+        window.pagefind = {
+            search: () => Promise.resolve({ results: [] }),
+            options: () => Promise.resolve(),
+        };
+        document.dispatchEvent(new CustomEvent('pagefindloaderror'));
+        console.log('Pagefind load error, event dispatched.');
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadPagefind);
+} else {
+    loadPagefind();
+}
+})();</script> </div> </div>  <div id="banner-wrapper" class="absolute z-10 w-full transition duration-700 overflow-hidden" style="top: -30vh"> <div id="banner" class="object-cover h-full transition duration-700 opacity-0 scale-105 overflow-hidden relative"> <img src="/HexoNotes/bg/banner-bocchi.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="bocchi" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-eva.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="eva" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-retro90.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="retro90" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-sakura.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="sakura" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-violet.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="violet" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-shinkai.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="shinkai" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-demon.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="demon" style="object-position: center" loading="eager"> <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div> </div> </div> <div class="absolute w-full z-30 pointer-events-none" style="top: calc(35vh - 3.5rem)"> <!-- The pointer-events-none here prevent blocking the click event of the TOC --> <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto"> <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
+    mx-auto gap-4 px-0 md:px-4"> <!-- Banner image credit -->  <div id="sidebar" class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation w-full"> <div class="flex flex-col w-full gap-4 mb-4"> <div class="card-base hover-lift p-3"> <a aria-label="Go to About Page" href="/HexoNotes/about/" class="group profile-avatar block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
+       max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95"> <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
+        w-full h-full z-50 flex items-center justify-center"> <svg width="1.13em" height="1em" class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl" data-icon="fa6-regular:address-card">   <symbol id="ai:fa6-regular:address-card" viewBox="0 0 576 512"><path fill="currentColor" d="M512 80c8.8 0 16 7.2 16 16v320c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V96c0-8.8 7.2-16 16-16zM64 32C28.7 32 0 60.7 0 96v320c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64zm144 224a64 64 0 1 0 0-128a64 64 0 1 0 0 128m-32 32c-44.2 0-80 35.8-80 80c0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16c0-44.2-35.8-80-80-80zm200-144c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24z"/></symbol><use href="#ai:fa6-regular:address-card"></use>  </svg> </div> <div class="mx-auto lg:w-full h-full lg:mt-0  overflow-hidden relative"> <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div> <img src="/HexoNotes/_astro/avatar.18vv_OyQ_ZrjH8f.webp" alt="Profile Image of the Author" style="object-position: center" loading="lazy" decoding="async" fetchpriority="auto" width="1327" height="1079" class="w-full h-full object-cover">  </div> </a> <div class="px-2"> <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">520luxun</div> <div class="name-divider h-1 w-5 mx-auto rounded-full mb-2 transition"></div> <div class="text-center text-neutral-400 mb-2.5 transition">嵌入式与计算机学习笔记 · 记录生活与技术</div> <div class="flex flex-wrap gap-2 justify-center mb-1"> <a rel="me" aria-label="GitHub" href="https://github.com/520luxun" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="0.97em" height="1em" class="text-[1.5rem]" data-icon="fa6-brands:github">   <symbol id="ai:fa6-brands:github" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6c-3.3.3-5.6-1.3-5.6-3.6c0-2 2.3-3.6 5.2-3.6c3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9c2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9c.3 2 2.9 3.3 5.9 2.6c2.9-.7 4.9-2.6 4.6-4.6c-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2c12.8 2.3 17.3-5.6 17.3-12.1c0-6.2-.3-40.4-.3-61.4c0 0-70 15-84.7-29.8c0 0-11.4-29.1-27.8-36.6c0 0-22.9-15.7 1.6-15.4c0 0 24.9 2 38.6 25.8c21.9 38.6 58.6 27.5 72.9 20.9c2.3-16 8.8-27.1 16-33.7c-55.9-6.2-112.3-14.3-112.3-110.5c0-27.5 7.6-41.3 23.6-58.9c-2.6-6.5-11.1-33.3 2.6-67.9c20.9-6.5 69 27 69 27c20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27c13.7 34.7 5.2 61.4 2.6 67.9c16 17.7 25.8 31.5 25.8 58.9c0 96.5-58.9 104.2-114.8 110.5c9.2 7.9 17 22.9 17 46.4c0 33.7-.3 75.4-.3 83.6c0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252C496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2c1.6 1.6 3.9 2.3 5.2 1c1.3-1 1-3.3-.7-5.2c-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9c1.6 1 3.6.7 4.3-.7c.7-1.3-.3-2.9-2.3-3.9c-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2c2.3 2.3 5.2 2.6 6.5 1c1.3-1.3.7-4.3-1.3-6.2c-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2c-1.4-2.3-4-3.3-5.6-2"/></symbol><use href="#ai:fa6-brands:github"></use>  </svg> </a><a rel="me" aria-label="BiliBili" href="https://www.bilibili.com/" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="1em" height="1em" class="text-[1.5rem]" data-icon="bilibili">   <symbol id="ai:local:bilibili" viewBox="0 0 24 24"><path fill="currentColor" d="M17.813 4.653h.854q2.266.08 3.773 1.574Q23.946 7.72 24 9.987v7.36q-.054 2.266-1.56 3.773c-1.506 1.507-2.262 1.524-3.773 1.56H5.333q-2.266-.054-3.773-1.56C.053 19.614.036 18.858 0 17.347v-7.36q.054-2.267 1.56-3.76t3.773-1.574h.774l-1.174-1.12a1.23 1.23 0 0 1-.373-.906q0-.534.373-.907l.027-.027q.4-.373.92-.373t.92.373L9.653 4.44q.107.106.187.213h4.267a.8.8 0 0 1 .16-.213l2.853-2.747q.4-.373.92-.373c.347 0 .662.151.929.4s.391.551.391.907q0 .532-.373.906zM5.333 7.24q-1.12.027-1.88.773-.76.748-.786 1.894v7.52q.026 1.146.786 1.893t1.88.773h13.334q1.12-.026 1.88-.773t.786-1.893v-7.52q-.026-1.147-.786-1.894t-1.88-.773zM8 11.107q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q0-.56.386-.947.387-.386.947-.386m8 0q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q.025-.586.4-.96.373-.373.933-.373"/></symbol><use href="#ai:local:bilibili"></use>  </svg> </a><a rel="me" aria-label="Obsidian" href="obsidian://open?vault=Embedded" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="1em" height="1em" class="text-[1.5rem]" data-icon="obsidian">   <symbol id="ai:local:obsidian" viewBox="0 0 24 24"><path fill="currentColor" d="M19.355 18.538a68.967 68.959 0 0 0 1.858-2.954.81.81 0 0 0-.062-.9c-.516-.685-1.504-2.075-2.042-3.362-.553-1.321-.636-3.375-.64-4.377a1.7 1.7 0 0 0-.358-1.05l-3.198-4.064a4 4 0 0 1-.076.543c-.106.503-.307 1.004-.536 1.5-.134.29-.29.6-.446.914l-.31.626c-.516 1.068-.997 2.227-1.132 3.59-.124 1.26.046 2.73.815 4.481q.192.016.386.044a6.36 6.36 0 0 1 3.326 1.505c.916.79 1.744 1.922 2.415 3.5zM8.199 22.569q.11.019.22.02c.78.024 2.095.092 3.16.29.87.16 2.593.64 4.01 1.055 1.083.316 2.198-.548 2.355-1.664.114-.814.33-1.735.725-2.58l-.01.005c-.67-1.87-1.522-3.078-2.416-3.849a5.3 5.3 0 0 0-2.778-1.257c-1.54-.216-2.952.19-3.84.45.532 2.218.368 4.829-1.425 7.531zM5.533 9.938q-.035.15-.098.29L2.82 16.059a1.6 1.6 0 0 0 .313 1.772l4.116 4.24c2.103-3.101 1.796-6.02.836-8.3-.728-1.73-1.832-3.081-2.55-3.831zM9.32 14.01c.615-.183 1.606-.465 2.745-.534-.683-1.725-.848-3.233-.716-4.577.154-1.552.7-2.847 1.235-3.95q.17-.35.328-.664c.149-.297.288-.577.419-.86.217-.47.379-.885.46-1.27.08-.38.08-.72-.014-1.043-.095-.325-.297-.675-.68-1.06a1.6 1.6 0 0 0-1.475.36l-4.95 4.452a1.6 1.6 0 0 0-.513.952l-.427 2.83c.672.59 2.328 2.316 3.335 4.711q.136.317.253.653"/></symbol><use href="#ai:local:obsidian"></use>  </svg> </a>  </div> </div> </div> </div> <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4"> <widget-layout data-id="categories" data-is-collapsed="true" class="pb-4 card-base onload-animation" style="animation-delay: 150ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+        before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">分类</div> <div id="categories" class="collapse-wrapper px-4 overflow-hidden collapsed" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=%E9%9A%8F%E7%AC%94" aria-label="View all posts in the 随笔 category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> 随笔 </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=FreeRTOS" aria-label="View all posts in the FreeRTOS category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> FreeRTOS </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 24 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=Linux" aria-label="View all posts in the Linux category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> Linux </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=NoSystematic" aria-label="View all posts in the NoSystematic category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> NoSystematic </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 64 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=OTA-BootLoader" aria-label="View all posts in the OTA-BootLoader category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> OTA-BootLoader </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=PCB" aria-label="View all posts in the PCB category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> PCB </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 23 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=PID" aria-label="View all posts in the PID category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> PID </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=SchoolStudy" aria-label="View all posts in the SchoolStudy category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> SchoolStudy </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 35 </div> </div> </button> </a> </div> </div> <div class="expand-btn px-4 -mb-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <button class="btn-plain rounded-lg w-full h-9" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <svg width="1em" height="1em" class="text-[1.75rem]" data-astro-cid-ucso7hve="true" data-icon="material-symbols:more-horiz">   <symbol id="ai:material-symbols:more-horiz" viewBox="0 0 24 24"><path fill="currentColor" d="M6 14q-.825 0-1.412-.587T4 12t.588-1.412T6 10t1.413.588T8 12t-.587 1.413T6 14m6 0q-.825 0-1.412-.587T10 12t.588-1.412T12 10t1.413.588T14 12t-.587 1.413T12 14m6 0q-.825 0-1.412-.587T16 12t.588-1.412T18 10t1.413.588T20 12t-.587 1.413T18 14"/></symbol><use href="#ai:material-symbols:more-horiz"></use>  </svg> 更多 </div> </button> </div> </widget-layout>  <script type="module">class d extends HTMLElement{constructor(){if(super(),this.dataset.isCollapsed!=="true")return;const e=this.dataset.id,t=this.querySelector(".expand-btn"),s=this.querySelector(`#${e}`);t.addEventListener("click",()=>{s.classList.remove("collapsed"),t.classList.add("hidden")})}}customElements.get("widget-layout")||customElements.define("widget-layout",d);</script> <widget-layout data-id="tags" data-is-collapsed="true" class="pb-4 card-base onload-animation" style="animation-delay: 200ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+        before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">标签</div> <div id="tags" class="collapse-wrapper px-4 overflow-hidden collapsed" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">  <div class="flex gap-2 flex-wrap"> <a href="/HexoNotes/archive/?tag=EMC" aria-label="View all posts with the EMC tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  EMC </a><a href="/HexoNotes/archive/?tag=Fuwari" aria-label="View all posts with the Fuwari tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Fuwari </a><a href="/HexoNotes/archive/?tag=Linux" aria-label="View all posts with the Linux tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Linux </a><a href="/HexoNotes/archive/?tag=MOS%E7%AE%A1" aria-label="View all posts with the MOS管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  MOS管 </a><a href="/HexoNotes/archive/?tag=Obsidian" aria-label="View all posts with the Obsidian tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Obsidian </a><a href="/HexoNotes/archive/?tag=PCB%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the PCB设计 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  PCB设计 </a><a href="/HexoNotes/archive/?tag=Shell" aria-label="View all posts with the Shell tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Shell </a><a href="/HexoNotes/archive/?tag=%E4%B8%89%E6%9E%81%E7%AE%A1" aria-label="View all posts with the 三极管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  三极管 </a><a href="/HexoNotes/archive/?tag=%E4%BA%8C%E6%9E%81%E7%AE%A1" aria-label="View all posts with the 二极管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  二极管 </a><a href="/HexoNotes/archive/?tag=%E4%BA%A4%E6%B5%81%E7%94%B5%E8%B7%AF" aria-label="View all posts with the 交流电路 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  交流电路 </a><a href="/HexoNotes/archive/?tag=%E4%BC%A0%E6%84%9F%E5%99%A8" aria-label="View all posts with the 传感器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  传感器 </a><a href="/HexoNotes/archive/?tag=%E5%81%8F%E7%BD%AE" aria-label="View all posts with the 偏置 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  偏置 </a><a href="/HexoNotes/archive/?tag=%E5%85%B1%E6%A8%A1%E7%94%B5%E6%84%9F" aria-label="View all posts with the 共模电感 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  共模电感 </a><a href="/HexoNotes/archive/?tag=%E5%8E%BB%E8%80%A6%E7%94%B5%E5%AE%B9" aria-label="View all posts with the 去耦电容 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  去耦电容 </a><a href="/HexoNotes/archive/?tag=%E5%AF%BC%E8%88%AA" aria-label="View all posts with the 导航 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  导航 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F" aria-label="View all posts with the 嵌入式 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2FC%E8%AF%AD%E8%A8%80" aria-label="View all posts with the 嵌入式/C语言 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/C语言 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2FESP32" aria-label="View all posts with the 嵌入式/ESP32 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/ESP32 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E5%9B%BA%E4%BB%B6" aria-label="View all posts with the 嵌入式/固件 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/固件 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E5%AD%A6%E7%A7%91" aria-label="View all posts with the 嵌入式/学科 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/学科 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%94%B5%E6%9C%BA" aria-label="View all posts with the 嵌入式/电机 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/电机 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%A1%AC%E4%BB%B6" aria-label="View all posts with the 嵌入式/硬件 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/硬件 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%B3%BB%E7%BB%9F" aria-label="View all posts with the 嵌入式/系统 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/系统 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E9%9F%B3%E8%A7%86%E9%A2%91" aria-label="View all posts with the 嵌入式/音视频 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/音视频 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE" aria-label="View all posts with the 工具链 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2FCI" aria-label="View all posts with the 工具链/CI tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/CI </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2FKeil-ARM" aria-label="View all posts with the 工具链/Keil-ARM tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/Keil-ARM </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91" aria-label="View all posts with the 工具链/交叉编译 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/交叉编译 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E6%B5%8B%E8%AF%95" aria-label="View all posts with the 工具链/测试 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/测试 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5" aria-label="View all posts with the 工具链/编译链接 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/编译链接 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90" aria-label="View all posts with the 工具链/静态分析 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/静态分析 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E7%A8%8B%E5%8D%8F%E4%BD%9C%2FGit" aria-label="View all posts with the 工程协作/Git tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工程协作/Git </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E7%A8%8B%E5%8D%8F%E4%BD%9C%2F%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C" aria-label="View all posts with the 工程协作/团队协作 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工程协作/团队协作 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83" aria-label="View all posts with the 开发环境 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FPython" aria-label="View all posts with the 开发环境/Python tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/Python </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FUbuntu" aria-label="View all posts with the 开发环境/Ubuntu tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/Ubuntu </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FVMware" aria-label="View all posts with the 开发环境/VMware tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/VMware </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FWindows" aria-label="View all posts with the 开发环境/Windows tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/Windows </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FWSL2" aria-label="View all posts with the 开发环境/WSL2 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/WSL2 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E5%B7%A5%E5%85%B7%E9%93%BE" aria-label="View all posts with the 开发环境/工具链 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/工具链 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E6%90%AD%E5%BB%BA" aria-label="View all posts with the 开发环境/搭建 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/搭建 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86" aria-label="View all posts with the 开发环境/版本管理 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/版本管理 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E7%BD%91%E7%BB%9C%E5%85%B1%E4%BA%AB" aria-label="View all posts with the 开发环境/网络共享 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/网络共享 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91" aria-label="View all posts with the 开发环境/远程开发 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/远程开发 </a><a href="/HexoNotes/archive/?tag=%E6%88%AA%E6%AD%A2%E9%A2%91%E7%8E%87" aria-label="View all posts with the 截止频率 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  截止频率 </a><a href="/HexoNotes/archive/?tag=%E6%8C%AF%E8%8D%A1" aria-label="View all posts with the 振荡 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  振荡 </a><a href="/HexoNotes/archive/?tag=%E6%95%88%E7%8E%87" aria-label="View all posts with the 效率 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  效率 </a><a href="/HexoNotes/archive/?tag=%E6%96%87%E6%A1%A3%2F%E6%8E%92%E9%94%99" aria-label="View all posts with the 文档/排错 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  文档/排错 </a><a href="/HexoNotes/archive/?tag=%E6%96%87%E6%A1%A3%2F%E6%96%B9%E6%B3%95%E8%AE%BA" aria-label="View all posts with the 文档/方法论 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  文档/方法论 </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93" aria-label="View all posts with the 服务器与数据库 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库 </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%2FopenEuler" aria-label="View all posts with the 服务器与数据库/openEuler tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库/openEuler </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%2FopenGauss" aria-label="View all posts with the 服务器与数据库/openGauss tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库/openGauss </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%2F%E6%95%B0%E6%8D%AE%E5%BA%93" aria-label="View all posts with the 服务器与数据库/数据库 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库/数据库 </a><a href="/HexoNotes/archive/?tag=%E6%A8%A1%E6%8B%9F%E7%94%B5%E8%B7%AF" aria-label="View all posts with the 模拟电路 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  模拟电路 </a><a href="/HexoNotes/archive/?tag=%E6%BB%A4%E6%B3%A2%E5%99%A8" aria-label="View all posts with the 滤波器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  滤波器 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E5%AE%B9" aria-label="View all posts with the 电容 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电容 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%84%9F" aria-label="View all posts with the 电感 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电感 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%B5%81%E6%A3%80%E6%B5%8B" aria-label="View all posts with the 电流检测 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电流检测 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%BA%90%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the 电源设计 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电源设计 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E8%B7%AF%E5%88%86%E6%9E%90" aria-label="View all posts with the 电路分析 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电路分析 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E9%98%BB" aria-label="View all posts with the 电阻 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电阻 </a><a href="/HexoNotes/archive/?tag=%E7%A1%AC%E4%BB%B6%E5%9F%BA%E7%A1%80" aria-label="View all posts with the 硬件基础 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  硬件基础 </a><a href="/HexoNotes/archive/?tag=%E7%A4%BA%E6%B3%A2%E5%99%A8" aria-label="View all posts with the 示波器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  示波器 </a><a href="/HexoNotes/archive/?tag=%E7%B4%A2%E5%BC%95" aria-label="View all posts with the 索引 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  索引 </a><a href="/HexoNotes/archive/?tag=%E8%87%AA%E4%B8%BE" aria-label="View all posts with the 自举 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  自举 </a><a href="/HexoNotes/archive/?tag=%E8%B0%90%E6%8C%AF" aria-label="View all posts with the 谐振 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  谐振 </a><a href="/HexoNotes/archive/?tag=%E8%B4%9F%E5%8F%8D%E9%A6%88" aria-label="View all posts with the 负反馈 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  负反馈 </a><a href="/HexoNotes/archive/?tag=%E8%BF%90%E7%AE%97%E6%94%BE%E5%A4%A7%E5%99%A8" aria-label="View all posts with the 运算放大器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  运算放大器 </a><a href="/HexoNotes/archive/?tag=%E9%9B%B6%E5%9F%BA%E7%A1%80" aria-label="View all posts with the 零基础 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  零基础 </a> </div>  </div> <div class="expand-btn px-4 -mb-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <button class="btn-plain rounded-lg w-full h-9" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <svg width="1em" height="1em" viewBox="0 0 24 24" class="text-[1.75rem]" data-astro-cid-ucso7hve="true" data-icon="material-symbols:more-horiz">   <use href="#ai:material-symbols:more-horiz"></use>  </svg> 更多 </div> </button> </div> </widget-layout>   </div> </div> <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden"> <div id="content-wrapper" class="onload-animation"> <!-- the overflow-hidden here prevent long text break the layout--> <!-- make id different from windows.swup global property -->   <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"> <div id="post-container" class="card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full "> <!-- word count and reading time --> <div class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation"> <div class="flex flex-row items-center"> <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"> <svg width="1em" height="1em" data-icon="material-symbols:notes-rounded">   <symbol id="ai:material-symbols:notes-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h10q.425 0 .713.288T15 17t-.288.713T14 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/></symbol><use href="#ai:material-symbols:notes-rounded"></use>  </svg> </div> <div class="text-sm">5664  字</div> </div> <div class="flex flex-row items-center"> <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"> <svg width="1em" height="1em" data-icon="material-symbols:schedule-outline-rounded">   <symbol id="ai:material-symbols:schedule-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M13 11.6V8q0-.425-.288-.712T12 7t-.712.288T11 8v3.975q0 .2.075.388t.225.337l3.3 3.3q.275.275.7.275T16 16t.275-.7t-.275-.7zM12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.325 0 5.663-2.337T20 12t-2.337-5.663T12 4T6.337 6.338T4 12t2.338 5.663T12 20"/></symbol><use href="#ai:material-symbols:schedule-outline-rounded"></use>  </svg> </div> <div class="text-sm"> 28  分钟 </div> </div> </div> <!-- title --> <div class="relative onload-animation"> <div data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title" class="transition w-full block font-bold mb-3
+                    text-3xl md:text-[2.25rem]/[2.75rem]
+                    text-black/90 dark:text-white/90
+                    md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+                    before:absolute before:top-[0.75rem] before:left-[-1.125rem]
+                "> GPU与NPU </div> </div> <!-- metadata --> <div class="onload-animation"> <div class="flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2 mb-5"> <!-- publish date --> <div class="flex items-center"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:calendar-today-outline-rounded">   <symbol id="ai:material-symbols:calendar-today-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M5 22q-.825 0-1.412-.587T3 20V6q0-.825.588-1.412T5 4h1V3q0-.425.288-.712T7 2t.713.288T8 3v1h8V3q0-.425.288-.712T17 2t.713.288T18 3v1h1q.825 0 1.413.588T21 6v14q0 .825-.587 1.413T19 22zm0-2h14V10H5zM5 8h14V6H5zm0 0V6z"/></symbol><use href="#ai:material-symbols:calendar-today-outline-rounded"></use>  </svg> </div> <span class="text-50 text-sm font-medium">2026-11-18</span> </div> <!-- update date -->  <!-- categories --> <div class="flex items-center"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:book-2-outline-rounded">   <symbol id="ai:material-symbols:book-2-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M6 15.325q.35-.175.725-.25T7.5 15H8V4h-.5q-.625 0-1.062.438T6 5.5zM10 15h8V4h-8zm-4 .325V4zM7.5 22q-1.45 0-2.475-1.025T4 18.5v-13q0-1.45 1.025-2.475T7.5 2H18q.825 0 1.413.587T20 4v12.525q0 .2-.162.363t-.588.362q-.35.175-.55.5t-.2.75t.2.763t.55.487t.55.413t.2.562v.25q0 .425-.288.725T19 22zm0-2h9.325q-.15-.35-.237-.712T16.5 18.5q0-.4.075-.775t.25-.725H7.5q-.65 0-1.075.438T6 18.5q0 .65.425 1.075T7.5 20"/></symbol><use href="#ai:material-symbols:book-2-outline-rounded"></use>  </svg> </div> <div class="flex flex-row flex-nowrap items-center"> <a href="/HexoNotes/archive/?category=NoSystematic" aria-label="View all posts in the NoSystematic category" class="link-lg transition text-50 text-sm font-medium
+                            hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> NoSystematic </a> </div> </div> <!-- tags --> <div class="items-center flex"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:tag-rounded">   <symbol id="ai:material-symbols:tag-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m9 16l-.825 3.275q-.075.325-.325.525t-.6.2q-.475 0-.775-.375T6.3 18.8L7 16H4.275q-.5 0-.8-.387T3.3 14.75q.075-.35.35-.55t.625-.2H7.5l1-4H5.775q-.5 0-.8-.387T4.8 8.75q.075-.35.35-.55t.625-.2H9l.825-3.275Q9.9 4.4 10.15 4.2t.6-.2q.475 0 .775.375t.175.825L11 8h4l.825-3.275q.075-.325.325-.525t.6-.2q.475 0 .775.375t.175.825L17 8h2.725q.5 0 .8.387t.175.863q-.075.35-.35.55t-.625.2H16.5l-1 4h2.725q.5 0 .8.388t.175.862q-.075.35-.35.55t-.625.2H15l-.825 3.275q-.075.325-.325.525t-.6.2q-.475 0-.775-.375T12.3 18.8L13 16zm.5-2h4l1-4h-4z"/></symbol><use href="#ai:material-symbols:tag-rounded"></use>  </svg> </div> <div class="flex flex-row flex-nowrap items-center"> <div class="hidden mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                <a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F" aria-label="View all posts with the 嵌入式 tag" class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> 嵌入式 </a><div class="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                <a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%A1%AC%E4%BB%B6" aria-label="View all posts with the 嵌入式/硬件 tag" class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> 嵌入式/硬件 </a>  </div> </div> </div> <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div> </div> <!-- always show cover as long as it has one -->  <div data-pagefind-body class="prose dark:prose-invert prose-base !max-w-none custom-md mb-6 markdown-content onload-animation"> <!--<div class="prose dark:prose-invert max-w-none custom-md">--> <!--<div class="max-w-none custom-md">-->  <section><h1 id="gpu与npu">GPU与NPU<a class="anchor" href="#gpu与npu"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h1><blockquote>
+<p><strong>本文定位</strong>
+GPU 与 NPU 的架构差异、分工与应用：嵌入式 GPU、NPU 的硬件级加速、两者在手机 SoC 中的协同，以人脸识别流程为例。</p>
+</blockquote><blockquote>
+<p><strong>章节速览</strong>
+#GPU · #NPU · #GPU和NPU的区别以及应用 · #人脸识别</p>
+</blockquote><section><h2 id="gpu">GPU<a class="anchor" href="#gpu"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>我们之前聊了手机SoC，你问为什么核心数一样，价格却天差地别。其中一个关键变量，就是今天要聊的<strong>嵌入式GPU</strong>。你可以把它理解为“跑在嵌入式设备里的图形心脏”，它和我们电脑里的显卡是亲戚，但因为“住”在手机、手表里，所以活法完全不同。</p><section><h3 id="-什么是嵌入式gpu">🧠 什么是嵌入式GPU？<a class="anchor" href="#-什么是嵌入式gpu"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>简单来说，嵌入式GPU就是<strong>集成在嵌入式系统（如手机SoC）内部，专门负责图形渲染和图像处理的处理器</strong>。它和我们熟悉的电脑独立显卡有本质区别：</p><ul>
+<li><strong>形态不同</strong>：电脑显卡是独立的板卡，而嵌入式GPU通常是以<strong>IP核（知识产权核）<strong>的形式，和CPU、NPU等其他核心一起，</strong>“拼”成一个完整的系统级芯片（SoC）</strong>。你在手机参数里看到的“Adreno 740”或“Mali-G710”，指的就是这个核心。</li>
+<li><strong>使命不同</strong>：它的首要任务是在极低的功耗预算下，高效地完成图形显示和界面流畅度任务，而不是追求极致的画面帧率。</li>
+</ul><section><h4 id="️-嵌入式gpu的核心秘密不止于画图">⚙️ 嵌入式GPU的核心秘密：不止于“画图”<a class="anchor" href="#️-嵌入式gpu的核心秘密不止于画图"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>为了在方寸之间平衡性能和功耗，嵌入式GPU发展出了自己独特的技术路径。</p><section><h5 id="1-独特的渲染架构分块渲染"><strong>1. 独特的渲染架构：分块渲染</strong><a class="anchor" href="#1-独特的渲染架构分块渲染"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>这是它和桌面GPU最核心的区别。桌面GPU通常采用<strong>即时渲染模式（IMR）</strong>，直接渲染整个画面，简单粗暴但费带宽。而移动GPU普遍采用<strong>基于图块的渲染（TBR）</strong> 。</p><ul>
+<li><strong>怎么理解</strong>：你可以把画面想象成一块大蛋糕。IMR是直接对整块蛋糕下口，而TBR会先把蛋糕切成许多小块，一小块一小块地吃。</li>
+<li><strong>好处</strong>：这样能保证在渲染每一小块时，关键数据都放在芯片内部的高速缓存里，大大减少了对内存的读写，从而达到<strong>省电</strong>的目的。</li>
+</ul></section><section><h5 id="2-嵌入式gpu里的国家队"><strong>2. 嵌入式GPU里的“国家队”</strong><a class="anchor" href="#2-嵌入式gpu里的国家队"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>目前，你手里设备的图形能力，基本都出自下面这几家：</p><ul>
+<li><strong>Arm Mali</strong>：授权给众多芯片厂商（如三星、紫光展锐），应用最广，涵盖从入门到旗舰的各个档次。</li>
+<li><strong>Qualcomm Adreno</strong>：高通自家的王牌，性能强悍，是很多旗舰手机游戏体验的保障。</li>
+<li><strong>Apple (原Imagination Technologies)</strong>：苹果自研的GPU，性能一直处于顶尖水平，深度结合iOS系统。</li>
+<li><strong>芯原 (VeriSilicon)</strong>：国内重要的GPU IP提供商，其低功耗GPU IP广泛用于智能手表等可穿戴设备。</li>
+</ul></section><section><h5 id="3-嵌入式系统中的多面手"><strong>3. 嵌入式系统中的“多面手”</strong><a class="anchor" href="#3-嵌入式系统中的多面手"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>虽然叫GPU，但它在系统里干的可不只是打游戏这一件事：</p><ul>
+<li><strong>界面加速</strong>：让系统UI滑动更流畅，这是最基础也最重要的任务。</li>
+<li><strong>HMI（人机界面）渲染</strong>：在工业控制、医疗设备、汽车仪表盘上，负责绘制精美的控制界面。</li>
+<li><strong>计算机视觉</strong>：利用其强大的并行计算能力，加速人脸识别、物体检测等算法，例如索尼的学术研究就显示Adreno GPU可用于特征检测。</li>
+<li><strong>AI辅助</strong>：在专门的NPU出现之前，GPU也常被用来跑一些轻量级的AI算法。</li>
+</ul></section></section><section><h4 id="-未来趋势ai与超低功耗">✨ 未来趋势：AI与超低功耗<a class="anchor" href="#-未来趋势ai与超低功耗"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>随着AI和AR的发展，嵌入式GPU也在进化。一方面，它变得更专业，比如芯原最近推出的GCNano3DVG GPU IP，专门为智能手表、AR眼镜设计，支持3D/2.5D混合渲染，功耗极低。另一方面，它也和NPU等核心协同，在AI推理中扮演重要角色，比如处理经过NPU分析后的画面，进行更智能的渲染。</p></section></section></section><section><h2 id="npu">NPU<a class="anchor" href="#npu"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>NPU，全称是神经网络处理单元（Neural-network Processing Unit）。你可以把它理解为一种<strong>专门为AI计算而生的“超级加速器”</strong>。</p><p>如果说CPU是一个知识渊博的教授（什么都会，但算复杂的题稍慢），GPU是一个算术能力超强的本科生（并行计算能力强，但能耗高），那NPU就是一个<strong>专为AI数学题设计的“计算器”</strong>——只会算AI相关的题（如矩阵乘法），但算得<strong>极快、极省电</strong>。</p><section><h3 id="1-npu的核心秘密硬件级一条龙服务">1. NPU的核心秘密：硬件级“一条龙服务”<a class="anchor" href="#1-npu的核心秘密硬件级一条龙服务"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>它之所以快和省，关键在于其独特的硬件设计，专门针对AI计算进行了“定制化改造”。</p><ul>
+<li><strong>GPU的计算方式（类似“接力赛”）</strong>：在计算一个像 <code>a×b + c×d</code> 这样的AI公式时，GPU需要先把数据从缓存读到乘法器，算完存回去；再读到加法器，算完再存回去。这个过程涉及多次“取指令-搬运数据-计算-存回”的循环。虽然它并行能力强，但搬运数据的过程本身就很耗电和耗时。</li>
+<li><strong>NPU的计算方式（类似“流水线工厂”）</strong>：NPU在硬件层面，用一条固定的“管道”把乘法器和加法器直接连起来了。乘法器算完的结果，会像流水线上的半成品一样，<strong>直接流到加法器里继续算</strong>。这样一来，本来需要好几条指令和多次数据搬运的复杂计算，在NPU里可能只需要<strong>一条指令</strong>就能完成。它内部拥有海量的<strong>MAC（乘加运算）阵列</strong>，专门用来快速处理AI模型中无穷无尽的矩阵乘法。</li>
+</ul></section><section><h3 id="2-npucpugpu的角色分工">2. NPU、CPU、GPU的角色分工<a class="anchor" href="#2-npucpugpu的角色分工"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>在手机SoC（系统级芯片）里，它们的分工非常明确：</p><ul>
+<li><strong>CPU（中央处理器）</strong>：负责复杂的逻辑判断和调度，比如打开App、响应你的触摸。它像“项目经理”一样统筹全局。</li>
+<li><strong>GPU（图形处理器）</strong>：负责图形渲染，你打游戏看到的精美画面主要靠它。但在跑AI时，它像是一个“全能工兵”，啥都能干但不太专精。</li>
+<li><strong>NPU（神经网络处理器）</strong>：专门负责AI计算，比如处理摄像头数据、语音识别。它的<strong>能效比极高</strong>。在跑同样的AI任务（如图片识别ResNet-50）时，NPU的能效比（TOPS/W，即每瓦功耗的算力）能达到<strong>GPU的3-5倍</strong>。这也是为什么在手机上用AI抠图不会导致手机迅速发烫、掉电的主要原因。</li>
+</ul></section><section><h3 id="3-npu在手机里具体在做什么">3. NPU在手机里具体在做什么？<a class="anchor" href="#3-npu在手机里具体在做什么"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>你手机里那些看似神奇的AI功能，背后都是NPU在工作：</p><ul>
+<li><strong>拍照优化</strong>：当你按下快门的瞬间，NPU在极短时间内分析画面，识别出这是人、天空还是草地，然后分别进行优化，实现“实时虚化”或“魔法消除”路人。</li>
+<li><strong>本地语音识别</strong>：现在很多手机的语音助手支持离线唤醒和识别，因为NPU可以在不联网、低功耗的情况下，实时处理你的语音指令。</li>
+<li><strong>智能资源调度</strong>：系统根据你的使用习惯，通过NPU预测你接下来要打开什么App，提前预加载，让手机用久了也不卡。</li>
+</ul></section><section><h3 id="4-嵌入式领域的新动向">4. 嵌入式领域的新动向<a class="anchor" href="#4-嵌入式领域的新动向"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>在 STM32、ESP32-S3 这类 MCU 上，NPU 也开始“下放”到嵌入式领域：厂商正在把 NPU 集成到微控制器里，让边缘设备也能跑 AI。</p><ul>
+<li><strong>TI（德州仪器）</strong> 新推出的MCU，集成了<code>TinyEngine NPU</code>。相比不带NPU的型号，AI推理的<strong>延迟最高降低了90倍，能耗降低了超过120倍</strong>。这意味着，一个用纽扣电池供电的传感器，也能本地运行AI算法（如振动分析、异常检测），而不用把数据发到云端。</li>
+<li><strong>恩智浦（NXP）</strong> 的i.MX 95系列也集成了NPU，用于工业机器人、安防监控等场景。</li>
+</ul><p>总结来说，NPU是AI时代的“专用计算器”，它牺牲了通用性，换来了在AI任务上<strong>无与伦比的效率和速度</strong>。它让AI功能从云端“下沉”到你的手机、手表，甚至是下一秒要控制的电机里。</p><p>在手机SoC里，CPU、GPU、NPU、DSP（数字信号处理器）这些不同的计算单元通过分工协作，才构成了我们体验到的强大功能。</p></section></section><section><h2 id="gpu和npu的区别以及应用">GPU和NPU的区别以及应用<a class="anchor" href="#gpu和npu的区别以及应用"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><section><h3 id="gpu与npu的区别及应用详解">GPU与NPU的区别及应用详解<a class="anchor" href="#gpu与npu的区别及应用详解"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>在手机SoC、嵌入式系统乃至数据中心，GPU和NPU都是重要的计算单元。虽然它们都能处理并行计算，但<strong>设计目标、核心架构和应用场景</strong>有本质区别。下面从多个维度详细对比。</p><hr><section><h4 id="一核心定位差异">一、核心定位差异<a class="anchor" href="#一核心定位差异"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>维度</th><th>GPU（图形处理器）</th><th>NPU（神经网络处理器）</th></tr></thead><tbody><tr><td><strong>设计目标</strong></td><td>加速<strong>图形渲染</strong>（3D建模、像素填充）和通用并行计算（GPGPU）</td><td>加速<strong>神经网络推理</strong>（卷积、矩阵乘、激活函数）</td></tr><tr><td><strong>起源</strong></td><td>为图形学中的浮点运算和像素处理而生</td><td>为深度学习模型的低延迟、低功耗推理而生</td></tr><tr><td><strong>适用算法</strong></td><td>适合数据并行、计算密集但控制简单的任务</td><td>专门优化深度神经网络中的特定算子（如Conv、ReLU、Pooling）</td></tr></tbody></table><hr></section><section><h4 id="二架构与工作方式对比">二、架构与工作方式对比<a class="anchor" href="#二架构与工作方式对比"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="1-计算核心">1. <strong>计算核心</strong><a class="anchor" href="#1-计算核心"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>GPU</strong>：拥有成百上千个<strong>流处理器（Stream Processor）</strong>，这些核心频率较高，支持复杂的指令集（包括整数、浮点、逻辑运算），可以执行通用代码。GPU的核心是“多核多线程”，通过大量线程掩盖访存延迟。</li>
+<li><strong>NPU</strong>：内部包含大量的<strong>乘加阵列（MAC阵列）</strong>，每个单元专门执行 <code>a×b + c</code> 操作。通常采用<strong>脉动阵列（Systolic Array）</strong> 或类似结构，数据在阵列中像流水一样流动，最大化计算密度。NPU的核心是“专用硬件加速器”，指令集相对精简，主要针对矩阵运算。</li>
+</ul></section><section><h5 id="2-数据流与存储">2. <strong>数据流与存储</strong><a class="anchor" href="#2-数据流与存储"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>GPU</strong>：依赖片外显存（或系统内存），有复杂的缓存层次结构（L1/L2缓存、寄存器文件）。执行核函数（Kernel）时，需要频繁从内存读取指令和数据，控制逻辑复杂。</li>
+<li><strong>NPU</strong>：通常内置较大的<strong>片上缓冲区（SRAM）</strong>，将模型权重和中间特征图尽量留在片上，减少对外部内存的访问。数据在MAC阵列中直接传递，无需反复写回寄存器。</li>
+</ul></section><section><h5 id="3-灵活性">3. <strong>灵活性</strong><a class="anchor" href="#3-灵活性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>GPU</strong>：可编程性极强，支持CUDA、OpenCL、Vulkan等通用计算API，能运行各种非图形任务（如物理模拟、密码破解）。但这也意味着控制逻辑开销大，能效比相对较低。</li>
+<li><strong>NPU</strong>：通常只支持特定的算子集合（如卷积、全连接、池化、激活函数）。虽然近年来NPU也开始支持可编程（如通过指令扩展），但通用性远不如GPU。不过，对于已定义的神经网络，NPU执行效率极高。</li>
+</ul></section><section><h5 id="4-能效比topsw">4. <strong>能效比（TOPS/W）</strong><a class="anchor" href="#4-能效比topsw"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>GPU</strong>：能效比一般在几十到几百 GFLOPS/W 量级（视工艺和架构）。高性能GPU功耗可达数百瓦。</li>
+<li><strong>NPU</strong>：能效比极高，通常可达<strong>几 TOPS/W 到几十 TOPS/W</strong>（1 TOPS = 10¹² 次运算/秒）。例如手机NPU在执行推理时功耗仅几十毫瓦到几百毫瓦。</li>
+</ul><hr></section></section><section><h4 id="三应用场景对比">三、应用场景对比<a class="anchor" href="#三应用场景对比"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="gpu的应用"><strong>GPU的应用</strong><a class="anchor" href="#gpu的应用"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ol>
+<li><strong>图形渲染</strong>：手机游戏、UI界面、AR/VR、三维建模。</li>
+<li><strong>通用并行计算（GPGPU）</strong>：
+<ul>
+<li>科学计算（如分子动力学模拟）</li>
+<li>视频编解码加速（部分GPU集成固定功能单元）</li>
+<li>机器学习训练（大规模并行训练，如NVIDIA的CUDA生态）</li>
+</ul>
+</li>
+<li><strong>图像处理</strong>：滤镜、图像增强、风格迁移（传统算法和轻量AI均可）。</li>
+</ol></section><section><h5 id="npu的应用"><strong>NPU的应用</strong><a class="anchor" href="#npu的应用"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ol>
+<li><strong>终端侧AI推理</strong>：
+<ul>
+<li><strong>拍照增强</strong>：场景识别、夜景降噪、人像虚化、超级分辨率。</li>
+<li><strong>语音处理</strong>：语音唤醒、语音识别、实时翻译。</li>
+<li><strong>视频分析</strong>：人脸检测、物体追踪、视频标签。</li>
+</ul>
+</li>
+<li><strong>边缘计算</strong>：
+<ul>
+<li>工业缺陷检测（在摄像头端实时检测）</li>
+<li>智能安防（人脸门禁、行为分析）</li>
+<li>自动驾驶（感知融合、目标检测，常与GPU/DSP协同）</li>
+</ul>
+</li>
+<li><strong>AIoT</strong>：
+<ul>
+<li>智能音箱的本地唤醒词检测</li>
+<li>可穿戴设备（手表、手环）的健康数据分析（如心率异常检测）</li>
+</ul>
+</li>
+</ol><hr></section></section><section><h4 id="四在手机soc中的协同工作">四、在手机SoC中的协同工作<a class="anchor" href="#四在手机soc中的协同工作"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>现代手机SoC（如骁龙8 Gen系列、天玑9000系列）中，GPU和NPU通常<strong>各司其职，并协同完成任务</strong>。例如：</p><ul>
+<li><strong>拍照场景</strong>：
+<ol>
+<li><strong>ISP（图像信号处理器）</strong> 初步处理原始RAW数据。</li>
+<li><strong>NPU</strong> 运行AI模型进行场景识别、脸部对焦、超级夜景合成。</li>
+<li><strong>GPU</strong> 负责实时取景画面的渲染、滤镜预览，以及最终照片的显示。</li>
+</ol>
+</li>
+<li><strong>游戏场景</strong>：
+<ol>
+<li><strong>GPU</strong> 主力渲染3D画面。</li>
+<li><strong>NPU</strong> 可用于实现“AI超分”（如将低分辨率渲染的画面用AI放大）或“AI插帧”，提升画质和流畅度，同时降低GPU负载。</li>
+</ol>
+</li>
+<li><strong>语音助手</strong>：
+<ol>
+<li><strong>NPU</strong> 始终在低功耗状态下监听唤醒词。</li>
+<li>唤醒后，<strong>CPU</strong> 处理自然语言理解，<strong>GPU</strong> 可能负责动画显示。</li>
+</ol>
+</li>
+</ul><hr></section><section><h4 id="五嵌入式领域的特殊性">五、嵌入式领域的特殊性<a class="anchor" href="#五嵌入式领域的特殊性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>在嵌入式领域，GPU和NPU的选择更加多样：</p><ul>
+<li><strong>低端MCU</strong>：可能没有GPU，也没有NPU，全部依赖CPU。</li>
+<li><strong>中高端MCU/嵌入式MPU</strong>：
+<ul>
+<li>部分集成<strong>简单2D GPU</strong>（如ST的STM32系列中的Chrom-ART Accelerator），用于加速GUI。</li>
+<li>越来越多芯片集成<strong>轻量级NPU</strong>（如耐能Kneron、Himax的WE-I Plus），用于传感器端AI。</li>
+</ul>
+</li>
+<li><strong>边缘计算模块</strong>（如NVIDIA Jetson、Google Coral）：
+<ul>
+<li>集成了性能强大的GPU（如Maxwell架构）和专用NPU（如TPU）。</li>
+<li>开发者可以灵活分配任务：GPU适合通用并行处理，NPU专攻神经网络推理。</li>
+</ul>
+</li>
+</ul><hr></section><section><h4 id="六总结">六、总结<a class="anchor" href="#六总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>对比项</th><th>GPU</th><th>NPU</th></tr></thead><tbody><tr><td><strong>擅长领域</strong></td><td>图形渲染、通用并行计算</td><td>神经网络推理、矩阵运算</td></tr><tr><td><strong>灵活性</strong></td><td>高（可编程性强）</td><td>低（针对特定算子优化）</td></tr><tr><td><strong>能效比（AI任务）</strong></td><td>中低</td><td>极高</td></tr><tr><td><strong>典型功耗</strong></td><td>几瓦到几百瓦（手机中几瓦）</td><td>几十毫瓦到几瓦</td></tr><tr><td><strong>编程方式</strong></td><td>CUDA/OpenCL/图形API</td><td>专用SDK（如Qualcomm SNPE、MediaTek NeuroPilot）</td></tr><tr><td><strong>应用</strong></td><td>游戏、UI、科学计算、AI训练</td><td>拍照、语音、传感器AI、推理加速</td></tr></tbody></table><p><strong>简单来说</strong>：GPU是“多面手”，既能画画又能算数；NPU是“专才”，只会算AI但算得又快又省电。在手机和嵌入式系统中，两者互补，共同实现丰富的智能体验。未来，随着AI渗透到更多领域，NPU的重要性将不断提升，而GPU仍将是图形和通用并行计算的基石。</p></section></section></section><section><h2 id="人脸识别">人脸识别<a class="anchor" href="#人脸识别"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><div class="expressive-code"><link rel="stylesheet" href="/HexoNotes/_astro/ec.4fsv9.css"><script type="module" src="/HexoNotes/_astro/ec.g1fg5.js"></script><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext" class="wrap" style="--ecMaxLine:70ch"><code><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">1</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">GPU–> matrix（矩阵足够大，可以进行人脸识别，唯一的） –> NPU 人脸图片 –> 旋转 –> 二值化 –> 特征值（推理过程）</span></div></div><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">2</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">人脸图片 –> 旋转 –> 二值化（不一致） –> 概率论解决，算相似度（训练）</span></div></div></code><button class="copy-btn" aria-label="Copy code"><div class="copy-btn-icon"><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon copy-icon"><path d="M368.37-237.37q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-474.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h378.26q34.48 0 58.74 24.26 24.26 24.26 24.26 58.74v474.26q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H368.37Zm0-83h378.26v-474.26H368.37v474.26Zm-155 238q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-515.76q0-17.45 11.96-29.48 11.97-12.02 29.33-12.02t29.54 12.02q12.17 12.03 12.17 29.48v515.76h419.76q17.45 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.03 12.17-29.48 12.17H213.37Zm155-238v-474.26 474.26Z"></path></svg><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon success-icon"><path d="m389-377.13 294.7-294.7q12.58-12.67 29.52-12.67 16.93 0 29.61 12.67 12.67 12.68 12.67 29.53 0 16.86-12.28 29.14L419.07-288.41q-12.59 12.67-29.52 12.67-16.94 0-29.62-12.67L217.41-430.93q-12.67-12.68-12.79-29.45-.12-16.77 12.55-29.45 12.68-12.67 29.62-12.67 16.93 0 29.28 12.67L389-377.13Z"></path></svg></div></button></pre></figure></div><p>在人脸识别系统中，图像处理流程通常包括预处理、特征提取、训练和推理等环节。典型流程涉及 GPU 与 NPU 的分工、图像旋转与二值化、特征提取，以及训练阶段的概率模型。下面我们详细拆解这些概念及其关系。</p><hr><section><h3 id="1-人脸识别的基本流程">1. 人脸识别的基本流程<a class="anchor" href="#1-人脸识别的基本流程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>人脸识别系统一般分为两大阶段：<strong>训练（学习）</strong> 和 <strong>推理（识别）</strong>。</p><section><h4 id="11-预处理">1.1 预处理<a class="anchor" href="#11-预处理"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>无论训练还是推理，原始人脸图像都需要经过预处理，以提高后续处理的效果。</p><ul>
+<li><strong>旋转</strong>：校正人脸姿态，使眼睛、嘴巴等关键点对齐到标准位置（如通过人脸关键点检测进行仿射变换）。</li>
+<li><strong>二值化</strong>：将灰度图像转换为黑白图像，简化数据。但在深度学习时代，直接使用原始像素或特征图更常见，二值化多用于传统方法或某些特殊场景（如边缘计算、特征二值编码）。</li>
+</ul><section><h5 id="12-特征提取">1.2 特征提取<a class="anchor" href="#12-特征提取"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>从预处理后的图像中提取能够代表人脸身份的特征向量（特征值）。传统方法（如LBP、HOG）手工设计特征，而现代方法（深度学习）自动学习特征。</p><ul>
+<li><strong>推理过程</strong>：输入一张人脸，经过训练好的模型（如卷积神经网络），输出一个固定长度的特征向量（通常称为“嵌入向量”）。</li>
+<li><strong>特征唯一性</strong>：理想情况下，不同人的特征向量差异大（距离远），同一人的特征向量差异小（距离近）。</li>
+</ul></section><section><h5 id="13-匹配分类">1.3 匹配/分类<a class="anchor" href="#13-匹配分类"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>推理阶段</strong>：将提取的特征与数据库中已知人脸的模板进行比对，计算相似度（如欧氏距离、余弦相似度），然后判定身份。</li>
+<li><strong>训练阶段</strong>：通过大量标注的人脸数据，让模型学会将相同人的特征拉近，不同人的特征推远，这通常需要概率论和统计方法。</li>
+</ul><hr></section></section><section><h4 id="2-你提到的流程解析">2. 你提到的流程解析<a class="anchor" href="#2-你提到的流程解析"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="21-gpu--matrix矩阵足够大可以进行人脸识别唯一的--npu">2.1 “GPU –> matrix（矩阵足够大，可以进行人脸识别，唯一的） –> NPU”<a class="anchor" href="#21-gpu--matrix矩阵足够大可以进行人脸识别唯一的--npu"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>GPU</strong>：擅长并行计算大矩阵，适合处理海量图像数据。在训练阶段，GPU 用于加速模型的反向传播，计算梯度，更新网络权重。在推理阶段，GPU 也可以用于服务器端的高吞吐量识别。</li>
+<li><strong>matrix</strong>：人脸图像在计算机中表示为像素矩阵（如 128×128×3 的 RGB 矩阵）。深度神经网络内部也充满了矩阵运算（卷积、全连接等），这些矩阵足够大，能够编码出人脸的唯一特征。</li>
+<li><strong>NPU</strong>：专门为神经网络推理设计的低功耗加速器。经过 GPU 训练好的模型，可以部署到手机、嵌入式设备中，由 NPU 高效执行前向推理，输出特征向量。</li>
+</ul><p>所以这句话可以理解为：<strong>GPU负责训练大规模的人脸识别模型（处理大矩阵），生成具有唯一性的特征提取器；而NPU则在终端设备上运行该模型，实现实时识别。</strong></p></section><section><h5 id="22-推理过程人脸图片--旋转--二值化--特征值">2.2 推理过程：人脸图片 –> 旋转 –> 二值化 –> 特征值<a class="anchor" href="#22-推理过程人脸图片--旋转--二值化--特征值"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>这是一个简化的推理流程：</p><ul>
+<li><strong>旋转</strong>：对齐人脸（人脸检测+关键点校正）。</li>
+<li><strong>二值化</strong>：可能是指将特征值二值化（如哈希编码），用于快速比对，或者指对图像进行二值化作为传统特征提取的输入。</li>
+<li><strong>特征值</strong>：最终输出一个数值向量，代表该人脸的身份特征。</li>
+</ul><p>在实际的深度学习推理中，二值化通常不是必需步骤，而是直接用模型输出浮点向量。</p></section><section><h5 id="23-训练过程人脸图片--旋转--二值化不一致--概率论解决算相似度">2.3 训练过程：人脸图片 –> 旋转 –> 二值化（不一致） –> 概率论解决，算相似度<a class="anchor" href="#23-训练过程人脸图片--旋转--二值化不一致--概率论解决算相似度"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>这里描述了训练时如何处理数据的多样性：</p><ul>
+<li><strong>旋转</strong>：训练时会使用各种旋转角度的人脸图像进行数据增强，使模型对姿态鲁棒。</li>
+<li><strong>二值化（不一致）</strong>：可能指不同样本的二值化结果存在差异，或者是指模型输出的特征向量在训练初期并不稳定。</li>
+<li><strong>概率论解决，算相似度</strong>：训练过程中，通过概率统计方法（如 Softmax 损失、Triplet Loss、ArcFace 等）来优化特征空间。目标是让同类样本的特征向量相似度高（距离近），异类样本相似度低（距离远）。这本质上是在学习一个特征分布，使得特征具有判别性。</li>
+</ul><hr></section></section><section><h4 id="3-gpu-与-npu-在其中的具体分工">3. GPU 与 NPU 在其中的具体分工<a class="anchor" href="#3-gpu-与-npu-在其中的具体分工"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>环节</th><th>GPU</th><th>NPU</th></tr></thead><tbody><tr><td><strong>训练</strong></td><td>主力：并行计算海量矩阵，加速模型收敛。处理成千上万张人脸，调整网络参数。</td><td>一般不用于训练（性能不足以处理大规模数据和复杂梯度计算）。</td></tr><tr><td><strong>推理</strong></td><td>可用于服务器端，批量处理请求，高吞吐量。</td><td>终端（手机、摄像头）专用，低功耗、低延迟，单次推理效率极高。</td></tr><tr><td><strong>数据处理</strong></td><td>图像预处理（旋转、缩放）也可用 GPU 加速，但通常 CPU 已足够。</td><td>NPU 可直接接收预处理后的图像或特征图，执行神经网络前向计算。</td></tr><tr><td><strong>特征比对</strong></td><td>服务器端数据库比对可借助 GPU 加速向量检索（如 FAISS）。</td><td>终端 NPU 可计算特征向量的相似度（距离），但通常由 CPU 完成最后的比对。</td></tr></tbody></table><hr></section><section><h4 id="4-举例从图像到唯一特征的旅程">4. 举例：从图像到唯一特征的旅程<a class="anchor" href="#4-举例从图像到唯一特征的旅程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>假设我们要训练一个人脸识别模型：</p><ol>
+<li><strong>数据准备</strong>：收集大量人脸图片，标注身份。</li>
+<li><strong>预处理</strong>：对每张图片进行人脸检测、旋转校正、归一化。</li>
+<li><strong>训练</strong>：使用 GPU，将图像矩阵输入卷积神经网络，经过多层卷积、池化，最后得到特征向量。通过损失函数（如 ArcFace）拉近同类、推开异类。这个过程涉及大量矩阵乘法和梯度计算，GPU 的并行能力至关重要。</li>
+<li><strong>模型导出</strong>：训练好的模型（权重）转换为适合 NPU 的格式（如 TFLite、ONNX）。</li>
+<li><strong>部署推理</strong>：在手机 NPU 上，输入一张实时拍摄的人脸，经过相同的预处理，运行模型得到 512 维特征向量。然后与手机本地存储的机主特征进行相似度计算（如余弦距离），若距离小于阈值，则解锁手机。</li>
+</ol><hr></section><section><h4 id="5-总结">5. 总结<a class="anchor" href="#5-总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>GPU</strong> 是大规模并行计算的利器，适合训练阶段处理海量数据和大矩阵，也用于服务器端推理。</li>
+<li><strong>NPU</strong> 专为低功耗推理设计，适合终端设备快速执行神经网络，输出特征值。</li>
+<li>人脸识别流程中，<strong>旋转、二值化</strong>等预处理步骤保证输入数据的规范性；<strong>特征值</strong>提取将图像压缩为唯一性向量；<strong>概率论与相似度计算</strong>（如 Softmax、Triplet Loss）在训练时优化特征空间，在推理时进行身份判定。</li>
+</ul><p>这种软硬件协同的分工，使得人脸识别既能达到高精度，又能实现在手机、门禁等嵌入式设备上的实时运行。</p></section></section></section></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
+`?"":e).join(`
+`);navigator.clipboard.writeText(i);const o=t.getAttribute("data-timeout-id");o&&clearTimeout(parseInt(o)),t.classList.add("success");const n=setTimeout(()=>{t.classList.remove("success")},1e3);t.setAttribute("data-timeout-id",n.toString())}});</script> <div class="relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 mb-6 rounded-xl license-container onload-animation"> <div class="transition font-bold text-black/75 dark:text-white/75"> GPU与NPU </div> <a href="https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/gpu与npu/" class="link text-[var(--primary)]"> https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/gpu与npu/ </a> <div class="flex gap-6 mt-2"> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">作者</div> <div class="transition text-black/75 dark:text-white/75 line-clamp-2">520luxun</div> </div> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">发布于</div> <div class="transition text-black/75 dark:text-white/75 line-clamp-2">2026-11-18</div> </div> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">许可协议</div> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="link text-[var(--primary)] line-clamp-2">CC BY-NC-SA 4.0</a> </div> </div> <svg width="0.97em" height="1em" class="transition text-[15rem] absolute pointer-events-none right-6 top-1/2 -translate-y-1/2 text-black/5 dark:text-white/5" data-icon="fa6-brands:creative-commons">   <symbol id="ai:fa6-brands:creative-commons" viewBox="0 0 496 512"><path fill="currentColor" d="m245.83 214.87l-33.22 17.28c-9.43-19.58-25.24-19.93-27.46-19.93c-22.13 0-33.22 14.61-33.22 43.84c0 23.57 9.21 43.84 33.22 43.84c14.47 0 24.65-7.09 30.57-21.26l30.55 15.5c-6.17 11.51-25.69 38.98-65.1 38.98c-22.6 0-73.96-10.32-73.96-77.05c0-58.69 43-77.06 72.63-77.06c30.72-.01 52.7 11.95 65.99 35.86m143.05 0l-32.78 17.28c-9.5-19.77-25.72-19.93-27.9-19.93c-22.14 0-33.22 14.61-33.22 43.84c0 23.55 9.23 43.84 33.22 43.84c14.45 0 24.65-7.09 30.54-21.26l31 15.5c-2.1 3.75-21.39 38.98-65.09 38.98c-22.69 0-73.96-9.87-73.96-77.05c0-58.67 42.97-77.06 72.63-77.06c30.71-.01 52.58 11.95 65.56 35.86M247.56 8.05C104.74 8.05 0 123.11 0 256.05c0 138.49 113.6 248 247.56 248c129.93 0 248.44-100.87 248.44-248c0-137.87-106.62-248-248.44-248m.87 450.81c-112.54 0-203.7-93.04-203.7-202.81c0-105.42 85.43-203.27 203.72-203.27c112.53 0 202.82 89.46 202.82 203.26c-.01 121.69-99.68 202.82-202.84 202.82"/></symbol><use href="#ai:fa6-brands:creative-commons"></use>  </svg> </div> </div> </div> <div class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"> <a href="/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/嵌入式系统概论/" class="w-full font-bold overflow-hidden active:scale-95"> <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4"> <svg width="1em" height="1em" class="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-left-rounded">   <symbol id="ai:material-symbols:chevron-left-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z"/></symbol><use href="#ai:material-symbols:chevron-left-rounded"></use>  </svg> <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"> 嵌入式系统概论 </div> </div> </a> <a href="/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/c语言底层知识体系/00-总览/" class="w-full font-bold overflow-hidden active:scale-95"> <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-end gap-4"> <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"> 00-总览 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg> </div> </a> </div>  <div class="footer col-span-2 onload-animation hidden lg:block"> <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">--><div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div> <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">--> <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"> <div class="transition text-50 text-sm text-center">
+&copy; <span id="copyright-year">2026</span> 520luxun. All Rights Reserved. /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/rss.xml">RSS</a> /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/sitemap-index.xml">Sitemap</a><br>
+Powered by
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a> </div> </div> </div> </div> </main> <div class="footer col-span-2 onload-animation block lg:hidden"> <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">--><div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div> <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">--> <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"> <div class="transition text-50 text-sm text-center">
+&copy; <span id="copyright-year">2026</span> 520luxun. All Rights Reserved. /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/rss.xml">RSS</a> /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/sitemap-index.xml">Sitemap</a><br>
+Powered by
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a> </div> </div> </div> </div> <!-- There can't be a filter on parent element, or it will break `fixed` --><div class="back-to-top-wrapper hidden lg:block" data-astro-cid-eymb5ayk> <div id="back-to-top-btn" class="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition" onclick="backToTop()" data-astro-cid-eymb5ayk> <button aria-label="Back to Top" class="btn-card h-[3.75rem] w-[3.75rem]" data-astro-cid-eymb5ayk> <svg width="1em" height="1em" class="mx-auto" data-astro-cid-eymb5ayk="true" data-icon="material-symbols:keyboard-arrow-up-rounded">   <symbol id="ai:material-symbols:keyboard-arrow-up-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m12 10.8l-3.9 3.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.6-4.6q.3-.3.7-.3t.7.3l4.6 4.6q.275.275.275.7t-.275.7t-.7.275t-.7-.275z"/></symbol><use href="#ai:material-symbols:keyboard-arrow-up-rounded"></use>  </svg> </button> </div> </div>  <script>
+function backToTop() {
+    window.scroll({ top: 0, behavior: 'smooth' });
+}
+</script> </div> </div>  <div class="absolute w-full z-0 hidden 2xl:block"> <div class="relative max-w-[var(--page-width)] mx-auto"> <!-- TOC component --> <div id="toc-wrapper" class="hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center toc-hide"> <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar"> <div id="toc" class="w-full h-full transition-swup-fade "> <div class="h-8 w-full"></div> <table-of-contents class="group"><a href="#gpu与npu" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold bg-[var(--toc-badge-bg)] text-[var(--btn-content)]">1</div><div class="transition text-sm text-50">GPU与NPU</div></a><a href="#gpu" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">GPU</div></a><a href="#npu" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">NPU</div></a><a href="#gpu和npu的区别以及应用" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">GPU和NPU的区别以及应用</div></a><a href="#人脸识别" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">人脸识别</div></a><div id="active-indicator" style="opacity: 0" class="-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"></div></table-of-contents><script type="module">class l extends HTMLElement{tocEl=null;visibleClass="visible";observer;anchorNavTarget=null;headingIdxMap=new Map;headings=[];sections=[];tocEntries=[];active=[];activeIndicator=null;constructor(){super(),this.observer=new IntersectionObserver(this.markVisibleSection,{threshold:0})}markVisibleSection=t=>{t.forEach(e=>{const i=e.target.children[0]?.getAttribute("id"),s=i?this.headingIdxMap.get(i):void 0;s!=null&&(this.active[s]=e.isIntersecting),e.isIntersecting&&this.anchorNavTarget==e.target.firstChild&&(this.anchorNavTarget=null)}),this.active.includes(!0)||this.fallback(),this.update()};toggleActiveHeading=()=>{let t=this.active.length-1,e=this.active.length-1,i=-1;for(;t>=0&&!this.active[t];)this.tocEntries[t].classList.remove(this.visibleClass),t--;for(;t>=0&&this.active[t];)this.tocEntries[t].classList.add(this.visibleClass),e=Math.min(e,t),i=Math.max(i,t),t--;for(;t>=0;)this.tocEntries[t].classList.remove(this.visibleClass),t--;if(e>i)this.activeIndicator?.setAttribute("style","opacity: 0");else{let s=this.tocEl?.getBoundingClientRect().top||0,n=this.tocEl?.scrollTop||0,o=this.tocEntries[e].getBoundingClientRect().top-s+n,c=this.tocEntries[i].getBoundingClientRect().bottom-s+n;this.activeIndicator?.setAttribute("style",`top: ${o}px; height: ${c-o}px`)}};scrollToActiveHeading=()=>{if(this.anchorNavTarget||!this.tocEl)return;const t=document.querySelectorAll(`#toc .${this.visibleClass}`);if(!t.length)return;const e=t[0],i=t[t.length-1],s=this.tocEl.clientHeight;let n;i.getBoundingClientRect().bottom-e.getBoundingClientRect().top<.9*s?n=e.offsetTop-32:n=i.offsetTop-s*.8,this.tocEl.scrollTo({top:n,left:0,behavior:"smooth"})};update=()=>{requestAnimationFrame(()=>{this.toggleActiveHeading(),this.scrollToActiveHeading()})};fallback=()=>{if(this.sections.length)for(let t=0;t<this.sections.length;t++){let e=this.sections[t].getBoundingClientRect().top,i=this.sections[t].getBoundingClientRect().bottom;if(this.isInRange(e,0,window.innerHeight)||this.isInRange(i,0,window.innerHeight)||e<0&&i>window.innerHeight)this.markActiveHeading(t);else if(e>window.innerHeight)break}};markActiveHeading=t=>{this.active[t]=!0};handleAnchorClick=t=>{const e=t.composedPath().find(i=>i instanceof HTMLAnchorElement);if(e){const i=decodeURIComponent(e.hash?.substring(1)),s=this.headingIdxMap.get(i);s!==void 0?this.anchorNavTarget=this.headings[s]:this.anchorNavTarget=null}};isInRange(t,e,i){return e<t&&t<i}connectedCallback(){const t=document.querySelector(".prose");t?t.addEventListener("animationend",()=>{this.init()},{once:!0}):console.debug("Animation element not found")}init(){if(this.tocEl=document.getElementById("toc-inner-wrapper"),!!this.tocEl&&(this.tocEl.addEventListener("click",this.handleAnchorClick,{capture:!0}),this.activeIndicator=document.getElementById("active-indicator"),this.tocEntries=Array.from(document.querySelectorAll("#toc a[href^='#']")),this.tocEntries.length!==0)){this.sections=new Array(this.tocEntries.length),this.headings=new Array(this.tocEntries.length);for(let t=0;t<this.tocEntries.length;t++){const e=decodeURIComponent(this.tocEntries[t].hash?.substring(1)),i=document.getElementById(e),s=i?.parentElement;i instanceof HTMLElement&&s instanceof HTMLElement&&(this.headings[t]=i,this.sections[t]=s,this.headingIdxMap.set(e,t))}this.active=new Array(this.tocEntries.length).fill(!1),this.sections.forEach(t=>this.observer.observe(t)),this.fallback(),this.update()}}disconnectedCallback(){this.sections.forEach(t=>this.observer.unobserve(t)),this.observer.disconnect(),this.tocEl?.removeEventListener("click",this.handleAnchorClick)}}customElements.get("table-of-contents")||customElements.define("table-of-contents",l);</script> <div class="h-8 w-full"></div> </div> </div> </div> <!-- #toc needs to exist for Swup to work normally -->  </div> </div>  <!-- 进站开场动画（每会话首次） --> <script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><astro-island uid="2t2uSh" component-url="/HexoNotes/_astro/IntroOverlay.C1bOQPmc.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{&quot;data-astro-cid-sckkx6r4&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;IntroOverlay&quot;,&quot;value&quot;:true}" await-children><!--[--><!--[!--><!--]--><!--]--><!--astro:end--></astro-island> <!-- 全站动态特效（飘落/点击） --> <astro-island uid="ZoiS2H" component-url="/HexoNotes/_astro/EffectsLayer.SvCN9z85.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{&quot;data-astro-cid-sckkx6r4&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;EffectsLayer&quot;,&quot;value&quot;:true}" await-children><!--[--><canvas class="falling-canvas svelte-100ohr1" aria-hidden="true"></canvas> <div class="click-fx-layer" aria-hidden="true"></div><!--]--><!--astro:end--></astro-island> <!-- increase the page height during page transition to prevent the scrolling animation from jumping --> <div id="page-height-extend" class="hidden h-[300vh]" data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;"></div>  <script type="module" src="/HexoNotes/_astro/Layout.astro_astro_type_script_index_0_lang.BGJ2_THW.js"></script> <script type="module" src="/HexoNotes/_astro/Layout.astro_astro_type_script_index_1_lang.x7Ak-T7n.js"></script></body></html>

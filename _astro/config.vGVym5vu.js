@@ -1,0 +1,1 @@
+var o=(t=>(t[t.Home=0]="Home",t[t.Archive=1]="Archive",t[t.About=2]="About",t))(o||{});const e={title:"晚霞小站",subtitle:"记录生活与技术",lang:"zh_CN"};o.Home,o.Archive,o.About;const u={theme:"github-dark"};export{u as e,e as s};

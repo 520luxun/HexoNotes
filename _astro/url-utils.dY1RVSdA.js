@@ -1,0 +1,1 @@
+import"./config.vGVym5vu.js";import"./zh_TW.QGhnORIq.js";function u(o,t){const e=o.replace(/^\/|\/$/g,"").toLowerCase(),n=t.replace(/^\/|\/$/g,"").toLowerCase();return e===n}function r(...o){return o.join("/").replace(/\/+/g,"/")}function c(o){return a(`/posts/${o}/`)}function a(o){return r("","/HexoNotes/",o)}export{c as g,u as p,a as u};

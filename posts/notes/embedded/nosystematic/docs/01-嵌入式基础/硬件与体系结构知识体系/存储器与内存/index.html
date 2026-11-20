@@ -1,0 +1,834 @@
+<!DOCTYPE html><html lang="zh-CN" class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]" data-overlayscrollbars-initialize data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;"> <head><title>存储器与内存 - 晚霞小站</title><meta charset="UTF-8"><meta name="description" content="存储器与内存 [!abstract] 本文定位 存储体系全景：ROM/RAM/寄存器分类与深入原理、代码在存储器中的运行全过程、内存层次与性能指标、机械硬盘结构"><meta name="author" content="520luxun"><meta property="og:site_name" content="晚霞小站"><meta property="og:url" content="https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%9F%BA%E7%A1%80/%E7%A1%AC%E4%BB%B6%E4%B8%8E%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/%E5%AD%98%E5%82%A8%E5%99%A8%E4%B8%8E%E5%86%85%E5%AD%98/"><meta property="og:title" content="存储器与内存 - 晚霞小站"><meta property="og:description" content="存储器与内存 [!abstract] 本文定位 存储体系全景：ROM/RAM/寄存器分类与深入原理、代码在存储器中的运行全过程、内存层次与性能指标、机械硬盘结构"><meta property="og:type" content="article"><meta name="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%9F%BA%E7%A1%80/%E7%A1%AC%E4%BB%B6%E4%B8%8E%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/%E5%AD%98%E5%82%A8%E5%99%A8%E4%B8%8E%E5%86%85%E5%AD%98/"><meta name="twitter:title" content="存储器与内存 - 晚霞小站"><meta name="twitter:description" content="存储器与内存 [!abstract] 本文定位 存储体系全景：ROM/RAM/寄存器分类与深入原理、代码在存储器中的运行全过程、内存层次与性能指标、机械硬盘结构"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.10"><link rel="icon" href="/HexoNotes/favicon/favicon-light-32.png" sizes="32x32" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-128.png" sizes="128x128" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-180.png" sizes="180x180" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-light-192.png" sizes="192x192" media="(prefers-color-scheme: light)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-32.png" sizes="32x32" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-128.png" sizes="128x128" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-180.png" sizes="180x180" media="(prefers-color-scheme: dark)"><link rel="icon" href="/HexoNotes/favicon/favicon-dark-192.png" sizes="192x192" media="(prefers-color-scheme: dark)"><!-- Set the theme before the page is rendered to avoid a flash --><script>(function(){const DEFAULT_THEME = "auto";
+const LIGHT_MODE = "light";
+const DARK_MODE = "dark";
+const AUTO_MODE = "auto";
+const BANNER_HEIGHT_EXTEND = 30;
+const PAGE_WIDTH = 75;
+const configHue = 250;
+const DEFAULT_STYLE = "bocchi";
+const styleDefaultHue = {"bocchi":250,"eva":285,"retro90":35,"sakura":330,"violet":215,"shinkai":205,"demon":230};
+
+			// Load the site style from local storage (anime style switcher)
+			let siteStyle = localStorage.getItem('site-style') || DEFAULT_STYLE;
+			if (!styleDefaultHue.hasOwnProperty(siteStyle)) {
+				siteStyle = DEFAULT_STYLE;
+			}
+			document.documentElement.dataset.style = siteStyle;
+
+			// Load the theme from local storage
+			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+			switch (theme) {
+				case LIGHT_MODE:
+					document.documentElement.classList.remove('dark');
+					break
+				case DARK_MODE:
+					document.documentElement.classList.add('dark');
+					break
+				case AUTO_MODE:
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+			}
+
+			// Load the hue from local storage; fall back to the current style's default
+			const hue = localStorage.getItem('hue') || styleDefaultHue[siteStyle] || configHue;
+			document.documentElement.style.setProperty('--hue', hue);
+
+			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+			offset = offset - offset % 4;
+			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		})();</script><!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"存储器与内存","description":"存储器与内存 [!abstract] 本文定位 存储体系全景：ROM/RAM/寄存器分类与深入原理、代码在存储器中的运行全过程、内存层次与性能指标、机械硬盘结构","keywords":["嵌入式","嵌入式/硬件"],"author":{"@type":"Person","name":"520luxun","url":"https://520luxun.github.io/HexoNotes/"},"datePublished":"2026-11-18","inLanguage":"zh-CN"}</script><link rel="alternate" type="application/rss+xml" title="520luxun" href="https://520luxun.github.io/HexoNotes/rss.xml"><link rel="stylesheet" href="/HexoNotes/_astro/Layout.y4KPJ9hc.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/Layout.DSulWsr7.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/_page_.v8bPqb9r.css">
+<link rel="stylesheet" href="/HexoNotes/_astro/about.JLkcjWQJ.css">
+<style>#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k){-webkit-appearance:none;height:1.5rem;background-image:var(--color-selection-bar);transition:background-image .15s ease-in-out}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-webkit-slider-thumb:active{background:#fff9}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;border-width:0;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-moz-range-thumb:active{background:#fff9}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb{-webkit-appearance:none;height:1rem;width:.5rem;border-radius:.125rem;background:#ffffffb3;box-shadow:none}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb:hover{background:#fffc}#display-setting.svelte-d7tq3k input[type=range]:where(.svelte-d7tq3k)::-ms-thumb:active{background:#fff9}.style-card.svelte-d7tq3k{display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:.6rem .5rem .5rem;border-radius:.75rem;background:var(--btn-regular-bg);transition:transform .2s cubic-bezier(.34,1.3,.64,1),background-color .2s,box-shadow .2s}.style-card.svelte-d7tq3k:hover{transform:translateY(-2px);background:var(--btn-plain-bg-hover)}.style-card.svelte-d7tq3k:active{transform:scale(.96)}.style-card-current.svelte-d7tq3k{box-shadow:0 0 0 2px var(--primary),0 6px 16px -6px #0000004d}.style-swatch.svelte-d7tq3k{width:100%;height:2.4rem;border-radius:.5rem;box-shadow:inset 0 0 0 1px #ffffff2e}.style-name.svelte-d7tq3k{font-size:.8rem;font-weight:700;color:var(--btn-content)}.effect-row.svelte-d7tq3k{display:flex;align-items:center;justify-content:space-between;width:100%;height:2.25rem;padding:0 .5rem 0 .75rem;border-radius:.5rem;transition:background-color .15s}.effect-row.svelte-d7tq3k:hover{background:var(--btn-plain-bg-hover)}.effect-label.svelte-d7tq3k{font-size:.875rem;font-weight:500;color:var(--btn-content)}.fx-switch.svelte-d7tq3k{position:relative;width:2.1rem;height:1.15rem;border-radius:9999px;background:var(--btn-regular-bg);transition:background-color .2s}.fx-switch.svelte-d7tq3k .fx-knob:where(.svelte-d7tq3k){position:absolute;top:.14rem;left:.14rem;width:.87rem;height:.87rem;border-radius:9999px;background:#fff;box-shadow:0 1px 3px #00000040;transition:transform .2s cubic-bezier(.34,1.3,.64,1)}.fx-switch-on.svelte-d7tq3k{background:var(--primary)}.fx-switch-on.svelte-d7tq3k .fx-knob:where(.svelte-d7tq3k){transform:translate(.95rem)}
+input.svelte-1wah7ro:focus{outline:0}.search-panel.svelte-1wah7ro{max-height:calc(100vh - 100px);overflow-y:auto}
+</style><script type="module" src="/HexoNotes/_astro/page.CupyVmFr.js"></script></head> <body class=" min-h-screen transition  enable-banner" data-overlayscrollbars-initialize style="--site-bg: url('/HexoNotes/background.jpg'); --bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;" data-astro-cid-sckkx6r4> <!-- 风格装饰层（扫描线/胶片颗粒/光斑），位于背景之上、内容之下 --> <div id="style-decor" aria-hidden="true" data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;"></div> <div id="config-carrier" data-hue="250"></div>    <div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto"> <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all"> <div id="navbar" class="z-50 onload-animation"> <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation --> <div class="card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"> <a href="/HexoNotes/" class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95"> <div class="flex flex-row text-[var(--primary)] items-center text-md"> <svg width="1em" height="1em" class="text-[1.75rem] mb-1 mr-2" data-icon="material-symbols:home-outline-rounded">   <symbol id="ai:material-symbols:home-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19h3v-5q0-.425.288-.712T10 13h4q.425 0 .713.288T15 14v5h3v-9l-6-4.5L6 10zm-2 0v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-4q-.425 0-.712-.288T13 20v-5h-2v5q0 .425-.288.713T10 21H6q-.825 0-1.412-.587T4 19m8-6.75"/></symbol><use href="#ai:material-symbols:home-outline-rounded"></use>  </svg> 晚霞小站 </div> </a> <div class="hidden md:flex"> <a aria-label="主页" href="/HexoNotes/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 主页  </div> </a><a aria-label="归档" href="/HexoNotes/archive/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 归档  </div> </a><a aria-label="总目录" href="/HexoNotes/catalog/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 总目录  </div> </a><a aria-label="关于" href="/HexoNotes/about/" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> 关于  </div> </a><a aria-label="GitHub" href="https://github.com/520luxun/HexoNotes" target="_blank" class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> <div class="flex items-center"> GitHub <svg width="1em" height="1em" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]" data-icon="fa6-solid:arrow-up-right-from-square">   <symbol id="ai:fa6-solid:arrow-up-right-from-square" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32zM80 32C35.8 32 0 67.8 0 112v320c0 44.2 35.8 80 80 80h320c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v112c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h112c17.7 0 32-14.3 32-32s-14.3-32-32-32z"/></symbol><use href="#ai:fa6-solid:arrow-up-right-from-square"></use>  </svg> </div> </a> </div> <div class="flex"> <!--<SearchPanel client:load>--> <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="Z1aBrwi" component-url="/HexoNotes/_astro/Search.B-v3mN4v.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;Search&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch"> <svg width="1em" height="1em" class="text-[1.25rem]" data-icon="material-symbols:palette-outline">   <symbol id="ai:material-symbols:palette-outline" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.813-3.9t2.2-3.175T8.25 2.788T12.2 2q2 0 3.775.688t3.113 1.9t2.125 2.875T22 11.05q0 2.875-1.75 4.413T16 17h-1.85q-.225 0-.312.125t-.088.275q0 .3.375.863t.375 1.287q0 1.25-.687 1.85T12 22m-5.5-9q.65 0 1.075-.425T8 11.5t-.425-1.075T6.5 10t-1.075.425T5 11.5t.425 1.075T6.5 13m3-4q.65 0 1.075-.425T11 7.5t-.425-1.075T9.5 6t-1.075.425T8 7.5t.425 1.075T9.5 9m5 0q.65 0 1.075-.425T16 7.5t-.425-1.075T14.5 6t-1.075.425T13 7.5t.425 1.075T14.5 9m3 4q.65 0 1.075-.425T19 11.5t-.425-1.075T17.5 10t-1.075.425T16 11.5t.425 1.075T17.5 13M12 20q.225 0 .363-.125t.137-.325q0-.35-.375-.825T11.75 17.3q0-1.05.725-1.675T14.25 15H16q1.65 0 2.825-.962T20 11.05q0-3.025-2.312-5.038T12.2 4Q8.8 4 6.4 6.325T4 12q0 3.325 2.338 5.663T12 20"/></symbol><use href="#ai:material-symbols:palette-outline"></use>  </svg> </button> <astro-island uid="20d3r6" component-url="/HexoNotes/_astro/LightDarkSwitch.N_jAJHLb.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;LightDarkSwitch&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch"> <svg width="1em" height="1em" class="text-[1.25rem]" data-icon="material-symbols:menu-rounded">   <symbol id="ai:material-symbols:menu-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/></symbol><use href="#ai:material-symbols:menu-rounded"></use>  </svg> </button> </div> <div id="nav-menu-panel" class="float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"> <a href="/HexoNotes/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 主页 </div> <svg width="1em" height="1em" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <symbol id="ai:material-symbols:chevron-right-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M12.6 12L8.7 8.1q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.6 4.6q.15.15.213.325t.062.375t-.062.375t-.213.325l-4.6 4.6q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7z"/></symbol><use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/archive/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 归档 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/catalog/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 总目录 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="/HexoNotes/about/" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        "> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> 关于 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg>  </a><a href="https://github.com/520luxun/HexoNotes" class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+        " target="_blank"> <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]"> GitHub </div>  <svg width="1em" height="1em" viewBox="0 0 512 512" class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1" data-icon="fa6-solid:arrow-up-right-from-square">   <use href="#ai:fa6-solid:arrow-up-right-from-square"></use>  </svg> </a> </div> <astro-island uid="Z1OfgCX" component-url="/HexoNotes/_astro/DisplaySettings.Dv247you.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;DisplaySettings&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island> </div> </div> <script type="module">function c(){localStorage.theme==="dark"?(document.documentElement.classList.remove("dark"),localStorage.theme="light"):(document.documentElement.classList.add("dark"),localStorage.theme="dark")}function o(){let t=document.getElementById("scheme-switch");t&&(t.onclick=function(){c()});let n=document.getElementById("display-settings-switch");n&&(n.onclick=function(){let e=document.getElementById("display-setting");e&&e.classList.toggle("float-panel-closed")});let l=document.getElementById("nav-menu-switch");l&&(l.onclick=function(){let e=document.getElementById("nav-menu-panel");e&&e.classList.toggle("float-panel-closed")})}o();</script> <script>(function(){const scriptUrl = "/HexoNotes/pagefind/pagefind.js";
+
+async function loadPagefind() {
+    try {
+        const response = await fetch(scriptUrl, { method: 'HEAD' });
+        if (!response.ok) {
+            throw new Error(`Pagefind script not found: ${response.status}`);
+        }
+
+        const pagefind = await import(scriptUrl);
+
+        await pagefind.options({
+            excerptLength: 20
+        });
+
+        window.pagefind = pagefind;
+
+        document.dispatchEvent(new CustomEvent('pagefindready'));
+        console.log('Pagefind loaded and initialized successfully, event dispatched.');
+    } catch (error) {
+        console.error('Failed to load Pagefind:', error);
+        window.pagefind = {
+            search: () => Promise.resolve({ results: [] }),
+            options: () => Promise.resolve(),
+        };
+        document.dispatchEvent(new CustomEvent('pagefindloaderror'));
+        console.log('Pagefind load error, event dispatched.');
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadPagefind);
+} else {
+    loadPagefind();
+}
+})();</script> </div> </div>  <div id="banner-wrapper" class="absolute z-10 w-full transition duration-700 overflow-hidden" style="top: -30vh"> <div id="banner" class="object-cover h-full transition duration-700 opacity-0 scale-105 overflow-hidden relative"> <img src="/HexoNotes/bg/banner-bocchi.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="bocchi" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-eva.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="eva" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-retro90.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="retro90" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-sakura.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="sakura" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-violet.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="violet" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-shinkai.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="shinkai" style="object-position: center" loading="eager"><img src="/HexoNotes/bg/banner-demon.jpg" alt="Banner image of the blog" class="banner-img w-full h-full object-cover" data-banner-style="demon" style="object-position: center" loading="eager"> <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div> </div> </div> <div class="absolute w-full z-30 pointer-events-none" style="top: calc(35vh - 3.5rem)"> <!-- The pointer-events-none here prevent blocking the click event of the TOC --> <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto"> <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
+    mx-auto gap-4 px-0 md:px-4"> <!-- Banner image credit -->  <div id="sidebar" class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation w-full"> <div class="flex flex-col w-full gap-4 mb-4"> <div class="card-base hover-lift p-3"> <a aria-label="Go to About Page" href="/HexoNotes/about/" class="group profile-avatar block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
+       max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95"> <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
+        w-full h-full z-50 flex items-center justify-center"> <svg width="1.13em" height="1em" class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl" data-icon="fa6-regular:address-card">   <symbol id="ai:fa6-regular:address-card" viewBox="0 0 576 512"><path fill="currentColor" d="M512 80c8.8 0 16 7.2 16 16v320c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V96c0-8.8 7.2-16 16-16zM64 32C28.7 32 0 60.7 0 96v320c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64zm144 224a64 64 0 1 0 0-128a64 64 0 1 0 0 128m-32 32c-44.2 0-80 35.8-80 80c0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16c0-44.2-35.8-80-80-80zm200-144c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24z"/></symbol><use href="#ai:fa6-regular:address-card"></use>  </svg> </div> <div class="mx-auto lg:w-full h-full lg:mt-0  overflow-hidden relative"> <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div> <img src="/HexoNotes/_astro/avatar.18vv_OyQ_ZrjH8f.webp" alt="Profile Image of the Author" style="object-position: center" loading="lazy" decoding="async" fetchpriority="auto" width="1327" height="1079" class="w-full h-full object-cover">  </div> </a> <div class="px-2"> <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">520luxun</div> <div class="name-divider h-1 w-5 mx-auto rounded-full mb-2 transition"></div> <div class="text-center text-neutral-400 mb-2.5 transition">嵌入式与计算机学习笔记 · 记录生活与技术</div> <div class="flex flex-wrap gap-2 justify-center mb-1"> <a rel="me" aria-label="GitHub" href="https://github.com/520luxun" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="0.97em" height="1em" class="text-[1.5rem]" data-icon="fa6-brands:github">   <symbol id="ai:fa6-brands:github" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6c-3.3.3-5.6-1.3-5.6-3.6c0-2 2.3-3.6 5.2-3.6c3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9c2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9c.3 2 2.9 3.3 5.9 2.6c2.9-.7 4.9-2.6 4.6-4.6c-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2c12.8 2.3 17.3-5.6 17.3-12.1c0-6.2-.3-40.4-.3-61.4c0 0-70 15-84.7-29.8c0 0-11.4-29.1-27.8-36.6c0 0-22.9-15.7 1.6-15.4c0 0 24.9 2 38.6 25.8c21.9 38.6 58.6 27.5 72.9 20.9c2.3-16 8.8-27.1 16-33.7c-55.9-6.2-112.3-14.3-112.3-110.5c0-27.5 7.6-41.3 23.6-58.9c-2.6-6.5-11.1-33.3 2.6-67.9c20.9-6.5 69 27 69 27c20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27c13.7 34.7 5.2 61.4 2.6 67.9c16 17.7 25.8 31.5 25.8 58.9c0 96.5-58.9 104.2-114.8 110.5c9.2 7.9 17 22.9 17 46.4c0 33.7-.3 75.4-.3 83.6c0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252C496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2c1.6 1.6 3.9 2.3 5.2 1c1.3-1 1-3.3-.7-5.2c-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9c1.6 1 3.6.7 4.3-.7c.7-1.3-.3-2.9-2.3-3.9c-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2c2.3 2.3 5.2 2.6 6.5 1c1.3-1.3.7-4.3-1.3-6.2c-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2c-1.4-2.3-4-3.3-5.6-2"/></symbol><use href="#ai:fa6-brands:github"></use>  </svg> </a><a rel="me" aria-label="BiliBili" href="https://www.bilibili.com/" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="1em" height="1em" class="text-[1.5rem]" data-icon="bilibili">   <symbol id="ai:local:bilibili" viewBox="0 0 24 24"><path fill="currentColor" d="M17.813 4.653h.854q2.266.08 3.773 1.574Q23.946 7.72 24 9.987v7.36q-.054 2.266-1.56 3.773c-1.506 1.507-2.262 1.524-3.773 1.56H5.333q-2.266-.054-3.773-1.56C.053 19.614.036 18.858 0 17.347v-7.36q.054-2.267 1.56-3.76t3.773-1.574h.774l-1.174-1.12a1.23 1.23 0 0 1-.373-.906q0-.534.373-.907l.027-.027q.4-.373.92-.373t.92.373L9.653 4.44q.107.106.187.213h4.267a.8.8 0 0 1 .16-.213l2.853-2.747q.4-.373.92-.373c.347 0 .662.151.929.4s.391.551.391.907q0 .532-.373.906zM5.333 7.24q-1.12.027-1.88.773-.76.748-.786 1.894v7.52q.026 1.146.786 1.893t1.88.773h13.334q1.12-.026 1.88-.773t.786-1.893v-7.52q-.026-1.147-.786-1.894t-1.88-.773zM8 11.107q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q0-.56.386-.947.387-.386.947-.386m8 0q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q.025-.586.4-.96.373-.373.933-.373"/></symbol><use href="#ai:local:bilibili"></use>  </svg> </a><a rel="me" aria-label="Obsidian" href="obsidian://open?vault=Embedded" target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90"> <svg width="1em" height="1em" class="text-[1.5rem]" data-icon="obsidian">   <symbol id="ai:local:obsidian" viewBox="0 0 24 24"><path fill="currentColor" d="M19.355 18.538a68.967 68.959 0 0 0 1.858-2.954.81.81 0 0 0-.062-.9c-.516-.685-1.504-2.075-2.042-3.362-.553-1.321-.636-3.375-.64-4.377a1.7 1.7 0 0 0-.358-1.05l-3.198-4.064a4 4 0 0 1-.076.543c-.106.503-.307 1.004-.536 1.5-.134.29-.29.6-.446.914l-.31.626c-.516 1.068-.997 2.227-1.132 3.59-.124 1.26.046 2.73.815 4.481q.192.016.386.044a6.36 6.36 0 0 1 3.326 1.505c.916.79 1.744 1.922 2.415 3.5zM8.199 22.569q.11.019.22.02c.78.024 2.095.092 3.16.29.87.16 2.593.64 4.01 1.055 1.083.316 2.198-.548 2.355-1.664.114-.814.33-1.735.725-2.58l-.01.005c-.67-1.87-1.522-3.078-2.416-3.849a5.3 5.3 0 0 0-2.778-1.257c-1.54-.216-2.952.19-3.84.45.532 2.218.368 4.829-1.425 7.531zM5.533 9.938q-.035.15-.098.29L2.82 16.059a1.6 1.6 0 0 0 .313 1.772l4.116 4.24c2.103-3.101 1.796-6.02.836-8.3-.728-1.73-1.832-3.081-2.55-3.831zM9.32 14.01c.615-.183 1.606-.465 2.745-.534-.683-1.725-.848-3.233-.716-4.577.154-1.552.7-2.847 1.235-3.95q.17-.35.328-.664c.149-.297.288-.577.419-.86.217-.47.379-.885.46-1.27.08-.38.08-.72-.014-1.043-.095-.325-.297-.675-.68-1.06a1.6 1.6 0 0 0-1.475.36l-4.95 4.452a1.6 1.6 0 0 0-.513.952l-.427 2.83c.672.59 2.328 2.316 3.335 4.711q.136.317.253.653"/></symbol><use href="#ai:local:obsidian"></use>  </svg> </a>  </div> </div> </div> </div> <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4"> <widget-layout data-id="categories" data-is-collapsed="true" class="pb-4 card-base onload-animation" style="animation-delay: 150ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+        before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">分类</div> <div id="categories" class="collapse-wrapper px-4 overflow-hidden collapsed" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=%E9%9A%8F%E7%AC%94" aria-label="View all posts in the 随笔 category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> 随笔 </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=FreeRTOS" aria-label="View all posts in the FreeRTOS category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> FreeRTOS </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 24 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=Linux" aria-label="View all posts in the Linux category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> Linux </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=NoSystematic" aria-label="View all posts in the NoSystematic category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> NoSystematic </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 64 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=OTA-BootLoader" aria-label="View all posts in the OTA-BootLoader category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> OTA-BootLoader </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=PCB" aria-label="View all posts in the PCB category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> PCB </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 23 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=PID" aria-label="View all posts in the PID category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> PID </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a> </div><div style="padding-left:0rem"> <a href="/HexoNotes/archive/?category=SchoolStudy" aria-label="View all posts in the SchoolStudy category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> SchoolStudy </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 35 </div> </div> </button> </a> </div> </div> <div class="expand-btn px-4 -mb-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <button class="btn-plain rounded-lg w-full h-9" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <svg width="1em" height="1em" class="text-[1.75rem]" data-astro-cid-ucso7hve="true" data-icon="material-symbols:more-horiz">   <symbol id="ai:material-symbols:more-horiz" viewBox="0 0 24 24"><path fill="currentColor" d="M6 14q-.825 0-1.412-.587T4 12t.588-1.412T6 10t1.413.588T8 12t-.587 1.413T6 14m6 0q-.825 0-1.412-.587T10 12t.588-1.412T12 10t1.413.588T14 12t-.587 1.413T12 14m6 0q-.825 0-1.412-.587T16 12t.588-1.412T18 10t1.413.588T20 12t-.587 1.413T18 14"/></symbol><use href="#ai:material-symbols:more-horiz"></use>  </svg> 更多 </div> </button> </div> </widget-layout>  <script type="module">class d extends HTMLElement{constructor(){if(super(),this.dataset.isCollapsed!=="true")return;const e=this.dataset.id,t=this.querySelector(".expand-btn"),s=this.querySelector(`#${e}`);t.addEventListener("click",()=>{s.classList.remove("collapsed"),t.classList.add("hidden")})}}customElements.get("widget-layout")||customElements.define("widget-layout",d);</script> <widget-layout data-id="tags" data-is-collapsed="true" class="pb-4 card-base onload-animation" style="animation-delay: 200ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+        before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">标签</div> <div id="tags" class="collapse-wrapper px-4 overflow-hidden collapsed" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">  <div class="flex gap-2 flex-wrap"> <a href="/HexoNotes/archive/?tag=EMC" aria-label="View all posts with the EMC tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  EMC </a><a href="/HexoNotes/archive/?tag=Fuwari" aria-label="View all posts with the Fuwari tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Fuwari </a><a href="/HexoNotes/archive/?tag=Linux" aria-label="View all posts with the Linux tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Linux </a><a href="/HexoNotes/archive/?tag=MOS%E7%AE%A1" aria-label="View all posts with the MOS管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  MOS管 </a><a href="/HexoNotes/archive/?tag=Obsidian" aria-label="View all posts with the Obsidian tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Obsidian </a><a href="/HexoNotes/archive/?tag=PCB%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the PCB设计 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  PCB设计 </a><a href="/HexoNotes/archive/?tag=Shell" aria-label="View all posts with the Shell tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Shell </a><a href="/HexoNotes/archive/?tag=%E4%B8%89%E6%9E%81%E7%AE%A1" aria-label="View all posts with the 三极管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  三极管 </a><a href="/HexoNotes/archive/?tag=%E4%BA%8C%E6%9E%81%E7%AE%A1" aria-label="View all posts with the 二极管 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  二极管 </a><a href="/HexoNotes/archive/?tag=%E4%BA%A4%E6%B5%81%E7%94%B5%E8%B7%AF" aria-label="View all posts with the 交流电路 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  交流电路 </a><a href="/HexoNotes/archive/?tag=%E4%BC%A0%E6%84%9F%E5%99%A8" aria-label="View all posts with the 传感器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  传感器 </a><a href="/HexoNotes/archive/?tag=%E5%81%8F%E7%BD%AE" aria-label="View all posts with the 偏置 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  偏置 </a><a href="/HexoNotes/archive/?tag=%E5%85%B1%E6%A8%A1%E7%94%B5%E6%84%9F" aria-label="View all posts with the 共模电感 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  共模电感 </a><a href="/HexoNotes/archive/?tag=%E5%8E%BB%E8%80%A6%E7%94%B5%E5%AE%B9" aria-label="View all posts with the 去耦电容 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  去耦电容 </a><a href="/HexoNotes/archive/?tag=%E5%AF%BC%E8%88%AA" aria-label="View all posts with the 导航 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  导航 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F" aria-label="View all posts with the 嵌入式 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2FC%E8%AF%AD%E8%A8%80" aria-label="View all posts with the 嵌入式/C语言 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/C语言 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2FESP32" aria-label="View all posts with the 嵌入式/ESP32 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/ESP32 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E5%9B%BA%E4%BB%B6" aria-label="View all posts with the 嵌入式/固件 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/固件 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E5%AD%A6%E7%A7%91" aria-label="View all posts with the 嵌入式/学科 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/学科 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%94%B5%E6%9C%BA" aria-label="View all posts with the 嵌入式/电机 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/电机 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%A1%AC%E4%BB%B6" aria-label="View all posts with the 嵌入式/硬件 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/硬件 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%B3%BB%E7%BB%9F" aria-label="View all posts with the 嵌入式/系统 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/系统 </a><a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E9%9F%B3%E8%A7%86%E9%A2%91" aria-label="View all posts with the 嵌入式/音视频 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  嵌入式/音视频 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE" aria-label="View all posts with the 工具链 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2FCI" aria-label="View all posts with the 工具链/CI tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/CI </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2FKeil-ARM" aria-label="View all posts with the 工具链/Keil-ARM tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/Keil-ARM </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91" aria-label="View all posts with the 工具链/交叉编译 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/交叉编译 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E6%B5%8B%E8%AF%95" aria-label="View all posts with the 工具链/测试 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/测试 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5" aria-label="View all posts with the 工具链/编译链接 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/编译链接 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E5%85%B7%E9%93%BE%2F%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90" aria-label="View all posts with the 工具链/静态分析 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工具链/静态分析 </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E7%A8%8B%E5%8D%8F%E4%BD%9C%2FGit" aria-label="View all posts with the 工程协作/Git tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工程协作/Git </a><a href="/HexoNotes/archive/?tag=%E5%B7%A5%E7%A8%8B%E5%8D%8F%E4%BD%9C%2F%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C" aria-label="View all posts with the 工程协作/团队协作 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  工程协作/团队协作 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83" aria-label="View all posts with the 开发环境 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FPython" aria-label="View all posts with the 开发环境/Python tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/Python </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FUbuntu" aria-label="View all posts with the 开发环境/Ubuntu tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/Ubuntu </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FVMware" aria-label="View all posts with the 开发环境/VMware tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/VMware </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FWindows" aria-label="View all posts with the 开发环境/Windows tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/Windows </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2FWSL2" aria-label="View all posts with the 开发环境/WSL2 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/WSL2 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E5%B7%A5%E5%85%B7%E9%93%BE" aria-label="View all posts with the 开发环境/工具链 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/工具链 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E6%90%AD%E5%BB%BA" aria-label="View all posts with the 开发环境/搭建 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/搭建 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86" aria-label="View all posts with the 开发环境/版本管理 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/版本管理 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E7%BD%91%E7%BB%9C%E5%85%B1%E4%BA%AB" aria-label="View all posts with the 开发环境/网络共享 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/网络共享 </a><a href="/HexoNotes/archive/?tag=%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%2F%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91" aria-label="View all posts with the 开发环境/远程开发 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  开发环境/远程开发 </a><a href="/HexoNotes/archive/?tag=%E6%88%AA%E6%AD%A2%E9%A2%91%E7%8E%87" aria-label="View all posts with the 截止频率 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  截止频率 </a><a href="/HexoNotes/archive/?tag=%E6%8C%AF%E8%8D%A1" aria-label="View all posts with the 振荡 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  振荡 </a><a href="/HexoNotes/archive/?tag=%E6%95%88%E7%8E%87" aria-label="View all posts with the 效率 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  效率 </a><a href="/HexoNotes/archive/?tag=%E6%96%87%E6%A1%A3%2F%E6%8E%92%E9%94%99" aria-label="View all posts with the 文档/排错 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  文档/排错 </a><a href="/HexoNotes/archive/?tag=%E6%96%87%E6%A1%A3%2F%E6%96%B9%E6%B3%95%E8%AE%BA" aria-label="View all posts with the 文档/方法论 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  文档/方法论 </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93" aria-label="View all posts with the 服务器与数据库 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库 </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%2FopenEuler" aria-label="View all posts with the 服务器与数据库/openEuler tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库/openEuler </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%2FopenGauss" aria-label="View all posts with the 服务器与数据库/openGauss tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库/openGauss </a><a href="/HexoNotes/archive/?tag=%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%2F%E6%95%B0%E6%8D%AE%E5%BA%93" aria-label="View all posts with the 服务器与数据库/数据库 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  服务器与数据库/数据库 </a><a href="/HexoNotes/archive/?tag=%E6%A8%A1%E6%8B%9F%E7%94%B5%E8%B7%AF" aria-label="View all posts with the 模拟电路 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  模拟电路 </a><a href="/HexoNotes/archive/?tag=%E6%BB%A4%E6%B3%A2%E5%99%A8" aria-label="View all posts with the 滤波器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  滤波器 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E5%AE%B9" aria-label="View all posts with the 电容 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电容 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%84%9F" aria-label="View all posts with the 电感 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电感 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%B5%81%E6%A3%80%E6%B5%8B" aria-label="View all posts with the 电流检测 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电流检测 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E6%BA%90%E8%AE%BE%E8%AE%A1" aria-label="View all posts with the 电源设计 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电源设计 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E8%B7%AF%E5%88%86%E6%9E%90" aria-label="View all posts with the 电路分析 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电路分析 </a><a href="/HexoNotes/archive/?tag=%E7%94%B5%E9%98%BB" aria-label="View all posts with the 电阻 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  电阻 </a><a href="/HexoNotes/archive/?tag=%E7%A1%AC%E4%BB%B6%E5%9F%BA%E7%A1%80" aria-label="View all posts with the 硬件基础 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  硬件基础 </a><a href="/HexoNotes/archive/?tag=%E7%A4%BA%E6%B3%A2%E5%99%A8" aria-label="View all posts with the 示波器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  示波器 </a><a href="/HexoNotes/archive/?tag=%E7%B4%A2%E5%BC%95" aria-label="View all posts with the 索引 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  索引 </a><a href="/HexoNotes/archive/?tag=%E8%87%AA%E4%B8%BE" aria-label="View all posts with the 自举 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  自举 </a><a href="/HexoNotes/archive/?tag=%E8%B0%90%E6%8C%AF" aria-label="View all posts with the 谐振 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  谐振 </a><a href="/HexoNotes/archive/?tag=%E8%B4%9F%E5%8F%8D%E9%A6%88" aria-label="View all posts with the 负反馈 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  负反馈 </a><a href="/HexoNotes/archive/?tag=%E8%BF%90%E7%AE%97%E6%94%BE%E5%A4%A7%E5%99%A8" aria-label="View all posts with the 运算放大器 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  运算放大器 </a><a href="/HexoNotes/archive/?tag=%E9%9B%B6%E5%9F%BA%E7%A1%80" aria-label="View all posts with the 零基础 tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  零基础 </a> </div>  </div> <div class="expand-btn px-4 -mb-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <button class="btn-plain rounded-lg w-full h-9" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;"> <svg width="1em" height="1em" viewBox="0 0 24 24" class="text-[1.75rem]" data-astro-cid-ucso7hve="true" data-icon="material-symbols:more-horiz">   <use href="#ai:material-symbols:more-horiz"></use>  </svg> 更多 </div> </button> </div> </widget-layout>   </div> </div> <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden"> <div id="content-wrapper" class="onload-animation"> <!-- the overflow-hidden here prevent long text break the layout--> <!-- make id different from windows.swup global property -->   <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"> <div id="post-container" class="card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full "> <!-- word count and reading time --> <div class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation"> <div class="flex flex-row items-center"> <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"> <svg width="1em" height="1em" data-icon="material-symbols:notes-rounded">   <symbol id="ai:material-symbols:notes-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h10q.425 0 .713.288T15 17t-.288.713T14 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/></symbol><use href="#ai:material-symbols:notes-rounded"></use>  </svg> </div> <div class="text-sm">8516  字</div> </div> <div class="flex flex-row items-center"> <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"> <svg width="1em" height="1em" data-icon="material-symbols:schedule-outline-rounded">   <symbol id="ai:material-symbols:schedule-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M13 11.6V8q0-.425-.288-.712T12 7t-.712.288T11 8v3.975q0 .2.075.388t.225.337l3.3 3.3q.275.275.7.275T16 16t.275-.7t-.275-.7zM12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.325 0 5.663-2.337T20 12t-2.337-5.663T12 4T6.337 6.338T4 12t2.338 5.663T12 20"/></symbol><use href="#ai:material-symbols:schedule-outline-rounded"></use>  </svg> </div> <div class="text-sm"> 43  分钟 </div> </div> </div> <!-- title --> <div class="relative onload-animation"> <div data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title" class="transition w-full block font-bold mb-3
+                    text-3xl md:text-[2.25rem]/[2.75rem]
+                    text-black/90 dark:text-white/90
+                    md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+                    before:absolute before:top-[0.75rem] before:left-[-1.125rem]
+                "> 存储器与内存 </div> </div> <!-- metadata --> <div class="onload-animation"> <div class="flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2 mb-5"> <!-- publish date --> <div class="flex items-center"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:calendar-today-outline-rounded">   <symbol id="ai:material-symbols:calendar-today-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M5 22q-.825 0-1.412-.587T3 20V6q0-.825.588-1.412T5 4h1V3q0-.425.288-.712T7 2t.713.288T8 3v1h8V3q0-.425.288-.712T17 2t.713.288T18 3v1h1q.825 0 1.413.588T21 6v14q0 .825-.587 1.413T19 22zm0-2h14V10H5zM5 8h14V6H5zm0 0V6z"/></symbol><use href="#ai:material-symbols:calendar-today-outline-rounded"></use>  </svg> </div> <span class="text-50 text-sm font-medium">2026-11-18</span> </div> <!-- update date -->  <!-- categories --> <div class="flex items-center"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:book-2-outline-rounded">   <symbol id="ai:material-symbols:book-2-outline-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="M6 15.325q.35-.175.725-.25T7.5 15H8V4h-.5q-.625 0-1.062.438T6 5.5zM10 15h8V4h-8zm-4 .325V4zM7.5 22q-1.45 0-2.475-1.025T4 18.5v-13q0-1.45 1.025-2.475T7.5 2H18q.825 0 1.413.587T20 4v12.525q0 .2-.162.363t-.588.362q-.35.175-.55.5t-.2.75t.2.763t.55.487t.55.413t.2.562v.25q0 .425-.288.725T19 22zm0-2h9.325q-.15-.35-.237-.712T16.5 18.5q0-.4.075-.775t.25-.725H7.5q-.65 0-1.075.438T6 18.5q0 .65.425 1.075T7.5 20"/></symbol><use href="#ai:material-symbols:book-2-outline-rounded"></use>  </svg> </div> <div class="flex flex-row flex-nowrap items-center"> <a href="/HexoNotes/archive/?category=NoSystematic" aria-label="View all posts in the NoSystematic category" class="link-lg transition text-50 text-sm font-medium
+                            hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> NoSystematic </a> </div> </div> <!-- tags --> <div class="items-center flex"> <div class="meta-icon"> <svg width="1em" height="1em" class="text-xl" data-icon="material-symbols:tag-rounded">   <symbol id="ai:material-symbols:tag-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m9 16l-.825 3.275q-.075.325-.325.525t-.6.2q-.475 0-.775-.375T6.3 18.8L7 16H4.275q-.5 0-.8-.387T3.3 14.75q.075-.35.35-.55t.625-.2H7.5l1-4H5.775q-.5 0-.8-.387T4.8 8.75q.075-.35.35-.55t.625-.2H9l.825-3.275Q9.9 4.4 10.15 4.2t.6-.2q.475 0 .775.375t.175.825L11 8h4l.825-3.275q.075-.325.325-.525t.6-.2q.475 0 .775.375t.175.825L17 8h2.725q.5 0 .8.387t.175.863q-.075.35-.35.55t-.625.2H16.5l-1 4h2.725q.5 0 .8.388t.175.862q-.075.35-.35.55t-.625.2H15l-.825 3.275q-.075.325-.325.525t-.6.2q-.475 0-.775-.375T12.3 18.8L13 16zm.5-2h4l1-4h-4z"/></symbol><use href="#ai:material-symbols:tag-rounded"></use>  </svg> </div> <div class="flex flex-row flex-nowrap items-center"> <div class="hidden mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                <a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F" aria-label="View all posts with the 嵌入式 tag" class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> 嵌入式 </a><div class="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                <a href="/HexoNotes/archive/?tag=%E5%B5%8C%E5%85%A5%E5%BC%8F%2F%E7%A1%AC%E4%BB%B6" aria-label="View all posts with the 嵌入式/硬件 tag" class="link-lg transition text-50 text-sm font-medium
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"> 嵌入式/硬件 </a>  </div> </div> </div> <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div> </div> <!-- always show cover as long as it has one -->  <div data-pagefind-body class="prose dark:prose-invert prose-base !max-w-none custom-md mb-6 markdown-content onload-animation"> <!--<div class="prose dark:prose-invert max-w-none custom-md">--> <!--<div class="max-w-none custom-md">-->  <section><h1 id="存储器与内存">存储器与内存<a class="anchor" href="#存储器与内存"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h1><blockquote>
+<p><strong>本文定位</strong>
+存储体系全景：ROM/RAM/寄存器分类与深入原理、代码在存储器中的运行全过程、内存层次与性能指标、机械硬盘结构与嵌入式取舍。</p>
+</blockquote><blockquote>
+<p><strong>章节速览</strong>
+#存储器 · #详细解释存储器 · #运行代码时，在储存器中是怎么运行的？ · #内存 · #详细解释机械硬盘</p>
+</blockquote><section><h2 id="存储器">存储器<a class="anchor" href="#存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>ROM，PROM，EPROM，EEPROM，FLASH，FLASH（NOR，NAND）。RAM，SRAM，DRAM，寄存器。</p><p>在嵌入式系统中，存储器是核心组成部分，根据数据存储的持久性和访问方式，主要分为 <strong>非易失性存储器</strong> （断电后数据不丢失）和 <strong>易失性存储器</strong> （断电后数据丢失）两大类。下面逐一解释你列出的各种存储器类型，并说明它们在嵌入式实践中的典型应用。</p><hr><section><h3 id="一rom-系列非易失性">一、ROM 系列（非易失性）<a class="anchor" href="#一rom-系列非易失性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><section><h4 id="1-rom只读存储器">1. ROM（只读存储器）<a class="anchor" href="#1-rom只读存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>定义</strong> ：出厂时数据已固定，用户只能读取，无法修改。</li>
+<li><strong>特点</strong> ：成本低、可靠性高，但灵活性差。</li>
+<li><strong>嵌入式应用</strong> ：早期用于存储固件（如BIOS），现在较少单独使用。</li>
+</ul><section><h5 id="2-prom可编程只读存储器">2. PROM（可编程只读存储器）<a class="anchor" href="#2-prom可编程只读存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：允许用户通过专用设备一次性写入数据，写入后不可更改。</li>
+<li><strong>特点</strong> ：灵活性高于掩膜ROM，但不可擦除。</li>
+<li><strong>嵌入式应用</strong> ：用于小批量生产或原型验证，写入程序或常数表。</li>
+</ul></section><section><h5 id="3-eprom可擦除可编程只读存储器">3. EPROM（可擦除可编程只读存储器）<a class="anchor" href="#3-eprom可擦除可编程只读存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：可通过紫外线照射擦除全部数据，然后重新编程。</li>
+<li><strong>特点</strong> ：可多次使用，但擦除需要专用紫外线灯，且需从电路中取下芯片。</li>
+<li><strong>嵌入式应用</strong> ：早期用于开发阶段的代码调试，现已被更便捷的存储器取代。</li>
+</ul></section><section><h5 id="4-eeprom电可擦除可编程只读存储器">4. EEPROM（电可擦除可编程只读存储器）<a class="anchor" href="#4-eeprom电可擦除可编程只读存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：通过电信号进行字节级擦除和写入，无需紫外线。</li>
+<li><strong>特点</strong> ：可在线改写，但写入速度慢、寿命有限（约10万次擦写）。</li>
+<li><strong>嵌入式应用</strong> ：存储少量配置参数、校准数据、设备序列号等（如24Cxx系列）。</li>
+</ul></section><section><h5 id="5-flash闪存">5. FLASH（闪存）<a class="anchor" href="#5-flash闪存"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：结合了EPROM的可擦除性和EEPROM的电擦除特性，但以 <strong>块（扇区）</strong> 为单位擦除。</li>
+<li><strong>特点</strong> ：容量大、速度快、成本低，是目前嵌入式系统的主流非易失存储器。</li>
+<li><strong>嵌入式应用</strong> ：存储程序代码、文件系统、操作系统内核等。</li>
+<li><strong>分类</strong> ：
+<ul>
+<li><strong>NOR Flash</strong> ：
+<ul>
+<li>支持随机访问（类似RAM），可执行代码（XIP，eXecute In Place）。
+- 读取速度快，但写入和擦除慢，容量通常较小。
+- 用于存储启动代码（如BIOS、Bootloader）。</li>
+<li><strong>NAND Flash</strong> ：</li>
+<li>按页读写，不支持随机访问，不能直接运行代码。
+- 写入和擦除快，容量大，成本低，但需要坏块管理和纠错（ECC）。
+- 用于大容量数据存储（如U盘、SSD、嵌入式文件系统）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><hr></section></section><section><h4 id="二ram-系列易失性">二、RAM 系列（易失性）<a class="anchor" href="#二ram-系列易失性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="1-ram随机存取存储器">1. RAM（随机存取存储器）<a class="anchor" href="#1-ram随机存取存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：可随时读写，但断电后数据丢失。</li>
+<li><strong>嵌入式应用</strong> ：作为程序运行时的数据存储区（如堆栈、变量）。</li>
+</ul></section><section><h5 id="2-sram静态随机存取存储器">2. SRAM（静态随机存取存储器）<a class="anchor" href="#2-sram静态随机存取存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：利用触发器存储每个位，只要供电数据就保持，无需刷新。</li>
+<li><strong>特点</strong> ：速度快、功耗低（静态功耗）、接口简单，但集成度低、成本高。</li>
+<li><strong>嵌入式应用</strong> ：CPU缓存（Cache）、小型嵌入式系统的片内内存。</li>
+</ul></section><section><h5 id="3-dram动态随机存取存储器">3. DRAM（动态随机存取存储器）<a class="anchor" href="#3-dram动态随机存取存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>定义</strong> ：利用电容电荷存储数据，需定期刷新（每几毫秒）以防泄漏。</li>
+<li><strong>特点</strong> ：集成度高、成本低，但速度较慢（因刷新延迟）、功耗较高。</li>
+<li><strong>嵌入式应用</strong> ：作为系统主内存（如SDRAM、DDR系列），用于运行操作系统和大型程序。</li>
+</ul><hr></section></section><section><h4 id="三寄存器registers">三、寄存器（Registers）<a class="anchor" href="#三寄存器registers"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>定义</strong> ：位于CPU内部，由触发器构成，是存取速度最快的存储单元。</li>
+<li><strong>特点</strong> ：容量极小（通常几十到几百字节），直接参与运算，无地址概念（通过指令访问）。</li>
+<li><strong>嵌入式应用</strong> ：
+<ul>
+<li><strong>通用寄存器</strong> ：暂存指令、数据和地址。
+<ul>
+<li><strong>特殊功能寄存器</strong> ：控制外设（如GPIO、定时器、UART的配置寄存器），通过读写这些寄存器实现对硬件的操作。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><hr></section><section><h4 id="嵌入式系统中的角色总结">嵌入式系统中的角色总结<a class="anchor" href="#嵌入式系统中的角色总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>存储器类型</th><th>典型用途</th><th>特点</th></tr></thead><tbody><tr><td><strong>ROM/PROM/EPROM</strong></td><td>早期固件存储</td><td>只读或一次性编程</td></tr><tr><td><strong>EEPROM</strong></td><td>参数存储</td><td>字节级擦写，寿命有限</td></tr><tr><td><strong>NOR Flash</strong></td><td>启动代码、Bootloader</td><td>可XIP，读取快</td></tr><tr><td><strong>NAND Flash</strong></td><td>大容量数据、文件系统</td><td>密度高，需管理坏块</td></tr><tr><td><strong>SRAM</strong></td><td>缓存、片内内存</td><td>速度快，但贵</td></tr><tr><td><strong>DRAM</strong></td><td>主内存（运行系统）</td><td>容量大，需刷新</td></tr><tr><td><strong>寄存器</strong></td><td>CPU内部操作、外设控制</td><td>速度最快，直接操作硬件</td></tr></tbody></table><p>在嵌入式开发中，理解这些存储器的特性对于代码优化（如将频繁访问的数据放在SRAM）、外设驱动编写（通过寄存器配置）以及存储方案设计（如选择EEPROM还是Flash保存参数）都至关重要。</p></section></section></section><section><h2 id="详细解释存储器">详细解释存储器<a class="anchor" href="#详细解释存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>好的，我们来深入、详细地解释这些嵌入式系统中至关重要的存储器。理解它们，不仅是知道缩写，更是要明白它们 <strong>为什么存在</strong> 、 <strong>如何工作</strong> 以及 <strong>在代码层面如何影响我们</strong> 。</p><p>我们可以从两个维度来深入： <strong>物理原理</strong> （决定了特性）和 <strong>工程实践</strong> （决定了怎么用）。</p><section><h3 id="深入核心为什么需要这么多存储器">深入核心：为什么需要这么多存储器？<a class="anchor" href="#深入核心为什么需要这么多存储器"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>根本原因在于 <strong>“快、热、贵”</strong> 的不可能三角。</p><ul>
+<li><strong>CPU寄存器</strong> ：极快，但极贵（占芯片面积大），一断电就丢。</li>
+<li><strong>硬盘/Flash</strong> ：便宜，容量大，断电不丢，但极慢（相对CPU）。</li>
+<li><strong>内存</strong> ：介于中间。</li>
+</ul><p>所以，现代计算系统（包括嵌入式）都采用 <strong>分层存储体系</strong> 。你列出的所有器件，正是这个体系中的每一层。</p><hr><section><h4 id="一深入非易失性存储器nvm从原理到实践">一、深入非易失性存储器（NVM）：从原理到实践<a class="anchor" href="#一深入非易失性存储器nvm从原理到实践"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这一类的核心是解决 <strong>“断电后数据怎么留住？”</strong> 的问题。</p><section><h5 id="1-掩膜rom">1. 掩膜ROM<a class="anchor" href="#1-掩膜rom"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：在芯片制造时，用最后一道金属布线层的光刻版（掩膜）决定数据。就像印刷好的书，出厂就定型了。</li>
+<li><strong>实践</strong> ：成本极高（动辄百万的掩膜费），只适合绝对不可能改代码、且千万级出货的产品（如某些键盘的字库）。现代嵌入式极少用。</li>
+</ul></section><section><h5 id="2-prom-一次可编程">2. PROM (一次可编程)<a class="anchor" href="#2-prom-一次可编程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：每个存储单元原本都是导通的。编程时，用大电流把内部的 <strong>熔丝烧断</strong> （或反之，让反熔丝导通）。烧断了就是“0”，没断就是“1”。</li>
+<li><strong>实践</strong> ： <strong>一次性</strong> 。常用于芯片内部的 <strong>硬防篡改</strong> 存储（如烧录密钥），因为物理上无法恢复熔丝，安全性高。</li>
+</ul></section><section><h5 id="3-eprom-紫外线可擦除">3. EPROM (紫外线可擦除)<a class="anchor" href="#3-eprom-紫外线可擦除"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：核心是 <strong>“浮栅”</strong> 技术。在控制栅和沟道之间，有一个被绝缘层包裹的“浮置栅”。
+<ul>
+<li><strong>编程</strong> ：加高电压，电子获得能量，穿越绝缘层注入到浮栅。浮栅里有电子，相当于阈值电压升高，读取时认为存了“0”。
+<ul>
+<li><strong>擦除</strong> ：用紫外线照射，光子能量让浮栅里的电子获得能量，“逃逸”出来。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>实践</strong> ：芯片顶部有一个 <strong>石英窗口</strong> ，擦除器就像一个小烤箱，需要把芯片放进去照20分钟。这在开发调试中极其痛苦，所以被EEPROM取代。</li>
+</ul></section><section><h5 id="4-eeprom-电可擦除">4. EEPROM (电可擦除)<a class="anchor" href="#4-eeprom-电可擦除"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：依然是浮栅技术，但加入了更精巧的结构，使得 <strong>擦除和编程可以按“字节”进行</strong> 。每个字节单元旁边都有一个小的“隧道二极管”，通过施加反向电压，产生“隧穿效应”，让电子穿过绝缘层。</li>
+<li><strong>实践</strong> ：
+<ul>
+<li><strong>寿命</strong> ：隧穿效应会磨损绝缘层，所以EEPROM写入寿命通常标称 <strong>10万次</strong> 或 <strong>100万次</strong> 。
+<ul>
+<li><strong>速度</strong> ：写入一个字节需要几毫秒，非常慢。</li>
+<li><strong>嵌入式代码</strong> ：常用于保存 <strong>配置参数</strong> 、 <strong>校准系数</strong> 。比如你调了一个温控器的设定温度，这个值就要存在EEPROM里，下次开机还能记住。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section><section><h5 id="5-flash-闪存---存储器的革命">5. FLASH (闪存) - 存储器的革命<a class="anchor" href="#5-flash-闪存---存储器的革命"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：同样是浮栅技术，但架构大改。它 <strong>擦除单位是“块/扇区”</strong> ，而不是字节。
+<ul>
+<li><strong>为什么快？</strong> EEPROM每个字节都有复杂结构，导致芯片面积大、成本高。Flash简化了外围电路，一个块里的所有单元共享擦除电路，所以 <strong>密度可以做得很高，成本低</strong> 。
+<ul>
+<li><strong>为什么不能按字节写？</strong> 写入前必须擦除（将浮栅电子抽走）。而擦除操作是物理上的“大扫除”，最小单位就是块。你不能只扫一间屋子（字节），要扫就扫一栋楼（块）。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>NOR vs NAND 深度对比</strong>
+<ul>
+<li><strong>NOR（或非）</strong> ：
+<ul>
+<li><strong>原理</strong> ：存储单元 <strong>并联</strong> 。就像并联的灯泡，每个都可以独立点亮（寻址）。所以它有独立的地址线和数据线，支持 <strong>随机访问</strong> 。
+- <strong>实践</strong> ：可以直接运行代码（XIP）。CPU上电后，可以直接从NOR Flash里取指令执行，不需要先拷贝到RAM。缺点是写入和擦除极慢，容量小。
+- <strong>应用</strong> ：存放 <strong>Bootloader</strong> （启动代码）。</li>
+<li><strong>NAND（与非）</strong> ：</li>
+<li><strong>原理</strong> ：存储单元 <strong>串联</strong> 。你不能单独访问中间某个单元，必须把一串（一个页）都读出来。所以它只有I/O口，按“页”传输数据。
+- <strong>实践</strong> ： <strong>不能XIP</strong> ，代码必须先拷贝到RAM里才能运行。 <strong>天生会有坏块</strong> ，必须软件管理（坏块标记、纠错码ECC）。优点是容量大，写入快。
+- <strong>应用</strong> ： <strong>文件系统</strong> （存放Linux内核、文件系统镜像）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><hr></section></section><section><h4 id="二深入易失性存储器速度的竞赛">二、深入易失性存储器：速度的竞赛<a class="anchor" href="#二深入易失性存储器速度的竞赛"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>这一类的核心是 <strong>“如何更快地读写，同时还能保持数据？”</strong></p><section><h5 id="1-sram-静态ram">1. SRAM (静态RAM)<a class="anchor" href="#1-sram-静态ram"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：核心是一个 <strong>双稳态触发器</strong> （通常由6个晶体管组成，6T）。你可以想象成一个跷跷板，只要通电，它就稳定在一边（代表0或1），不需要任何操作。</li>
+<li><strong>实践</strong> ：
+<ul>
+<li><strong>速度</strong> ：极快，和CPU速度同步。因为它不需要“刷新”这种等待。
+<ul>
+<li><strong>功耗</strong> ：静态功耗低，但每个单元用的晶体管多，所以 <strong>面积大，成本高</strong> 。</li>
+<li><strong>嵌入式代码</strong> ： <strong>MCU（微控制器）的片内RAM</strong> 基本都是SRAM。像STM32的20K、256K指的就是它。也用作CPU的 <strong>一级缓存（L1 Cache）</strong> 。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section><section><h5 id="2-dram-动态ram">2. DRAM (动态RAM)<a class="anchor" href="#2-dram-动态ram"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>原理</strong> ：核心就是一个 <strong>晶体管加一个电容</strong> （1T1C）。电容里存电荷，有电是1，没电是0。这比SRAM的6T省地方多了，所以 <strong>容量大，便宜</strong> 。</li>
+<li><strong>问题</strong> ：电容会漏电。就像漏水的桶，几毫秒就漏光了。</li>
+<li><strong>解决方案</strong> ：必须 <strong>不断“刷新”</strong> 。有一个专门的刷新电路，不停地去读每个单元的数据，发现少了就补上（重写）。</li>
+<li><strong>实践</strong> ：
+<ul>
+<li><strong>速度</strong> ：因为有刷新周期，且访问时还要等电容充电放电，所以比SRAM慢。
+<ul>
+<li><strong>类型</strong> ：我们常说的 <strong>SDRAM</strong> 、 <strong>DDR</strong> 都是DRAM的进化版，通过更复杂的接口（如双倍速率、突发传输）来掩盖DRAM核心单元的慢速。</li>
+<li><strong>嵌入式代码</strong> ：运行Linux等复杂系统的 <strong>主内存</strong> 。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><hr></section></section><section><h4 id="三寄存器registers-1">三、寄存器（Registers）<a class="anchor" href="#三寄存器registers-1"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>原理</strong> ：和SRAM原理一样（触发器），但 <strong>地位完全不同</strong> 。寄存器是CPU逻辑电路的一部分。</li>
+<li><strong>关键区别</strong> ：
+<ol>
+<li><strong>功能</strong> ：SRAM和DRAM只是存数据。寄存器除了存数据（通用寄存器），还 <strong>控制硬件</strong> （特殊功能寄存器，SFR）。
+2. <strong>速度</strong> ：没有任何中间层，CPU核心直接操作，通常在一个时钟周期内完成。
+3. <strong>数量</strong> ：极少（几十到几百个）。</li>
+</ol>
+</li>
+</ul></section><section><h4 id="嵌入式实践中的总结">嵌入式实践中的总结<a class="anchor" href="#嵌入式实践中的总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>当你写嵌入式代码时，你在和它们打交道：</p><ol>
+<li><strong>定义一个变量 <code>int a;</code></strong>
+<ul>
+<li>如果是在函数内部（局部），它通常存在 <strong>寄存器</strong> （如果编译器优化）或 <strong>SRAM（栈）</strong> 里。</li>
+</ul>
+</li>
+<li><strong>定义一个全局变量 <code>int flag = 0x55;</code></strong>
+<ul>
+<li>这个初始值 <code>0x55</code> 存放在 <strong>Flash</strong> 里。
+<ul>
+<li>在芯片启动时，启动代码会把这个值从 <strong>Flash</strong> 复制到 <strong>SRAM</strong> 里（这个过程叫加载）。</li>
+<li>程序运行时， <code>flag</code> 是在 <strong>SRAM</strong> 里被读写。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>保存用户设置 <code>eeprom_write(0x00, 0x01);</code></strong>
+<ul>
+<li>你调用的函数，最终通过I2C或SPI协议，把数据写入了外挂的 <strong>EEPROM</strong> 芯片。</li>
+</ul>
+</li>
+<li><strong>配置一个引脚 <code>GPIOA->CRL |= 0x01;</code></strong>
+<ul>
+<li>你直接操作的是由芯片设计者定义的 <strong>寄存器</strong> （SFR）。这个操作会瞬间改变硬件引脚状态。</li>
+</ul>
+</li>
+<li><strong>运行一个Linux系统</strong>
+<ul>
+<li><strong>Bootloader</strong> 在 <strong>NOR Flash</strong> 或片内SRAM 里运行。
+<ul>
+<li>它初始化 <strong>DRAM</strong> 控制器。</li>
+<li>然后把内核从 <strong>NAND Flash</strong> 拷贝到 <strong>DRAM</strong> 里。</li>
+<li>最后跳转到 <strong>DRAM</strong> 里去执行内核。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol></section></section></section><section><h2 id="运行代码时在储存器中是怎么运行的">运行代码时，在储存器中是怎么运行的？<a class="anchor" href="#运行代码时在储存器中是怎么运行的"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>当我们讨论“运行代码时，在存储器中是怎么运行的”，实际上是在描述一个程序从静止的二进制文件变成CPU中动态指令流的过程。这个过程涉及多种存储器的协同工作，它们的角色和交互方式决定了程序的执行效率、功耗甚至可行性。下面从嵌入式系统的视角，详细剖析代码运行时的存储器行为。</p><hr><section><h3 id="一代码的存储形态">一、代码的存储形态<a class="anchor" href="#一代码的存储形态"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>编写好的C/C++/汇编代码，经过编译、链接后，生成一个 <strong>可执行文件</strong> （如.hex、.bin、.elf）。这个文件里包含了：</p><ul>
+<li><strong>机器指令</strong> ：CPU要执行的二进制操作码。</li>
+<li><strong>数据</strong> ：全局变量、静态变量、常量字符串等。</li>
+<li><strong>初始化信息</strong> ：如哪些变量需要初始化为特定值。</li>
+</ul><p>在嵌入式系统中，这个可执行文件通常被烧录到 <strong>非易失性存储器</strong> （如Flash、ROM）中。这是因为系统断电后需要保持代码，下次上电才能继续运行。</p><hr></section><section><h3 id="二cpu执行指令的基本流程">二、CPU执行指令的基本流程<a class="anchor" href="#二cpu执行指令的基本流程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>CPU的核心工作就是 <strong>取指-译码-执行</strong> 的无限循环：</p><ol>
+<li><strong>取指</strong> ：从存储器中读取一条指令。</li>
+<li><strong>译码</strong> ：解析指令含义（如加法、跳转、读内存）。</li>
+<li><strong>执行</strong> ：由运算单元完成操作，可能涉及读写数据。</li>
+</ol><p>因此，要运行代码，CPU必须能够 <strong>访问存放指令的存储器</strong> 和 <strong>存放数据的存储器</strong> 。存储器的速度、位置直接决定CPU能否“喂饱”自己。</p><hr></section><section><h3 id="三分层存储体系中的代码运行">三、分层存储体系中的代码运行<a class="anchor" href="#三分层存储体系中的代码运行"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>现代计算机系统（包括嵌入式）采用分层存储结构，目的是用最快的存储器（寄存器）处理最频繁的操作，用大容量慢速存储器（Flash/硬盘）存放大量静态内容。下图展示了代码运行时数据流动的典型路径：</p><div class="expressive-code"><link rel="stylesheet" href="/HexoNotes/_astro/ec.4fsv9.css"><script type="module" src="/HexoNotes/_astro/ec.g1fg5.js"></script><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext" class="wrap" style="--ecMaxLine:62ch"><code><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">1</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">CPU寄存器  &#x3C;-->  缓存（Cache）  &#x3C;-->  主存（RAM）  &#x3C;-->  非易失存储（Flash/ROM）</span></div></div><div class="ec-line" style="--ecIndent:2ch"><div class="gutter"><div class="ln" aria-hidden="true">2</div></div><div class="code"><span class="indent"><span style="--0:#e1e4e8;--1:#e1e4e8">  </span></span><span style="--0:#e1e4e8;--1:#e1e4e8">(最快)           (次快)           (较慢)            (最慢)</span></div></div></code><button class="copy-btn" aria-label="Copy code"><div class="copy-btn-icon"><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon copy-icon"><path d="M368.37-237.37q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-474.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h378.26q34.48 0 58.74 24.26 24.26 24.26 24.26 58.74v474.26q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H368.37Zm0-83h378.26v-474.26H368.37v474.26Zm-155 238q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-515.76q0-17.45 11.96-29.48 11.97-12.02 29.33-12.02t29.54 12.02q12.17 12.03 12.17 29.48v515.76h419.76q17.45 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.03 12.17-29.48 12.17H213.37Zm155-238v-474.26 474.26Z"></path></svg><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon success-icon"><path d="m389-377.13 294.7-294.7q12.58-12.67 29.52-12.67 16.93 0 29.61 12.67 12.67 12.68 12.67 29.53 0 16.86-12.28 29.14L419.07-288.41q-12.59 12.67-29.52 12.67-16.94 0-29.62-12.67L217.41-430.93q-12.67-12.68-12.79-29.45-.12-16.77 12.55-29.45 12.68-12.67 29.62-12.67 16.93 0 29.28 12.67L389-377.13Z"></path></svg></div></button></pre></figure></div><section><h4 id="1-寄存器registers">1. 寄存器（Registers）<a class="anchor" href="#1-寄存器registers"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>作用</strong> ：CPU执行指令时，操作数通常先加载到寄存器中，计算结果也暂存在寄存器里。例如 <code>add r0, r1, r2</code> 表示将r1和r2的值相加，结果存入r0。寄存器是代码执行的 <strong>直接参与者</strong> ，但容量极小（几十字节），无法存放全部代码。</li>
+</ul></section><section><h4 id="2-缓存cache">2. 缓存（Cache）<a class="anchor" href="#2-缓存cache"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>作用</strong> ：位于CPU和主存之间，自动保存最近使用的指令和数据。由于程序具有时间局部性和空间局部性，缓存能显著减少CPU等待慢速存储器的次数。在MCU中，Cache可能不存在或较小；在应用处理器中，Cache是标配。</li>
+</ul></section><section><h4 id="3-主存ram">3. 主存（RAM）<a class="anchor" href="#3-主存ram"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>作用</strong> ：存放当前运行的程序代码和动态数据。CPU通过总线从RAM读取指令，读取/修改数据。RAM的访问速度比Flash快得多，但断电丢失。</li>
+</ul></section><section><h4 id="4-非易失存储flashrom">4. 非易失存储（Flash/ROM）<a class="anchor" href="#4-非易失存储flashrom"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>作用</strong> ：永久存放代码和只读数据。系统上电时，CPU从这里开始执行。</li>
+</ul><hr></section><section><h4 id="四两种典型的嵌入式运行模式">四、两种典型的嵌入式运行模式<a class="anchor" href="#四两种典型的嵌入式运行模式"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>根据系统复杂度，代码运行时的存储器使用方式分为两种主要场景。</p><section><h5 id="场景一微控制器mcu裸机程序xip就地执行">场景一：微控制器（MCU）裸机程序——XIP（就地执行）<a class="anchor" href="#场景一微控制器mcu裸机程序xip就地执行"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>大多数单片机（如STM32、AVR）采用 <strong>XIP</strong> 方式：</p><ul>
+<li><strong>存储</strong> ：代码烧录在片内Flash中。</li>
+<li><strong>执行</strong> ：CPU直接通过地址总线访问Flash，读取指令并执行。Flash虽然比RAM慢，但对许多实时性要求不高的任务足够。</li>
+<li><strong>数据</strong> ：可读写的全局变量、堆栈必须在 <strong>SRAM</strong> 中，因为Flash不能频繁改写。CPU执行指令时，若遇到数据访问指令（如 <code>ldr r0, [addr]</code> ），则从SRAM读取数据；若遇到写数据指令（如 <code>str r1, [addr]</code> ），则写入SRAM。</li>
+<li><strong>启动过程</strong> ：
+<ol>
+<li>上电后，CPU从复位向量（通常位于Flash起始地址）取出第一条指令地址。
+2. 开始从Flash取指执行。
+3. 启动代码（C运行时库）负责将Flash中已初始化的全局变量复制到SRAM中，并将未初始化的变量清零。这一步是必需的，因为C语言要求全局变量在进入main前已有初值。
+4. 跳转到main函数，程序正式运行。</li>
+</ol>
+</li>
+</ul><p>这种模式的优点是简单、无需外部RAM，缺点是Flash访问速度可能成为瓶颈，且代码量受Flash容量限制。</p></section><section><h5 id="场景二应用处理器运行linuxandroid拷贝执行">场景二：应用处理器运行Linux/Android——拷贝执行<a class="anchor" href="#场景二应用处理器运行linuxandroid拷贝执行"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>对于运行操作系统的复杂嵌入式设备（如树莓派、手机），CPU速度极快，而外部Flash（NAND/NOR）太慢，无法直接运行，因此采用 <strong>拷贝执行</strong> 模式：</p><ul>
+<li><strong>存储</strong> ：系统镜像（内核、文件系统）存放在NAND Flash或eMMC中。</li>
+<li><strong>执行</strong> ：
+<ol>
+<li>上电后，片内ROM（BootROM）执行一小段引导代码，初始化基本硬件，从存储设备加载 <strong>Bootloader</strong> 到片内SRAM或外部DRAM中。
+2. Bootloader进一步初始化DRAM控制器，使DRAM可用。
+3. Bootloader将内核镜像从Flash拷贝到DRAM的指定位置。
+4. Bootloader跳转到DRAM中的内核入口点，内核开始在DRAM中运行。
+5. 内核运行时，指令和数据都在DRAM中访问，速度较快。内核管理虚拟内存，可以将不常用的代码页丢弃，需要时再从文件系统（Flash）重新加载。</li>
+</ol>
+</li>
+</ul><p>为什么不能直接在Flash中执行？因为NAND Flash不支持随机访问（只能按页读），且速度慢；NOR Flash虽然支持XIP，但容量小、价格高，通常只存放Bootloader。所以内核必须搬到DRAM中运行。</p><hr></section></section><section><h4 id="五一个具体例子点亮led的程序运行全过程">五、一个具体例子：点亮LED的程序运行全过程<a class="anchor" href="#五一个具体例子点亮led的程序运行全过程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>假设我们有一个简单的STM32程序，代码功能是：</p><div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext" class="wrap" style="--ecMaxLine:48ch"><code><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">1</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">int main() {</span></div></div><div class="ec-line" style="--ecIndent:4ch"><div class="gutter"><div class="ln" aria-hidden="true">2</div></div><div class="code"><span class="indent"><span style="--0:#e1e4e8;--1:#e1e4e8">    </span></span><span style="--0:#e1e4e8;--1:#e1e4e8">while(1) {</span></div></div><div class="ec-line" style="--ecIndent:8ch"><div class="gutter"><div class="ln" aria-hidden="true">3</div></div><div class="code"><span class="indent"><span style="--0:#e1e4e8;--1:#e1e4e8">        </span></span><span style="--0:#e1e4e8;--1:#e1e4e8">GPIOA->ODR ^= (1 &#x3C;&#x3C; 5);  // 翻转PA5引脚（LED）</span></div></div><div class="ec-line" style="--ecIndent:8ch"><div class="gutter"><div class="ln" aria-hidden="true">4</div></div><div class="code"><span class="indent"><span style="--0:#e1e4e8;--1:#e1e4e8">        </span></span><span style="--0:#e1e4e8;--1:#e1e4e8">delay(1000000);</span></div></div><div class="ec-line" style="--ecIndent:4ch"><div class="gutter"><div class="ln" aria-hidden="true">5</div></div><div class="code"><span class="indent"><span style="--0:#e1e4e8;--1:#e1e4e8">    </span></span><span style="--0:#e1e4e8;--1:#e1e4e8">}</span></div></div><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">6</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">}</span></div></div></code><button class="copy-btn" aria-label="Copy code"><div class="copy-btn-icon"><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon copy-icon"><path d="M368.37-237.37q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-474.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h378.26q34.48 0 58.74 24.26 24.26 24.26 24.26 58.74v474.26q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H368.37Zm0-83h378.26v-474.26H368.37v474.26Zm-155 238q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-515.76q0-17.45 11.96-29.48 11.97-12.02 29.33-12.02t29.54 12.02q12.17 12.03 12.17 29.48v515.76h419.76q17.45 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.03 12.17-29.48 12.17H213.37Zm155-238v-474.26 474.26Z"></path></svg><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon success-icon"><path d="m389-377.13 294.7-294.7q12.58-12.67 29.52-12.67 16.93 0 29.61 12.67 12.67 12.68 12.67 29.53 0 16.86-12.28 29.14L419.07-288.41q-12.59 12.67-29.52 12.67-16.94 0-29.62-12.67L217.41-430.93q-12.67-12.68-12.79-29.45-.12-16.77 12.55-29.45 12.68-12.67 29.62-12.67 16.93 0 29.28 12.67L389-377.13Z"></path></svg></div></button></pre></figure></div><p>编译后，生成的二进制文件中有两部分：指令部分（如 <code>GPIOA->ODR ^= ...</code>对应的机器码）和数据部分（如GPIOA的地址常数，可能存放在常量区）。</p><p><strong>烧录后：</strong></p><ul>
+<li>机器码和常量存储在Flash中。</li>
+<li>全局变量（这里没有）如果需要初值，初值也存储在Flash，运行前复制到SRAM。</li>
+</ul><p><strong>运行时：</strong></p><ol>
+<li>CPU从Flash取出第一条指令（例如设置堆栈指针的指令）。</li>
+<li>启动代码将Flash中的常量区（如果有）复制到SRAM。</li>
+<li>跳转到main：后续的循环指令仍在Flash中读取。</li>
+<li>执行到 <code>GPIOA->ODR ^= (1 &#x3C;&#x3C; 5)</code> 时：
+<ul>
+<li>CPU从Flash读取“异或”指令。
+<ul>
+<li>译码发现需要读取GPIOA的ODR寄存器地址（该地址是硬件映射的，属于特殊功能寄存器空间，实际上在芯片设计时是SRAM或专用外设总线区域）。</li>
+<li>从该地址（外设寄存器）读取当前值，进行异或，再写回该地址。</li>
+<li>注意：这里的数据访问直接针对外设寄存器，不是普通的SRAM变量。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>delay</code> 函数的循环指令也在Flash中，循环计数变量通常保存在CPU寄存器或栈（SRAM）中。</li>
+</ol><p>这个例子展示了指令从Flash读取，数据（包括堆栈、变量）主要在SRAM和外设寄存器中，CPU通过总线同时与多个存储器交互。</p><hr></section><section><h4 id="六存储器的层次协作总结">六、存储器的层次协作总结<a class="anchor" href="#六存储器的层次协作总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>存储器类型</th><th>在代码运行中的作用</th><th>访问频率</th><th>特点</th></tr></thead><tbody><tr><td>寄存器</td><td>暂存指令、地址、中间结果</td><td>最高</td><td>CPU核心内，无延迟</td></tr><tr><td>缓存（Cache）</td><td>自动缓存最近使用的指令和数据，减少对慢速存储的访问</td><td>次高</td><td>硬件透明管理</td></tr><tr><td>SRAM</td><td>存放全局变量、堆栈、动态数据；部分系统存放代码</td><td>中等</td><td>快速，但容量有限</td></tr><tr><td>DRAM</td><td>运行操作系统、大型程序的代码和数据</td><td>中等偏下</td><td>容量大，需刷新</td></tr><tr><td>Flash/NOR</td><td>XIP模式下直接执行代码；非XIP模式下存储待加载的代码</td><td>低（读）</td><td>读较慢，写更慢，断电不丢</td></tr><tr><td>NAND/其他存储</td><td>存储文件系统、内核镜像，需先读到RAM再执行</td><td>极低</td><td>读慢，需要块管理</td></tr></tbody></table><p>通过这种层次化结构，系统既保证了代码的持久化，又兼顾了执行速度，同时控制了成本。</p><hr></section><section><h4 id="七总结">七、总结<a class="anchor" href="#七总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p><strong>代码运行的本质是CPU不断从存储器中取出指令并执行的过程</strong> 。在嵌入式系统中，这个过程的起点是非易失存储器（存放代码），终点是CPU寄存器（执行指令），中间经过多级存储器的缓冲和搬运。不同的系统架构（XIP vs 拷贝执行）决定了哪些存储器直接参与指令读取，但最终目标都是让CPU能够高效地获取指令和数据。</p><p>理解这个流程，有助于开发者优化代码布局（如将频繁调用的函数放在RAM中加速）、合理管理内存，以及诊断程序运行时的异常（如总线错误、内存访问越界等）。</p></section></section></section><section><h2 id="内存">内存<a class="anchor" href="#内存"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><section><h3 id="内存详解计算机系统的核心存储">内存详解：计算机系统的核心存储<a class="anchor" href="#内存详解计算机系统的核心存储"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>在计算机体系结构中，<strong>内存</strong>是用于临时或永久存储数据和指令的硬件部件。它是CPU、GPU、NPU等计算单元与数据之间的桥梁，决定了系统的运行速度、功耗和成本。下面从多个维度深入解析内存。</p><hr><section><h4 id="一内存的分类">一、内存的分类<a class="anchor" href="#一内存的分类"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>内存可以从<strong>数据保持性</strong>和<strong>物理结构</strong>两个角度分类。</p><section><h5 id="1-按数据保持性">1. 按数据保持性<a class="anchor" href="#1-按数据保持性"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>易失性存储器</strong>：断电后数据丢失，用于运行时数据存储。
+<ul>
+<li><strong>RAM（随机存取存储器）</strong>：可读写，速度较快。</li>
+</ul>
+</li>
+<li><strong>非易失性存储器</strong>：断电后数据保留，用于程序存储和长期数据保存。
+<ul>
+<li><strong>ROM（只读存储器）</strong>、<strong>Flash</strong>、<strong>EEPROM</strong> 等。</li>
+</ul>
+</li>
+</ul></section><section><h5 id="2-常见内存类型">2. 常见内存类型<a class="anchor" href="#2-常见内存类型"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>类型</th><th>全称</th><th>特点</th><th>用途</th></tr></thead><tbody><tr><td><strong>SRAM</strong></td><td>静态随机存取存储器</td><td>速度快，功耗低（但静态功耗相对高），集成度低，成本高。由触发器构成，无需刷新。</td><td>CPU缓存（L1/L2/L3）、片上内存</td></tr><tr><td><strong>DRAM</strong></td><td>动态随机存取存储器</td><td>容量大，成本低，速度较SRAM慢，需要周期性刷新（每几毫秒）。</td><td>主内存（如DDR SDRAM）</td></tr><tr><td><strong>SDRAM</strong></td><td>同步动态随机存取存储器</td><td>与系统时钟同步，支持突发传输。</td><td>计算机内存条</td></tr><tr><td><strong>DDR SDRAM</strong></td><td>双倍数据率SDRAM</td><td>在时钟上升沿和下降沿都传输数据，提升带宽。</td><td>现代PC、手机、嵌入式系统（DDR3/4/5）</td></tr><tr><td><strong>LPDDR</strong></td><td>低功耗DDR</td><td>针对移动设备优化，电压更低，省电。</td><td>手机、平板、嵌入式设备</td></tr><tr><td><strong>Flash</strong></td><td>闪存</td><td>非易失，可电擦写，分NOR和NAND两种。NOR支持随机访问，适合代码执行；NAND容量大，适合数据存储。</td><td>U盘、SSD、嵌入式存储（eMMC、UFS）</td></tr><tr><td><strong>EEPROM</strong></td><td>电可擦可编程ROM</td><td>可字节擦写，寿命长，容量小。</td><td>存储配置参数、校准数据</td></tr><tr><td><strong>ROM</strong></td><td>只读存储器</td><td>出厂时固化，不可修改（或一次可编程）。</td><td>启动代码、固件</td></tr></tbody></table><hr></section></section><section><h4 id="二内存层次结构">二、内存层次结构<a class="anchor" href="#二内存层次结构"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>为了平衡速度、容量和成本，现代计算机采用<strong>内存层次结构</strong>。越靠近CPU的层次速度越快、容量越小、成本越高。</p><div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext" class="wrap" style="--ecMaxLine:57ch"><code><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">1</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">CPU寄存器 &#x3C;---> 高速缓存（L1/L2/L3） &#x3C;---> 主存（DRAM） &#x3C;---> 固态硬盘/硬盘</span></div></div><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">2</div></div><div class="code"><span style="--0:#e1e4e8;--1:#e1e4e8">（最快、最小）                         （较慢、较大）           （最慢、最大）</span></div></div></code><button class="copy-btn" aria-label="Copy code"><div class="copy-btn-icon"><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon copy-icon"><path d="M368.37-237.37q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-474.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h378.26q34.48 0 58.74 24.26 24.26 24.26 24.26 58.74v474.26q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H368.37Zm0-83h378.26v-474.26H368.37v474.26Zm-155 238q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-515.76q0-17.45 11.96-29.48 11.97-12.02 29.33-12.02t29.54 12.02q12.17 12.03 12.17 29.48v515.76h419.76q17.45 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.03 12.17-29.48 12.17H213.37Zm155-238v-474.26 474.26Z"></path></svg><svg viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" class="copy-btn-icon success-icon"><path d="m389-377.13 294.7-294.7q12.58-12.67 29.52-12.67 16.93 0 29.61 12.67 12.67 12.68 12.67 29.53 0 16.86-12.28 29.14L419.07-288.41q-12.59 12.67-29.52 12.67-16.94 0-29.62-12.67L217.41-430.93q-12.67-12.68-12.79-29.45-.12-16.77 12.55-29.45 12.68-12.67 29.62-12.67 16.93 0 29.28 12.67L389-377.13Z"></path></svg></div></button></pre></figure></div><ul>
+<li><strong>寄存器</strong>：CPU内部，访问延迟约1个时钟周期。</li>
+<li><strong>L1/L2/L3缓存</strong>：通常由SRAM构成，容量几十KB到几十MB，延迟几到几十个时钟周期。</li>
+<li><strong>主存</strong>：DRAM，容量几GB到几十GB，延迟几十到几百纳秒。</li>
+<li><strong>外存</strong>：Flash或硬盘，容量几百GB到几TB，延迟毫秒级（SSD）或几十毫秒（HDD）。</li>
+</ul><p><strong>局部性原理</strong>（时间局部性、空间局部性）使得这种层次结构有效：程序倾向于重复访问同一块数据或相邻数据，缓存可以提前加载数据，减少CPU等待。</p><hr></section><section><h4 id="三嵌入式系统中的内存">三、嵌入式系统中的内存<a class="anchor" href="#三嵌入式系统中的内存"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>嵌入式系统对内存的要求多样，通常资源受限（几KB到几MB），需要根据应用选择合适类型。</p><section><h5 id="1-常见嵌入式内存布局">1. 常见嵌入式内存布局<a class="anchor" href="#1-常见嵌入式内存布局"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>片上内存</strong>：与CPU集成在同一芯片上，包括SRAM和Flash。访问快，节省功耗。
+<ul>
+<li>例如STM32F103内部有20KB SRAM和64KB Flash。</li>
+</ul>
+</li>
+<li><strong>片外内存</strong>：通过总线扩展，如SDRAM、NOR Flash、NAND Flash。用于需要更大内存的场景（如运行Linux的系统）。</li>
+</ul></section><section><h5 id="2-内存管理单元mmu与内存保护单元mpu">2. 内存管理单元（MMU）与内存保护单元（MPU）<a class="anchor" href="#2-内存管理单元mmu与内存保护单元mpu"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>MMU</strong>：用于高级处理器（如ARM Cortex-A系列），实现虚拟地址到物理地址的映射，支持分页、进程隔离和内存保护。</li>
+<li><strong>MPU</strong>：用于实时处理器（如ARM Cortex-M系列），仅提供内存区域保护（可配置为只读、不可执行等），无虚拟内存，简化设计，保证实时性。</li>
+</ul></section><section><h5 id="3-内存对齐与位宽">3. 内存对齐与位宽<a class="anchor" href="#3-内存对齐与位宽"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>嵌入式CPU通常支持字节、半字、字访问，但要求地址对齐（如32位数据需4字节对齐），否则引发异常或降低性能。</li>
+<li>内存位宽决定了一次能读取的数据量，常见8位、16位、32位，甚至64位。</li>
+</ul><hr></section></section><section><h4 id="四gpunpu-与内存的交互">四、GPU/NPU 与内存的交互<a class="anchor" href="#四gpunpu-与内存的交互"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>在前面的人脸识别流程中，内存扮演着关键角色。</p><section><h5 id="1-gpu-与显存">1. GPU 与显存<a class="anchor" href="#1-gpu-与显存"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>GPU 需要高速访问大量图像数据（矩阵），通常使用专用的<strong>显存</strong>（VRAM），如GDDR6、HBM等，带宽极高。</li>
+<li>在手机SoC中，GPU与CPU共享系统内存（如LPDDR5），通过高带宽总线连接。</li>
+</ul></section><section><h5 id="2-npu-与片上缓冲区">2. NPU 与片上缓冲区<a class="anchor" href="#2-npu-与片上缓冲区"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>NPU 为了极致能效，通常内置大容量<strong>片上缓冲区</strong>（SRAM），存放模型权重和中间特征图，减少对外部内存的访问。</li>
+<li>执行推理时，数据从系统内存（DRAM）加载到NPU缓冲区，计算完成后结果写回内存。</li>
+</ul></section><section><h5 id="3-数据流">3. 数据流<a class="anchor" href="#3-数据流"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>摄像头采集图像 → 存入内存（DRAM） → CPU/GPU/NPU 读取内存中的图像进行预处理 → 处理后的数据再次存入内存 → NPU 读取进行推理 → 结果存入内存 → CPU 读取结果并执行后续操作。</li>
+</ul><p>整个过程中，内存带宽和延迟直接影响系统性能。例如，如果内存带宽不足，NPU可能处于“等数据”状态，无法发挥全部算力。</p><hr></section></section><section><h4 id="五内存性能指标">五、内存性能指标<a class="anchor" href="#五内存性能指标"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><ul>
+<li><strong>容量</strong>：能存储多少数据。</li>
+<li><strong>延迟</strong>：从发出访问请求到数据到达的时间。</li>
+<li><strong>带宽</strong>：单位时间内能传输的数据量（如 GB/s）。</li>
+<li><strong>功耗</strong>：尤其对电池供电设备至关重要。</li>
+<li><strong>成本</strong>：每比特价格。</li>
+</ul><hr></section><section><h4 id="六总结">六、总结<a class="anchor" href="#六总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>内存是计算机系统中不可或缺的组成部分，它连接着处理器和外部世界。理解不同类型内存的特性、层次结构以及它们在系统中的作用，对于软硬件设计、性能优化都至关重要。在嵌入式开发中，合理选择内存类型和大小，并考虑内存对齐、缓存一致性等问题，是编写高效稳定代码的基础。</p></section></section></section><section><h2 id="详细解释机械硬盘">详细解释机械硬盘<a class="anchor" href="#详细解释机械硬盘"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><section><h3 id="机械硬盘hdd详解">机械硬盘（HDD）详解<a class="anchor" href="#机械硬盘hdd详解"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><p>机械硬盘（Hard Disk Drive，HDD）是一种采用磁性碟片作为存储介质的传统数据存储设备。尽管在嵌入式系统中不常用（更多使用Flash/eMMC），但作为计算机存储体系的基础，理解其工作原理有助于全面掌握硬件知识。</p><section><h4 id="一机械硬盘的物理结构">一、机械硬盘的物理结构<a class="anchor" href="#一机械硬盘的物理结构"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>机械硬盘内部是一个精密机械与电子电路结合的组件，主要包括以下部分：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>部件</th><th>功能描述</th></tr></thead><tbody><tr><td><strong>盘片</strong></td><td>存储数据的载体，由铝、玻璃或陶瓷制成，表面涂有磁性介质。多个盘片平行安装在主轴上</td></tr><tr><td><strong>磁头</strong></td><td>负责数据的读写，每个盘片上下表面各对应一个磁头。磁头悬浮在盘片上方，不直接接触</td></tr><tr><td><strong>主轴电机</strong></td><td>带动盘片高速旋转，转速通常为5400/7200 RPM（转/分钟），服务器级可达10000-15000 RPM</td></tr><tr><td><strong>磁头臂/传动轴</strong></td><td>带动磁头沿盘片半径方向移动，精确定位到指定磁道</td></tr><tr><td><strong>控制电路板</strong></td><td>控制硬盘的读写操作、电机转速、接口通信等</td></tr><tr><td><strong>接口</strong></td><td>与主板连接，常见有SATA、SAS、SCSI等</td></tr></tbody></table><p><strong>关键特点</strong>：硬盘内部是完全密封的，防止尘埃进入。磁头与盘片的距离极小——仅约0.005μm～0.01μm，相当于人类头发直径的千分之一。这也是为什么硬盘在运行时<strong>非常怕震动</strong>——轻微撞击就可能导致磁头划伤盘片，造成数据损坏。</p></section><section><h4 id="二数据的逻辑组织">二、数据的逻辑组织<a class="anchor" href="#二数据的逻辑组织"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>盘片上的数据按照特定的逻辑结构排列，如下图所示：</p><section><h5 id="1-磁道">1. 磁道<a class="anchor" href="#1-磁道"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>盘片上的一系列同心圆环，从外向内编号（最外圈是0磁道）。数据存放在这些同心圆上。</p></section><section><h5 id="2-扇区">2. 扇区<a class="anchor" href="#2-扇区"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>每个磁道被等分为若干弧段，每段称为一个扇区。扇区是硬盘的<strong>最小存储单元</strong>，传统扇区大小为<strong>512字节</strong>，新型硬盘支持4K扇区。</p></section><section><h5 id="3-柱面">3. 柱面<a class="anchor" href="#3-柱面"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>所有盘片相同编号的磁道构成的虚拟圆柱。硬盘在存储时优先按柱面写入——写满一个柱面再换下一个，这样所有磁头可以同时工作，效率更高。</p><p><strong>硬盘容量计算公式</strong>：<code>容量 = 磁头数 × 柱面数 × 扇区数 × 每扇区字节数</code>。</p></section></section><section><h4 id="三工作原理">三、工作原理<a class="anchor" href="#三工作原理"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="1-温彻斯特winchester技术">1. <strong>温彻斯特（Winchester）技术</strong><a class="anchor" href="#1-温彻斯特winchester技术"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>目前几乎所有机械硬盘都采用此技术，核心特点：</p><ul>
+<li>盘片与磁头密封在防尘腔体内</li>
+<li>磁头通过盘片高速旋转产生的气流“飞行”在盘片上方，不接触盘面</li>
+<li>磁头飞行高度极低（纳米级）</li>
+</ul></section><section><h5 id="2-读写过程">2. <strong>读写过程</strong><a class="anchor" href="#2-读写过程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li><strong>读数据</strong>：盘片高速旋转 → 磁头移动到目标磁道（寻道）→ 等待目标扇区旋转到磁头下方（旋转等待）→ 磁头感应盘片表面磁场变化，产生电脉冲 → 电路转换为数字信号</li>
+<li><strong>写数据</strong>：磁头通过电磁流改变盘片上磁性颗粒的极性，记录0/1信息</li>
+</ul></section><section><h5 id="3-一次完整的io操作耗时">3. <strong>一次完整的IO操作耗时</strong><a class="anchor" href="#3-一次完整的io操作耗时"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p><code>I/O时间 = 寻道时间 + 旋转延迟 + 数据传输时间</code></p><ul>
+<li><strong>寻道时间</strong>：磁头移动到目标磁道的时间。平均寻道时间约5-10ms</li>
+<li><strong>旋转延迟</strong>：等待目标扇区旋转到磁头下方。平均为转半圈的时间（如7200 RPM硬盘约4.17ms）</li>
+<li><strong>数据传输时间</strong>：数据从盘片读到缓存或通过接口发送的时间</li>
+</ul></section></section><section><h4 id="四关键性能指标">四、关键性能指标<a class="anchor" href="#四关键性能指标"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><section><h5 id="1-转速rpm">1. <strong>转速（RPM）</strong><a class="anchor" href="#1-转速rpm"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>5400 RPM：笔记本硬盘、移动硬盘，省电</li>
+<li>7200 RPM：台式机主流</li>
+<li>10000-15000 RPM：服务器高性能硬盘</li>
+</ul></section><section><h5 id="2-iops每秒输入输出操作次数">2. <strong>IOPS（每秒输入输出操作次数）</strong><a class="anchor" href="#2-iops每秒输入输出操作次数"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>衡量随机读写性能的关键指标。机械硬盘IOPS通常在100-200左右，远低于固态硬盘（数万IOPS）。例如：</p><ul>
+<li>7200 RPM硬盘，4K随机读写，IOPS约140</li>
+</ul></section><section><h5 id="3-数据传输率">3. <strong>数据传输率</strong><a class="anchor" href="#3-数据传输率"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><ul>
+<li>内部传输率：盘片到缓存的速度</li>
+<li>外部传输率：接口速度（如SATA 3.0理论600MB/s，实际机械硬盘约120-200MB/s）</li>
+</ul></section><section><h5 id="4-平均无故障时间mtbf">4. <strong>平均无故障时间（MTBF）</strong><a class="anchor" href="#4-平均无故障时间mtbf"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h5><p>企业级硬盘可达120万-200万小时。</p></section></section><section><h4 id="五机械硬盘-vs-固态硬盘嵌入式常用">五、机械硬盘 vs 固态硬盘（嵌入式常用）<a class="anchor" href="#五机械硬盘-vs-固态硬盘嵌入式常用"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>对比项</th><th>机械硬盘（HDD）</th><th>固态硬盘（SSD）</th></tr></thead><tbody><tr><td><strong>存储介质</strong></td><td>磁性盘片</td><td>闪存颗粒</td></tr><tr><td><strong>抗震性</strong></td><td>差（怕震动）</td><td>好（无机械部件）</td></tr><tr><td><strong>速度</strong></td><td>约120-200MB/s</td><td>500-3500MB/s（NVMe）</td></tr><tr><td><strong>功耗</strong></td><td>较高</td><td>较低</td></tr><tr><td><strong>噪音</strong></td><td>有（马达声）</td><td>无（0分贝）</td></tr><tr><td><strong>容量/价格</strong></td><td>大/便宜</td><td>较小/较贵</td></tr><tr><td><strong>寿命</strong></td><td>理论上无写次数限制</td><td>有擦写次数限制</td></tr></tbody></table></section><section><h4 id="六嵌入式视角为什么很少用机械硬盘">六、嵌入式视角：为什么很少用机械硬盘？<a class="anchor" href="#六嵌入式视角为什么很少用机械硬盘"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h4><p>在嵌入式系统（如STM32、ESP32）中，通常使用Flash（NAND/NOR）或eMMC，而非机械硬盘，原因如下：</p><ul>
+<li><strong>体积与功耗</strong>：机械硬盘体积大、功耗高，不适合便携/电池设备</li>
+<li><strong>抗震性</strong>：嵌入式设备常移动、震动，机械硬盘易损坏</li>
+<li><strong>接口复杂度</strong>：机械硬盘需要SATA/SAS接口和复杂驱动，MCU难以直接驱动</li>
+<li><strong>实时性</strong>：机械硬盘的寻道时间不确定，影响实时响应</li>
+</ul><p>但在<strong>存储服务器、NAS、监控录像机</strong>等嵌入式设备中，机械硬盘仍是大容量冷存储的首选。</p><hr><p>机械硬盘的核心价值在于<strong>大容量、低成本、长寿命</strong>，尽管速度不如SSD，但在数据中心、冷数据备份等领域依然不可或缺。理解它的机械特性和性能瓶颈，有助于在系统设计时做出合理选择。</p></section></section></section></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
+`?"":e).join(`
+`);navigator.clipboard.writeText(i);const o=t.getAttribute("data-timeout-id");o&&clearTimeout(parseInt(o)),t.classList.add("success");const n=setTimeout(()=>{t.classList.remove("success")},1e3);t.setAttribute("data-timeout-id",n.toString())}});</script> <div class="relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 mb-6 rounded-xl license-container onload-animation"> <div class="transition font-bold text-black/75 dark:text-white/75"> 存储器与内存 </div> <a href="https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/存储器与内存/" class="link text-[var(--primary)]"> https://520luxun.github.io/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/存储器与内存/ </a> <div class="flex gap-6 mt-2"> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">作者</div> <div class="transition text-black/75 dark:text-white/75 line-clamp-2">520luxun</div> </div> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">发布于</div> <div class="transition text-black/75 dark:text-white/75 line-clamp-2">2026-11-18</div> </div> <div> <div class="transition text-black/30 dark:text-white/30 text-sm">许可协议</div> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="link text-[var(--primary)] line-clamp-2">CC BY-NC-SA 4.0</a> </div> </div> <svg width="0.97em" height="1em" class="transition text-[15rem] absolute pointer-events-none right-6 top-1/2 -translate-y-1/2 text-black/5 dark:text-white/5" data-icon="fa6-brands:creative-commons">   <symbol id="ai:fa6-brands:creative-commons" viewBox="0 0 496 512"><path fill="currentColor" d="m245.83 214.87l-33.22 17.28c-9.43-19.58-25.24-19.93-27.46-19.93c-22.13 0-33.22 14.61-33.22 43.84c0 23.57 9.21 43.84 33.22 43.84c14.47 0 24.65-7.09 30.57-21.26l30.55 15.5c-6.17 11.51-25.69 38.98-65.1 38.98c-22.6 0-73.96-10.32-73.96-77.05c0-58.69 43-77.06 72.63-77.06c30.72-.01 52.7 11.95 65.99 35.86m143.05 0l-32.78 17.28c-9.5-19.77-25.72-19.93-27.9-19.93c-22.14 0-33.22 14.61-33.22 43.84c0 23.55 9.23 43.84 33.22 43.84c14.45 0 24.65-7.09 30.54-21.26l31 15.5c-2.1 3.75-21.39 38.98-65.09 38.98c-22.69 0-73.96-9.87-73.96-77.05c0-58.67 42.97-77.06 72.63-77.06c30.71-.01 52.58 11.95 65.56 35.86M247.56 8.05C104.74 8.05 0 123.11 0 256.05c0 138.49 113.6 248 247.56 248c129.93 0 248.44-100.87 248.44-248c0-137.87-106.62-248-248.44-248m.87 450.81c-112.54 0-203.7-93.04-203.7-202.81c0-105.42 85.43-203.27 203.72-203.27c112.53 0 202.82 89.46 202.82 203.26c-.01 121.69-99.68 202.82-202.84 202.82"/></symbol><use href="#ai:fa6-brands:creative-commons"></use>  </svg> </div> </div> </div> <div class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"> <a href="/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/处理器类型与架构/" class="w-full font-bold overflow-hidden active:scale-95"> <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4"> <svg width="1em" height="1em" class="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-left-rounded">   <symbol id="ai:material-symbols:chevron-left-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z"/></symbol><use href="#ai:material-symbols:chevron-left-rounded"></use>  </svg> <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"> 处理器类型与架构 </div> </div> </a> <a href="/HexoNotes/posts/notes/embedded/nosystematic/docs/01-嵌入式基础/硬件与体系结构知识体系/汇编与流水线/" class="w-full font-bold overflow-hidden active:scale-95"> <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-end gap-4"> <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"> 汇编与流水线 </div> <svg width="1em" height="1em" viewBox="0 0 24 24" class="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">   <use href="#ai:material-symbols:chevron-right-rounded"></use>  </svg> </div> </a> </div>  <div class="footer col-span-2 onload-animation hidden lg:block"> <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">--><div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div> <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">--> <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"> <div class="transition text-50 text-sm text-center">
+&copy; <span id="copyright-year">2026</span> 520luxun. All Rights Reserved. /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/rss.xml">RSS</a> /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/sitemap-index.xml">Sitemap</a><br>
+Powered by
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a> </div> </div> </div> </div> </main> <div class="footer col-span-2 onload-animation block lg:hidden"> <!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">--><div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div> <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">--> <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"> <div class="transition text-50 text-sm text-center">
+&copy; <span id="copyright-year">2026</span> 520luxun. All Rights Reserved. /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/rss.xml">RSS</a> /
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="/HexoNotes/sitemap-index.xml">Sitemap</a><br>
+Powered by
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
+<a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a> </div> </div> </div> </div> <!-- There can't be a filter on parent element, or it will break `fixed` --><div class="back-to-top-wrapper hidden lg:block" data-astro-cid-eymb5ayk> <div id="back-to-top-btn" class="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition" onclick="backToTop()" data-astro-cid-eymb5ayk> <button aria-label="Back to Top" class="btn-card h-[3.75rem] w-[3.75rem]" data-astro-cid-eymb5ayk> <svg width="1em" height="1em" class="mx-auto" data-astro-cid-eymb5ayk="true" data-icon="material-symbols:keyboard-arrow-up-rounded">   <symbol id="ai:material-symbols:keyboard-arrow-up-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m12 10.8l-3.9 3.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.6-4.6q.3-.3.7-.3t.7.3l4.6 4.6q.275.275.275.7t-.275.7t-.7.275t-.7-.275z"/></symbol><use href="#ai:material-symbols:keyboard-arrow-up-rounded"></use>  </svg> </button> </div> </div>  <script>
+function backToTop() {
+    window.scroll({ top: 0, behavior: 'smooth' });
+}
+</script> </div> </div>  <div class="absolute w-full z-0 hidden 2xl:block"> <div class="relative max-w-[var(--page-width)] mx-auto"> <!-- TOC component --> <div id="toc-wrapper" class="hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center toc-hide"> <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar"> <div id="toc" class="w-full h-full transition-swup-fade "> <div class="h-8 w-full"></div> <table-of-contents class="group"><a href="#存储器与内存" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold bg-[var(--toc-badge-bg)] text-[var(--btn-content)]">1</div><div class="transition text-sm text-50">存储器与内存</div></a><a href="#存储器" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">存储器</div></a><a href="#详细解释存储器" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">详细解释存储器</div></a><a href="#运行代码时在储存器中是怎么运行的" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">运行代码时，在储存器中是怎么运行的？</div></a><a href="#内存" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">内存</div></a><a href="#详细解释机械硬盘" class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
+        hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
+    "><div class="transition w-5 h-5 shrink-0 rounded-lg text-xs flex items-center justify-center font-bold ml-4"><div class="transition w-2 h-2 rounded-[0.1875rem] bg-[var(--toc-badge-bg)]"></div></div><div class="transition text-sm text-50">详细解释机械硬盘</div></a><div id="active-indicator" style="opacity: 0" class="-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"></div></table-of-contents><script type="module">class l extends HTMLElement{tocEl=null;visibleClass="visible";observer;anchorNavTarget=null;headingIdxMap=new Map;headings=[];sections=[];tocEntries=[];active=[];activeIndicator=null;constructor(){super(),this.observer=new IntersectionObserver(this.markVisibleSection,{threshold:0})}markVisibleSection=t=>{t.forEach(e=>{const i=e.target.children[0]?.getAttribute("id"),s=i?this.headingIdxMap.get(i):void 0;s!=null&&(this.active[s]=e.isIntersecting),e.isIntersecting&&this.anchorNavTarget==e.target.firstChild&&(this.anchorNavTarget=null)}),this.active.includes(!0)||this.fallback(),this.update()};toggleActiveHeading=()=>{let t=this.active.length-1,e=this.active.length-1,i=-1;for(;t>=0&&!this.active[t];)this.tocEntries[t].classList.remove(this.visibleClass),t--;for(;t>=0&&this.active[t];)this.tocEntries[t].classList.add(this.visibleClass),e=Math.min(e,t),i=Math.max(i,t),t--;for(;t>=0;)this.tocEntries[t].classList.remove(this.visibleClass),t--;if(e>i)this.activeIndicator?.setAttribute("style","opacity: 0");else{let s=this.tocEl?.getBoundingClientRect().top||0,n=this.tocEl?.scrollTop||0,o=this.tocEntries[e].getBoundingClientRect().top-s+n,c=this.tocEntries[i].getBoundingClientRect().bottom-s+n;this.activeIndicator?.setAttribute("style",`top: ${o}px; height: ${c-o}px`)}};scrollToActiveHeading=()=>{if(this.anchorNavTarget||!this.tocEl)return;const t=document.querySelectorAll(`#toc .${this.visibleClass}`);if(!t.length)return;const e=t[0],i=t[t.length-1],s=this.tocEl.clientHeight;let n;i.getBoundingClientRect().bottom-e.getBoundingClientRect().top<.9*s?n=e.offsetTop-32:n=i.offsetTop-s*.8,this.tocEl.scrollTo({top:n,left:0,behavior:"smooth"})};update=()=>{requestAnimationFrame(()=>{this.toggleActiveHeading(),this.scrollToActiveHeading()})};fallback=()=>{if(this.sections.length)for(let t=0;t<this.sections.length;t++){let e=this.sections[t].getBoundingClientRect().top,i=this.sections[t].getBoundingClientRect().bottom;if(this.isInRange(e,0,window.innerHeight)||this.isInRange(i,0,window.innerHeight)||e<0&&i>window.innerHeight)this.markActiveHeading(t);else if(e>window.innerHeight)break}};markActiveHeading=t=>{this.active[t]=!0};handleAnchorClick=t=>{const e=t.composedPath().find(i=>i instanceof HTMLAnchorElement);if(e){const i=decodeURIComponent(e.hash?.substring(1)),s=this.headingIdxMap.get(i);s!==void 0?this.anchorNavTarget=this.headings[s]:this.anchorNavTarget=null}};isInRange(t,e,i){return e<t&&t<i}connectedCallback(){const t=document.querySelector(".prose");t?t.addEventListener("animationend",()=>{this.init()},{once:!0}):console.debug("Animation element not found")}init(){if(this.tocEl=document.getElementById("toc-inner-wrapper"),!!this.tocEl&&(this.tocEl.addEventListener("click",this.handleAnchorClick,{capture:!0}),this.activeIndicator=document.getElementById("active-indicator"),this.tocEntries=Array.from(document.querySelectorAll("#toc a[href^='#']")),this.tocEntries.length!==0)){this.sections=new Array(this.tocEntries.length),this.headings=new Array(this.tocEntries.length);for(let t=0;t<this.tocEntries.length;t++){const e=decodeURIComponent(this.tocEntries[t].hash?.substring(1)),i=document.getElementById(e),s=i?.parentElement;i instanceof HTMLElement&&s instanceof HTMLElement&&(this.headings[t]=i,this.sections[t]=s,this.headingIdxMap.set(e,t))}this.active=new Array(this.tocEntries.length).fill(!1),this.sections.forEach(t=>this.observer.observe(t)),this.fallback(),this.update()}}disconnectedCallback(){this.sections.forEach(t=>this.observer.unobserve(t)),this.observer.disconnect(),this.tocEl?.removeEventListener("click",this.handleAnchorClick)}}customElements.get("table-of-contents")||customElements.define("table-of-contents",l);</script> <div class="h-8 w-full"></div> </div> </div> </div> <!-- #toc needs to exist for Swup to work normally -->  </div> </div>  <!-- 进站开场动画（每会话首次） --> <script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><astro-island uid="2t2uSh" component-url="/HexoNotes/_astro/IntroOverlay.C1bOQPmc.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{&quot;data-astro-cid-sckkx6r4&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;IntroOverlay&quot;,&quot;value&quot;:true}" await-children><!--[--><!--[!--><!--]--><!--]--><!--astro:end--></astro-island> <!-- 全站动态特效（飘落/点击） --> <astro-island uid="ZoiS2H" component-url="/HexoNotes/_astro/EffectsLayer.SvCN9z85.js" component-export="default" renderer-url="/HexoNotes/_astro/client.svelte.CWJe3nPF.js" props="{&quot;data-astro-cid-sckkx6r4&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;EffectsLayer&quot;,&quot;value&quot;:true}" await-children><!--[--><canvas class="falling-canvas svelte-100ohr1" aria-hidden="true"></canvas> <div class="click-fx-layer" aria-hidden="true"></div><!--]--><!--astro:end--></astro-island> <!-- increase the page height during page transition to prevent the scrolling animation from jumping --> <div id="page-height-extend" class="hidden h-[300vh]" data-astro-cid-sckkx6r4 style="--bannerOffset: 15vh;--banner-height-home: 65vh;--banner-height: 35vh;--site-bg-bocchi: url('/HexoNotes/background.jpg');--site-bg-eva: url('/HexoNotes/bg/bg-eva.jpg');--site-bg-retro90: url('/HexoNotes/bg/bg-retro90.jpg');--site-bg-sakura: url('/HexoNotes/bg/bg-sakura.jpg');--site-bg-violet: url('/HexoNotes/bg/bg-violet.jpg');--site-bg-shinkai: url('/HexoNotes/bg/bg-shinkai.jpg');--site-bg-demon: url('/HexoNotes/bg/bg-demon.jpg');--configHue: 250;--page-width: 75rem;"></div>  <script type="module" src="/HexoNotes/_astro/Layout.astro_astro_type_script_index_0_lang.BGJ2_THW.js"></script> <script type="module" src="/HexoNotes/_astro/Layout.astro_astro_type_script_index_1_lang.x7Ak-T7n.js"></script></body></html>
