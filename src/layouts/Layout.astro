@@ -396,7 +396,7 @@ function showBanner() {
 // 只有当前风格的那张 banner 才带 src，切换风格时按需补上
 function syncBannerSrc() {
 	const style = document.documentElement.dataset.style || '';
-	document.querySelectorAll('#banner .banner-img').forEach(img => {
+	document.querySelectorAll<HTMLImageElement>('#banner .banner-img').forEach(img => {
 		if (img.dataset.bannerStyle === style && !img.getAttribute('src')) {
 			img.setAttribute('src', img.dataset.src || '');
 			img.style.display = '';
@@ -405,7 +405,7 @@ function syncBannerSrc() {
 }
 
 function hideBrokenBannerImages() {
-	const bannerImgs = document.querySelectorAll('#banner .banner-img');
+	const bannerImgs = document.querySelectorAll<HTMLImageElement>('#banner .banner-img');
 	bannerImgs.forEach(img => {
 		if (!img.getAttribute('src')) return;
 		if (img.complete && img.naturalWidth === 0) {

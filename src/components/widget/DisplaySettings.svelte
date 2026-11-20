@@ -98,11 +98,12 @@ function toggleEffect(key: keyof EffectSettings) {
 	effects = { ...effects, [key]: !effects[key] };
 	setEffects(effects);
 }
+let { class: className = "" } = $props();
 </script>
 
 <div
 	id="display-setting"
-	class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-4 max-h-[calc(100vh-7rem)] overflow-y-auto"
+	class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-4 max-h-[calc(100vh-7rem)] overflow-y-auto {className}"
 >
 	<!-- 站点风格 -->
 	<div

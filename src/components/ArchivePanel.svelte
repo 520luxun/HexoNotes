@@ -6,24 +6,19 @@ import { i18n } from "../i18n/translation";
 import { initReveal } from "../scripts/effects/reveal";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
-export let tags: string[];
-export let categories: string[];
+export let tags: string[] = [];
+export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
 // "archive" groups by year (newest first); "catalog" groups by category and
 // keeps the chapter order of the incoming list.
 export let mode: "archive" | "catalog" = "archive";
-
-const params = new URLSearchParams(window.location.search);
-tags = params.has("tag") ? params.getAll("tag") : [];
-categories = params.has("category") ? params.getAll("category") : [];
-const uncategorized = params.get("uncategorized");
 
 interface Post {
 	slug: string;
 	data: {
 		title: string;
 		tags: string[];
-		category?: string;
+		category?: string | null;
 		published: Date;
 	};
 }
@@ -46,29 +41,47 @@ function formatTag(tagList: string[]) {
 	return tagList.map((t) => `#${t}`).join(" ");
 }
 
-onMount(async () => {
-	let filteredPosts: Post[] = sortedPosts;
+// Sort inside each group by the chapter number in the title
+// (00_, 1.1.1, 1.2, 2.1 ...), not by file-system order.
+function chapterKey(title: string) {
+	const m = title.match(/^(\d+(?:\.\d+)*)/);
+	return m
+		? m[1]
+				.split(".")
+				.map((n) => n.padStart(4, "0"))
+				.join(".")
+		: "9999";
+}
 
-	if (tags.length > 0) {
+/** 纯函数：给定文章和筛选条件，算出分组，便于首屏（SSR）与筛选共用。 */
+function buildGroups(
+	posts: Post[],
+	activeTags: string[],
+	activeCategories: string[],
+	onlyUncategorized: string | null,
+): Group[] {
+	let filteredPosts = posts;
+
+	if (activeTags.length > 0) {
 		filteredPosts = filteredPosts.filter(
 			(post) =>
 				Array.isArray(post.data.tags) &&
-				post.data.tags.some((tag) => tags.includes(tag)),
+				post.data.tags.some((tag) => activeTags.includes(tag)),
 		);
 	}
 
-	if (categories.length > 0) {
+	if (activeCategories.length > 0) {
 		filteredPosts = filteredPosts.filter(
 			(post) =>
 				post.data.category &&
-				categories.some(
+				activeCategories.some(
 					(c) =>
 						post.data.category === c || post.data.category.startsWith(`${c}/`),
 				),
 		);
 	}
 
-	if (uncategorized) {
+	if (onlyUncategorized) {
 		filteredPosts = filteredPosts.filter((post) => !post.data.category);
 	}
 
@@ -81,17 +94,6 @@ onMount(async () => {
 	});
 
 	if (mode === "catalog") {
-		// Sort inside each group by the chapter number in the title
-		// (00_, 1.1.1, 1.2, 2.1 ...), not by file-system order.
-		const chapterKey = (title: string) => {
-			const m = title.match(/^(\d+(?:\.\d+)*)/);
-			return m
-				? m[1]
-						.split(".")
-						.map((n) => n.padStart(4, "0"))
-						.join(".")
-				: "9999";
-		};
 		filteredPosts = [...filteredPosts].sort((a, b) =>
 			chapterKey(a.data.title).localeCompare(chapterKey(b.data.title)),
 		);
@@ -104,12 +106,11 @@ onMount(async () => {
 			if (list) list.push(post);
 			else byCategory.set(key, [post]);
 		}
-		groups = [...byCategory.entries()].map(([label, posts]) => ({
+		return [...byCategory.entries()].map(([label, posts]) => ({
 			year: 0,
 			label,
 			posts,
 		})) as Group[];
-		return;
 	}
 
 	const grouped = filteredPosts.reduce(
@@ -131,12 +132,35 @@ onMount(async () => {
 
 	groupedPostsArray.sort((a, b) => b.year - a.year);
 
-	groups = groupedPostsArray;
-});
+	return groupedPostsArray;
+}
 
-// 分组块是滚动入场元素；组件每次 DOM 更新后重新观察
-afterUpdate(() => {
+// 首屏（构建时）直接渲染全量列表，避免进入 /archive/ 时先白屏再填充；
+// 带 ?tag= / ?category= 的筛选在客户端水合后再套用。
+groups = buildGroups(sortedPosts, tags, categories, null);
+
+onMount(() => {
+	const params = new URLSearchParams(window.location.search);
+	const queryTags = params.has("tag") ? params.getAll("tag") : [];
+	const queryCategories = params.has("category")
+		? params.getAll("category")
+		: [];
+	const uncategorized = params.get("uncategorized");
+
+	if (queryTags.length > 0 || queryCategories.length > 0 || uncategorized) {
+		groups = buildGroups(
+			sortedPosts,
+			queryTags,
+			queryCategories,
+			uncategorized,
+		);
+	}
+
 	initReveal();
+	// 分组块是滚动入场元素；筛选导致 DOM 更新后重新观察一次
+	afterUpdate(() => {
+		initReveal();
+	});
 });
 </script>
 

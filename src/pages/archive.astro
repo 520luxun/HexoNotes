@@ -6,9 +6,19 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPostsList } from "../utils/content-utils";
 
 const sortedPostsList = await getSortedPostsList();
+
+// 只把列表需要的字段传给岛屿，顺便控制序列化体积
+const posts = sortedPostsList.map((post) => ({
+	slug: post.slug,
+	data: {
+		title: post.data.title,
+		tags: post.data.tags,
+		category: post.data.category,
+		published: post.data.published,
+	},
+}));
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+    <ArchivePanel sortedPosts={posts} client:load></ArchivePanel>
 </MainGridLayout>
-

@@ -6,6 +6,8 @@ import { siteConfig } from "@/config";
 import type { SiteStyle } from "../../constants/constants";
 import { getStyle, prefersReducedMotion } from "../../utils/setting-utils";
 
+let { class: className = "" } = $props();
+
 /* 开场动画变体家族：每个风格映射到一种开场形式 */
 type IntroVariant = "bocchi" | "eva" | "retro90" | "sakura";
 
@@ -186,7 +188,7 @@ onMount(() => {
 
 {#if visible}
 	<div
-		class="intro-overlay {variant}"
+		class="intro-overlay {variant} {className}"
 		class:leaving
 		role="presentation"
 		aria-hidden="true"
