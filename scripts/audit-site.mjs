@@ -18,7 +18,8 @@ const add = (map, u) => {
 	const full = u.startsWith("http") ? u : origin + u;
 	map.set(full, (map.get(full) ?? 0) + 1);
 };
-const isInternal = (u) => u.startsWith(siteBase) || u.startsWith(origin + siteBase);
+const isInternal = (u) =>
+	u.startsWith(siteBase) || u.startsWith(origin + siteBase);
 
 function walk(dir) {
 	for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -27,14 +28,21 @@ function walk(dir) {
 			walk(p);
 		} else if (e.name.endsWith(".html")) {
 			const rel = path.relative(dist, p).split(path.sep).join("/");
-			const pageUrl = rel === "index.html" ? siteBase : `${siteBase}${rel.replace(/index\.html$/, "")}`;
+			const pageUrl =
+				rel === "index.html"
+					? siteBase
+					: `${siteBase}${rel.replace(/index\.html$/, "")}`;
 			pages.push(origin + pageUrl);
 			const html = fs.readFileSync(p, "utf8");
-			for (const m of html.matchAll(/<img\s[^>]*src="([^"]+)"/gi)) add(images, m[1]);
+			for (const m of html.matchAll(/<img\s[^>]*src="([^"]+)"/gi))
+				add(images, m[1]);
 			for (const m of html.matchAll(/<source\s[^>]*srcset="([^"]+)"/gi))
 				add(images, m[1].split(",")[0].trim());
-			for (const m of html.matchAll(/<script\s[^>]*src="([^"]+)"/gi)) add(assets, m[1]);
-			for (const m of html.matchAll(/<link\s[^>]*rel="stylesheet"[^>]*href="([^"]+)"/gi))
+			for (const m of html.matchAll(/<script\s[^>]*src="([^"]+)"/gi))
+				add(assets, m[1]);
+			for (const m of html.matchAll(
+				/<link\s[^>]*rel="stylesheet"[^>]*href="([^"]+)"/gi,
+			))
 				add(assets, m[1]);
 			for (const m of html.matchAll(/<a\s[^>]*href="([^"]+)"/gi)) {
 				const u = m[1].split("#")[0];
@@ -46,7 +54,12 @@ function walk(dir) {
 walk(dist);
 
 // Feeds, sitemap and search index are not linked from every page.
-for (const p of ["rss.xml", "sitemap-index.xml", "robots.txt", "pagefind/pagefind.js"])
+for (const p of [
+	"rss.xml",
+	"sitemap-index.xml",
+	"robots.txt",
+	"pagefind/pagefind.js",
+])
 	add(assets, siteBase + p);
 
 const targets = [
@@ -91,6 +104,7 @@ console.log(
 for (const kind of ["image", "asset", "link", "page"]) {
 	const list = bad.filter((b) => b.kind === kind);
 	console.log(`-- bad ${kind}: ${list.length}`);
-	for (const b of list.slice(0, 20)) console.log(`   ${b.status} ${b.err ?? ""} ${b.u}`);
+	for (const b of list.slice(0, 20))
+		console.log(`   ${b.status} ${b.err ?? ""} ${b.u}`);
 }
 if (bad.length) process.exitCode = 1;

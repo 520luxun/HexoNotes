@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 
 process.env.CODEBUDDY_SAFE_DELETE_BULK_THRESHOLD ||= "5000";
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const projectRoot = path.resolve(
+	path.dirname(fileURLToPath(import.meta.url)),
+	"..",
+);
 const config = JSON.parse(
 	fs.readFileSync(path.join(projectRoot, "notes-sync.config.json"), "utf8"),
 );
@@ -20,11 +23,16 @@ const valueOf = (flag) => {
 const dryRun = has("--dry-run");
 const syncAll = has("--all");
 const sourceDir = path.resolve(valueOf("--source") ?? config.source);
-const targetDir = path.resolve(projectRoot, valueOf("--target") ?? config.target);
+const targetDir = path.resolve(
+	projectRoot,
+	valueOf("--target") ?? config.target,
+);
 const cacheDir = path.join(projectRoot, ".notes-image-cache");
 
 if (!targetDir.startsWith(projectRoot)) {
-	throw new Error(`[notes-sync] target must be inside the project: ${targetDir}`);
+	throw new Error(
+		`[notes-sync] target must be inside the project: ${targetDir}`,
+	);
 }
 
 const normalize = (p) => p.replace(/\\/g, "/").toLowerCase();
@@ -53,7 +61,8 @@ const excludePatterns = (config.exclude ?? []).map(toRegExp);
 const alwaysIncludePatterns = (config.alwaysInclude ?? []).map(toRegExp);
 const featured = new Set((config.featured ?? []).map(normalize));
 const isExcluded = (rel) => excludePatterns.some((re) => re.test(rel));
-const isAlwaysIncluded = (rel) => alwaysIncludePatterns.some((re) => re.test(rel));
+const isAlwaysIncluded = (rel) =>
+	alwaysIncludePatterns.some((re) => re.test(rel));
 const isFeatured = (rel) => featured.has(normalize(rel));
 
 const stripQuotes = (v) => v.replace(/^['"]|['"]$/g, "").trim();
@@ -102,7 +111,8 @@ const normalizeDate = (value) => {
 };
 
 const yamlQuote = (v) => JSON.stringify(String(v ?? ""));
-const yamlArray = (arr) => `[${arr.map((v) => JSON.stringify(String(v))).join(", ")}]`;
+const yamlArray = (arr) =>
+	`[${arr.map((v) => JSON.stringify(String(v))).join(", ")}]`;
 
 // ---------------------------------------------------------------------------
 // 标签规范化：同步时压缩标签体系
@@ -180,9 +190,14 @@ const normalizeTags = (tags) => {
 	}
 	return out;
 };
-const sha = (s) => crypto.createHash("sha1").update(s).digest("hex").slice(0, 12);
-const safeName = (s) => s.replace(/[\\/:*?"<>|#%\s]+/g, "_").replace(/^\.+/, "");
-const pathCollator = new Intl.Collator("zh", { numeric: true, sensitivity: "base" });
+const sha = (s) =>
+	crypto.createHash("sha1").update(s).digest("hex").slice(0, 12);
+const safeName = (s) =>
+	s.replace(/[\\/:*?"<>|#%\s]+/g, "_").replace(/^\.+/, "");
+const pathCollator = new Intl.Collator("zh", {
+	numeric: true,
+	sensitivity: "base",
+});
 
 // Directory-first natural ordering: FreeRTOS/01 < FreeRTOS/02 < .../10,
 // and parent-level notes before notes in subdirectories.
@@ -274,7 +289,7 @@ function cleanDescription(desc, body) {
 			.replace(/!\[\[[^\]]*\]\]/g, "")
 			.replace(/<[^>]+>/g, "")
 			.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-			.replace(/[#>*`|\-]/g, "")
+			.replace(/[#>*`|-]/g, "")
 			.replace(/\s+/g, " ")
 			.trim()
 			.slice(0, 80);
@@ -380,7 +395,10 @@ function convertNote(file, attachments, downloaded, assets, order, ctx) {
 		}
 		if (/^(data:|#)/i.test(r)) return r;
 
-		const decoded = decodeURIComponent(r.split("?")[0].split("#")[0]).replace(/\\/g, "/");
+		const decoded = decodeURIComponent(r.split("?")[0].split("#")[0]).replace(
+			/\\/g,
+			"/",
+		);
 		const norm = decoded.replace(/^\.\//, "");
 		const noteDir = path.dirname(file.full);
 		const candidates = [];
@@ -411,7 +429,16 @@ function convertNote(file, attachments, downloaded, assets, order, ctx) {
 		// attachment folders first, walking up the folder tree like Obsidian's
 		// "shortest path" mode. A global basename hit is only a last resort,
 		// otherwise one "1.png" from another chapter would be picked silently.
-		const subdirs = ["", "assets", "asserts", "Photo", "photos", "images", "img", "attachments"];
+		const subdirs = [
+			"",
+			"assets",
+			"asserts",
+			"Photo",
+			"photos",
+			"images",
+			"img",
+			"attachments",
+		];
 		let dir = noteDir;
 		for (let i = 0; i < 6 && dir.length >= attachments.root.length; i++) {
 			for (const sub of subdirs) {
@@ -442,7 +469,7 @@ function convertNote(file, attachments, downloaded, assets, order, ctx) {
 		return `[${(alias ?? pathPart).trim()}](${relLink(ctx.dirs.length, hit.dirs, hit.slug)})`;
 	};
 
-	let output = body
+	const output = body
 		.replace(/在这里插入图片描述/g, "")
 		.replace(/\uFEFF/g, "") // stray BOM from copied notes
 		// Obsidian-only syntax that plain Markdown would show literally.
@@ -460,7 +487,10 @@ function convertNote(file, attachments, downloaded, assets, order, ctx) {
 		.replace(/^```\s*C\s*$/gim, "```c")
 		.replace(/^```\s*ld\s*$/gim, "```txt")
 		// Dead links to other vault notes (*.md that is not published) become text.
-		.replace(/\[([^\]]+)\]\((?![a-z][a-z0-9+.-]*:)[^)]*\.md(?:#[^)]*)?\)/gi, "$1")
+		.replace(
+			/\[([^\]]+)\]\((?![a-z][a-z0-9+.-]*:)[^)]*\.md(?:#[^)]*)?\)/gi,
+			"$1",
+		)
 		// Obsidian embeds: images stay images, notes become links.
 		.replace(/!\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g, (_, target, alias) => {
 			const t = target.trim();
@@ -504,7 +534,9 @@ function convertNote(file, attachments, downloaded, assets, order, ctx) {
 
 async function main() {
 	if (!fs.existsSync(sourceDir)) {
-		console.log(`[notes-sync] source not found (${sourceDir}), keep previously synced notes.`);
+		console.log(
+			`[notes-sync] source not found (${sourceDir}), keep previously synced notes.`,
+		);
 		return;
 	}
 
@@ -512,7 +544,10 @@ async function main() {
 	const attachments = { root: sourceDir, byPath: new Map(), byBase: new Map() };
 	for (const f of files) {
 		if (f.rel.toLowerCase().endsWith(".md")) continue;
-		attachments.byPath.set(f.rel.split(path.sep).join("/").toLowerCase(), f.full);
+		attachments.byPath.set(
+			f.rel.split(path.sep).join("/").toLowerCase(),
+			f.full,
+		);
 		const base = path.basename(f.rel).toLowerCase();
 		const list = attachments.byBase.get(base);
 		if (list) list.push(f.full);
@@ -523,7 +558,9 @@ async function main() {
 	// still opt in with `publish: true`.
 	const candidates = files.filter((f) => f.rel.toLowerCase().endsWith(".md"));
 	const hasPublishFlag = (file) => {
-		const flag = parseFrontmatter(fs.readFileSync(file.full, "utf8")).data[config.publishField];
+		const flag = parseFrontmatter(fs.readFileSync(file.full, "utf8")).data[
+			config.publishField
+		];
 		return flag === true || flag === "true" || flag === "yes" || flag === 1;
 	};
 	const selected = candidates.filter(
@@ -542,11 +579,15 @@ async function main() {
 	const urlSet = new Set();
 	for (const file of selected) {
 		const raw = fs.readFileSync(file.full, "utf8");
-		for (const m of raw.matchAll(/https?:\/\/[^\s)"'<>]+\.(?:png|jpe?g|gif|webp|bmp|svg)/gi))
+		for (const m of raw.matchAll(
+			/https?:\/\/[^\s)"'<>]+\.(?:png|jpe?g|gif|webp|bmp|svg)/gi,
+		))
 			urlSet.add(m[0]);
 		// Image hosts often hide the extension (e.g. /640?wx_fmt=gif).
-		for (const m of raw.matchAll(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/gi)) urlSet.add(m[1]);
-		for (const m of raw.matchAll(/<img\s+[^>]*src="(https?:\/\/[^"]+)"/gi)) urlSet.add(m[1]);
+		for (const m of raw.matchAll(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/gi))
+			urlSet.add(m[1]);
+		for (const m of raw.matchAll(/<img\s+[^>]*src="(https?:\/\/[^"]+)"/gi))
+			urlSet.add(m[1]);
 	}
 	const downloaded = new Map();
 	if (!dryRun && urlSet.size) {
@@ -610,7 +651,14 @@ async function main() {
 			byBase,
 			assetDir: [...p.dirs, p.slug, "assets"].join("/"),
 		};
-		const note = convertNote(p.file, attachments, downloaded, assets, index + 1, ctx);
+		const note = convertNote(
+			p.file,
+			attachments,
+			downloaded,
+			assets,
+			index + 1,
+			ctx,
+		);
 		if (!note) {
 			console.log(`  - skipped (empty): ${p.file.rel}`);
 			continue;
@@ -643,7 +691,11 @@ async function main() {
 					const frames = meta.pages ?? 1;
 					// Animated GIF/WebP: total decoded pixels can exceed sharp's
 					// limit even when one frame is small. Keep only the first frame.
-					if (w * h * frames > 100_000_000 || Math.max(w, h) > 10000 || frames > 1) {
+					if (
+						w * h * frames > 100_000_000 ||
+						Math.max(w, h) > 10000 ||
+						frames > 1
+					) {
 						await sharp(src, { animated: false })
 							.resize({
 								width: 4096,
@@ -660,9 +712,11 @@ async function main() {
 					fs.copyFileSync(src, dest);
 				}
 			}
-			if (resized) console.log(`[notes-sync] resized ${resized} oversized images`);
+			if (resized)
+				console.log(`[notes-sync] resized ${resized} oversized images`);
 		}
-		if (!outputs.length) fs.writeFileSync(path.join(targetDir, ".gitkeep"), "", "utf8");
+		if (!outputs.length)
+			fs.writeFileSync(path.join(targetDir, ".gitkeep"), "", "utf8");
 	}
 	for (const o of outputs) console.log(`  + notes/${o.name}  <- ${o.rel}`);
 	console.log(`[notes-sync] ${outputs.length} posts, ${assets.size} images`);

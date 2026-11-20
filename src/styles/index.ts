@@ -6,6 +6,7 @@
 // (e.g. `The 'link' class does not exist` in markdown.css).
 import "./variables.styl";
 import "./main.css";
+import "./heading-fonts.css";
 import "./markdown.css";
 import "./markdown-extend.styl";
 import "./transition.css";

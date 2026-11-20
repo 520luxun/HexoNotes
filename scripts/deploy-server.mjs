@@ -12,7 +12,9 @@ const remoteDir = process.env.DEPLOY_PATH ?? "/var/www/blog";
 const port = process.env.DEPLOY_PORT ?? "22";
 
 if (!host) {
-	console.error("缺少 DEPLOY_HOST，例如：DEPLOY_HOST=47.76.70.118 node scripts/deploy-server.mjs");
+	console.error(
+		"缺少 DEPLOY_HOST，例如：DEPLOY_HOST=47.76.70.118 node scripts/deploy-server.mjs",
+	);
 	process.exit(1);
 }
 
@@ -24,8 +26,14 @@ const run = (cmd, args) => {
 	}
 };
 
-console.log(`[deploy] 构建根域名版本 -> https://blog.luxunacc.xyz/`);
-run("node", ["scripts/build.mjs", "--site", "https://blog.luxunacc.xyz/", "--base", "/"]);
+console.log("[deploy] 构建根域名版本 -> https://blog.luxunacc.xyz/");
+run("node", [
+	"scripts/build.mjs",
+	"--site",
+	"https://blog.luxunacc.xyz/",
+	"--base",
+	"/",
+]);
 
 console.log(`[deploy] 上传 dist/ -> ${user}@${host}:${remoteDir}/`);
 run("rsync", [
@@ -37,5 +45,7 @@ run("rsync", [
 	`${user}@${host}:${remoteDir}/`,
 ]);
 
-console.log("[deploy] 完成。若首次部署，请在服务器上追加 Caddy 站点块并 reload:");
+console.log(
+	"[deploy] 完成。若首次部署，请在服务器上追加 Caddy 站点块并 reload:",
+);
 console.log("        sudo caddy reload --config /etc/caddy/Caddyfile");
