@@ -79,6 +79,7 @@ export class FallingLayer {
 	private particles: Particle[] = [];
 	private raf = 0;
 	private running = false;
+	private paused = false;
 	private style: SiteStyle = "bocchi";
 	private last = 0;
 	private time = 0;
@@ -112,6 +113,20 @@ export class FallingLayer {
 		document.addEventListener("visibilitychange", this.onVisibility);
 		this.last = performance.now();
 		this.raf = requestAnimationFrame(this.loop);
+	}
+
+	/** 页面切换等重绘场景下暂停动画，避免和过渡动画抢帧。 */
+	pause(): void {
+		if (!this.running || this.paused) return;
+		this.paused = true;
+		this.pauseLoop();
+	}
+
+	/** 恢复被 pause() 暂停的动画。 */
+	resume(): void {
+		if (!this.paused) return;
+		this.paused = false;
+		if (this.running) this.resumeLoop();
 	}
 
 	setStyle(style: SiteStyle): void {

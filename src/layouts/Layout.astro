@@ -474,10 +474,18 @@ const setup = () => {
 			navbar.classList.add('navbar-hidden')
 		}
 	})
-	window.swup.hooks.on('content:replace', initCustomScrollbar)
+	// 滚动条初始化不参与首帧，放到空闲时段，避免和过渡动画抢主线程
+	window.swup.hooks.on('content:replace', () => {
+		if ('requestIdleCallback' in window) {
+			window.requestIdleCallback(() => initCustomScrollbar(), { timeout: 400 })
+		} else {
+			setTimeout(initCustomScrollbar, 120)
+		}
+	})
 	window.swup.hooks.on('content:replace', initReveal)
 	window.swup.hooks.on('content:replace', () => setProgressBar(getEffects().progress))
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+		document.dispatchEvent(new CustomEvent('swup-transition', { detail: { active: true } }))
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
 		if (pathsEqual(visit.to.url, url('/'))) {
@@ -499,6 +507,7 @@ const setup = () => {
 		}
 	});
 	window.swup.hooks.on('page:view', () => {
+		document.dispatchEvent(new CustomEvent('swup-transition', { detail: { active: false } }))
 		// hide the temp high element when the transition is done
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {

@@ -47,12 +47,21 @@ onMount(() => {
 		layer.setStyle((e as CustomEvent<SiteStyle>).detail);
 	};
 
+	// swup 切换页面时暂停粒子动画，把这一帧让给过渡动画
+	const onSwupTransition = (e: Event) => {
+		const active = (e as CustomEvent<{ active: boolean }>).detail?.active;
+		if (active) layer.pause();
+		else layer.resume();
+	};
+
 	document.addEventListener("effects-changed", onEffectsChanged);
 	document.addEventListener("site-style-changed", onStyleChanged);
+	document.addEventListener("swup-transition", onSwupTransition);
 
 	return () => {
 		document.removeEventListener("effects-changed", onEffectsChanged);
 		document.removeEventListener("site-style-changed", onStyleChanged);
+		document.removeEventListener("swup-transition", onSwupTransition);
 		layer.destroy();
 		clickCleanup?.();
 	};

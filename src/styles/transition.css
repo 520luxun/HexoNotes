@@ -1,9 +1,11 @@
-/* Page transition animations with Swup */
+/* Page transition animations with Swup
+   只做 opacity（合成层动画），160ms，避免 transition-all 逐帧重绘整个容器 */
 html.is-changing .transition-swup-fade {
-    @apply transition-all duration-200
+    transition: opacity 120ms linear;
+    will-change: opacity;
 }
 html.is-animating .transition-swup-fade {
-    @apply opacity-0 translate-y-4
+    opacity: 0;
 }
 
 /* Fade-in animations for components */
